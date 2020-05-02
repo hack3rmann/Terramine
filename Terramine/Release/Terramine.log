@@ -1,0 +1,9 @@
+﻿LINK : warning LNK4098: библиотека по умолчанию "LIBCMT" конфликтует с использованием других библиотек; используйте /NODEFAULTLIB:library
+main.obj : error LNK2001: неразрешенный внешний символ "_glfwSwapBuffers"
+main.obj : error LNK2001: неразрешенный внешний символ "_glfwTerminate"
+main.obj : error LNK2001: неразрешенный внешний символ "_glfwPollEvents"
+main.obj : error LNK2001: неразрешенный внешний символ "_glfwInit"
+main.obj : error LNK2001: неразрешенный внешний символ "_glfwCreateWindow"
+main.obj : error LNK2001: неразрешенный внешний символ "_glfwMakeContextCurrent"
+main.obj : error LNK2001: неразрешенный внешний символ "_glfwWindowShouldClose"
+D:\Svyatoslav\Projects\C++\Terramine\Release\Terramine.exe : fatal error LNK1120: неразрешенных внешних элементов: 7

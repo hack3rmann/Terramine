@@ -1,0 +1,12 @@
+﻿  main.cpp
+main.obj : warning LNK4075: не учитывается "/EDITANDCONTINUE" из-за спецификации "/INCREMENTAL:NO"
+main.obj : error LNK2019: ссылка на неразрешенный внешний символ __imp_glClear в функции main
+main.obj : error LNK2019: ссылка на неразрешенный внешний символ __imp_glDrawArrays в функции main
+main.obj : error LNK2019: ссылка на неразрешенный внешний символ __imp_glGetString в функции main
+main.obj : error LNK2019: ссылка на неразрешенный внешний символ glewInit в функции main
+main.obj : error LNK2001: неразрешенный внешний символ "__glewBindBuffer"
+main.obj : error LNK2001: неразрешенный внешний символ "__glewBufferData"
+main.obj : error LNK2001: неразрешенный внешний символ "__glewGenBuffers"
+main.obj : error LNK2001: неразрешенный внешний символ "__glewEnableVertexAttribArray"
+main.obj : error LNK2001: неразрешенный внешний символ "__glewVertexAttribPointer"
+D:\Svyatoslav\Projects\C++\Terramine\x64\Debug\Terramine.exe : fatal error LNK1120: неразрешенных внешних элементов: 9
