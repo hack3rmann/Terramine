@@ -1,8 +1,10 @@
-#include <Windows.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
+
+#define BUFFER_OFFSET(i) ((char*)NULL + (i))
+#define DEBUG
 
 std::string parseShader(const std::string& name) {
 	std::ifstream file;
@@ -80,35 +82,53 @@ int main() {
 		std::cout << "GLEW err" << std::endl;
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
+	
+	unsigned int shader = CreateShader();
 
 	float vertex[] = {
-//		  X      Y   
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.5f,  0.5f,
-		-0.5f,  0.5f,
+//		  X      Y      Z
+		-0.5f, -0.5f,  0.0f,
+		 0.5f, -0.5f,  0.0f,
+		 0.5f,  0.5f,  0.0f,
+		-0.5f,  0.5f,  0.0f
 	};
-
+	float color[] = {
+//		 R     G     B     A
+		1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 1.0f, 1.0f
+	};
 	unsigned int indeces[] = {
 		0, 1, 2,
 		2, 3, 0
 	};
 
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertex, GL_STATIC_DRAW);
-	
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 	GLuint ibo;
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indeces, GL_STATIC_DRAW);
-	
-	unsigned int shader = CreateShader();
+
+	glBufferData(GL_ARRAY_BUFFER, 4 * 7 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 7 * sizeof(unsigned int), indeces, GL_DYNAMIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * 3 * sizeof(float), vertex);
+	glBufferSubData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), 4 * 4 * sizeof(float), color);
+
+	unsigned int positionID = glGetAttribLocation(shader, "vPosition");
+	unsigned int colorID = glGetAttribLocation(shader, "vColor");
+
+	glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, 0, (const void*)(4 * 3 * sizeof(float)));
 	glUseProgram(shader);
+	glEnableVertexAttribArray(positionID);
+	glEnableVertexAttribArray(colorID);
 
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
