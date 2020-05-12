@@ -16,19 +16,19 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{55d89472-d9c0-416b-9c49-13e08aa32371}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{195679bf-3a48-4dee-945a-fb36ee36c06f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
+    <ClCompile Include="EventHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="vertexBuffer.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="indexBuffer.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="Graphics\Shader.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,14 +41,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="renderer.h">
+    <ClInclude Include="EventHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="vertexBuffer.h">
+    <ClInclude Include="Window.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="indexBuffer.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Graphics\Shader.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
