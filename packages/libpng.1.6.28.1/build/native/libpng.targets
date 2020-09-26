@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="libpng_init">
+  <PropertyGroup Label="Default initializers for properties">
+    <Linkage-libpng Condition="'$(Linkage-libpng)' == ''">dynamic</Linkage-libpng>
+    <CallingConvention-libpng Condition="'$(CallingConvention-libpng)' == ''">cdecl</CallingConvention-libpng>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>HAS_LIBPNG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v140 and dynamic and Release" Condition="'$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v140' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v140\dynamic\Release\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v120 and dynamic and Release" Condition="'$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v120' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v120\dynamic\Release\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v140 and dynamic and Release" Condition="'$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v140' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v140\dynamic\Release\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v120 and dynamic and Release" Condition="'$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v120' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v120\dynamic\Release\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v140 and dynamic and Debug" Condition="'$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v140' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v140\dynamic\Debug\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Win32 and v120 and dynamic and Debug" Condition="'$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v120' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Win32\v120\dynamic\Debug\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v140 and dynamic and Debug" Condition="'$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v140' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v140\dynamic\Debug\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="x64 and v120 and dynamic and Debug" Condition="'$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v120' And '$(Linkage-libpng.ToLower())' == 'dynamic' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 )">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/x64\v120\dynamic\Debug\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\default-propertiesui.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\libpng-propertiesui-3321bf86-a3d5-4d5f-8f99-a507440412bd.xml" />
+  </ItemGroup>
+  <UsingTask TaskName="libpng_Contains" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" TaskFactory="CodeTaskFactory">
+    <ParameterGroup>
+      <Text Output="false" ParameterType="System.String" />
+      <Library Output="false" Required="true" ParameterType="System.String" />
+      <Value Output="false" Required="true" ParameterType="System.String" />
+      <Result Output="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code>Result = ((Text ?? "").Split(';').Contains(Library) ) ? Value : String.Empty;</Code>
+    </Task>
+  </UsingTask>
+  <Target Name="libpng_init">
+    <libpng_Contains Text="Linkage-dynamic" Library="libpng" Value="dynamic" Condition="'$(Linkage-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="Linkage-static" Library="libpng" Value="static" Condition="'$(Linkage-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="Linkage-ltcg" Library="libpng" Value="ltcg" Condition="'$(Linkage-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="Linkage-sxs" Library="libpng" Value="sxs" Condition="'$(Linkage-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="CallingConvention-cdecl" Library="libpng" Value="cdecl" Condition="'$(CallingConvention-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="CallingConvention-stdcall" Library="libpng" Value="stdcall" Condition="'$(CallingConvention-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="CallingConvention-fastcall" Library="libpng" Value="fastcall" Condition="'$(CallingConvention-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="CallingConvention-thiscall" Library="libpng" Value="thiscall" Condition="'$(CallingConvention-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libpng" />
+    </libpng_Contains>
+    <libpng_Contains Text="CallingConvention-clrcall" Library="libpng" Value="clrcall" Condition="'$(CallingConvention-libpng)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libpng" />
+    </libpng_Contains>
+  </Target>
+</Project>

@@ -3,6 +3,8 @@
 #define SHADER_H
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <exception>
@@ -17,8 +19,11 @@ public:
 	~Shader();
 
 	void use();
+	void uniformMatrix(const char* name, glm::mat4 matrix);
+	void uniformVec2u(const char* name, glm::vec2 vec);
+	void uniform1i(const char* name, int num);
 };
 
-extern Shader* load_shader(std::string vertexFile, std::string fragmentFile);
+extern Shader* load_shader(const std::string vertexFile, const std::string fragmentFile);
 
 #endif // !SHADER_H

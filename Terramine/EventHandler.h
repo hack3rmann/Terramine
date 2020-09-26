@@ -17,11 +17,13 @@ public:
 	static bool _cursor_started;
 
 	static int init();
+	static void terminate();
 	static void pullEvents();
 	static bool isPressed(int keycode);
 	static bool justPressed(int keycode);
 	static bool isClicked(int button);
 	static bool justClicked(int button);
+	static void toggleCursor();
 };
 
 #endif // !EVENT_HANDLER_H

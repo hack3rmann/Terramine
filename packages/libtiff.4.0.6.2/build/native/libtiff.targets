@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="libtiff_init">
+  <PropertyGroup Label="Default initializers for properties">
+    <Linkage-libtiff Condition="'$(Linkage-libtiff)' == ''">dynamic</Linkage-libtiff>
+    <CallingConvention-libtiff Condition="'$(CallingConvention-libtiff)' == ''">cdecl</CallingConvention-libtiff>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>HAS_LIBTIFF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Release and Win32 and v120" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v120'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Release\Win32\v120\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Debug and Win32 and v120" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v120'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Debug\Win32\v120\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Release and x64 and v120" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v120'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Release\x64\v120\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Debug and x64 and v120" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v120'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Debug\x64\v120\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Release and Win32 and v140" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v140'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Release\Win32\v140\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Debug and Win32 and v140" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Platform.ToLower())' == 'win32' And '$(PlatformToolset.ToLower())' == 'v140'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Debug\Win32\v140\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Release and x64 and v140" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v140'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Release\x64\v140\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="Debug and x64 and v140" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Platform.ToLower())' == 'x64' And '$(PlatformToolset.ToLower())' == 'v140'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/Debug\x64\v140\libtiff.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\default-propertiesui.xml" />
+  </ItemGroup>
+  <UsingTask TaskName="libtiff_Contains" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" TaskFactory="CodeTaskFactory">
+    <ParameterGroup>
+      <Text Output="false" ParameterType="System.String" />
+      <Library Output="false" Required="true" ParameterType="System.String" />
+      <Value Output="false" Required="true" ParameterType="System.String" />
+      <Result Output="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code>Result = ((Text ?? "").Split(';').Contains(Library) ) ? Value : String.Empty;</Code>
+    </Task>
+  </UsingTask>
+  <Target Name="libtiff_init">
+    <libtiff_Contains Text="Linkage-dynamic" Library="libtiff" Value="dynamic" Condition="'$(Linkage-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="Linkage-static" Library="libtiff" Value="static" Condition="'$(Linkage-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="Linkage-ltcg" Library="libtiff" Value="ltcg" Condition="'$(Linkage-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="Linkage-sxs" Library="libtiff" Value="sxs" Condition="'$(Linkage-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="CallingConvention-cdecl" Library="libtiff" Value="cdecl" Condition="'$(CallingConvention-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="CallingConvention-stdcall" Library="libtiff" Value="stdcall" Condition="'$(CallingConvention-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="CallingConvention-fastcall" Library="libtiff" Value="fastcall" Condition="'$(CallingConvention-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="CallingConvention-thiscall" Library="libtiff" Value="thiscall" Condition="'$(CallingConvention-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libtiff" />
+    </libtiff_Contains>
+    <libtiff_Contains Text="CallingConvention-clrcall" Library="libtiff" Value="clrcall" Condition="'$(CallingConvention-libtiff)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libtiff" />
+    </libtiff_Contains>
+  </Target>
+</Project>

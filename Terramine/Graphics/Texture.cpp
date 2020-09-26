@@ -1,0 +1,22 @@
+#include "Texture.h"
+#include <GL/glew.h>
+#include <string>
+#include <iostream>
+#include "../defines.cpp"
+
+int Texture::AviableSlot = 0;
+
+Texture::Texture(GLuint id, int width, int height) : id(id), width(width), height(height) {
+	slot = AviableSlot + GL_TEXTURE0;
+	AviableSlot++;
+}
+Texture::Texture() { }
+Texture::~Texture() {
+	//glcall(glDeleteTextures(1, &id));
+}
+void Texture::bind() {
+	glcall(glBindTexture(GL_TEXTURE_2D, id));
+}
+void Texture::unbind() {
+	glcall(glBindTexture(GL_TEXTURE_2D, 0));
+}

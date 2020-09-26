@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework">
+  <Rule Name="ReferencedPackagesfc546b36-e5c8-4597-ac70-5ae915dcae82" PageTemplate="tool" DisplayName="Referenced Packages" SwitchPrefix="/" Order="1">
+    <Rule.Categories>
+      <Category Name="libjpeg" DisplayName="libjpeg" />
+    </Rule.Categories>
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" />
+    </Rule.DataSource>
+    <EnumProperty Name="Linkage-libjpeg" DisplayName="Linkage" Description="Which version of the .lib file to link to this library" Category="libjpeg">
+      <EnumValue Name="" DisplayName="Dynamic Library (DLL)" />
+      <EnumValue Name="static" DisplayName="Static" />
+      <EnumValue Name="ltcg" DisplayName="Link Time Compiler Generation" />
+    </EnumProperty>
+    <EnumProperty Name="CallingConvention-libjpeg" DisplayName="CallingConvention" Description="Calling convention model to use (for x86 only)" Category="libjpeg">
+      <EnumValue Name="" DisplayName="cdecl" />
+    </EnumProperty>
+  </Rule>
+</ProjectSchemaDefinitions>

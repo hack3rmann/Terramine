@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="libjpeg_init">
+  <PropertyGroup Label="Debug and static and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Release and static and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Debug and ltcg and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Release and ltcg and RuntimeLibraryNull" Condition="( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And ('$(RuntimeLibrary)' == '')">
+    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+  </PropertyGroup>
+  <PropertyGroup Label="Default initializers for properties">
+    <Linkage-libjpeg Condition="'$(Linkage-libjpeg)' == ''">dynamic</Linkage-libjpeg>
+    <CallingConvention-libjpeg Condition="'$(CallingConvention-libjpeg)' == ''">cdecl</CallingConvention-libjpeg>
+  </PropertyGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\default-propertiesui.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\libjpeg-propertiesui-2a4f4917-a890-491a-b825-aeba667d8ee7.xml" />
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>HAS_LIBJPEG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../..//build/native/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="static" Condition="'$(Linkage-libjpeg.ToLower())' == 'static'">
+    <ClCompile>
+      <RuntimeLibrary>$(RuntimeLibrary)</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="ltcg" Condition="'$(Linkage-libjpeg.ToLower())' == 'ltcg'">
+    <ClCompile>
+      <RuntimeLibrary>$(RuntimeLibrary)</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and Win32 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\Win32\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and Win32 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\Win32\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and Win32 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\Win32\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and Win32 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\Win32\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and x64 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\x64\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and x64 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\x64\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and x64 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\x64\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and x64 and Release and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\x64\Release\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and Win32 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\Win32\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and Win32 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\Win32\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and Win32 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\Win32\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and Win32 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\Win32\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and x64 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\x64\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and x64 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\x64\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and x64 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\x64\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and x64 and Debug and static and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'static' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\x64\Debug\static\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and Win32 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\Win32\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and Win32 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\Win32\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and Win32 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\Win32\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and Win32 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\Win32\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and x64 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\x64\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and x64 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\x64\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and x64 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\x64\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and x64 and Release and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\x64\Release\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and Win32 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\Win32\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and Win32 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\Win32\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and Win32 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\Win32\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and Win32 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\Win32\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and x64 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\x64\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and x64 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\x64\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and x64 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\x64\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and x64 and Debug and ltcg and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'ltcg' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\x64\Debug\ltcg\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and Win32 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\Win32\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and Win32 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\Win32\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and Win32 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\Win32\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and Win32 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\Win32\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and x64 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\x64\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and x64 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\x64\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and x64 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\x64\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and x64 and Release and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) == -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\x64\Release\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and Win32 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\Win32\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and Win32 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\Win32\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and Win32 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\Win32\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and Win32 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'win32' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\Win32\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v100 and x64 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v100' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v100\x64\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v110 and x64 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v110' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v110\x64\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v120 and x64 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v120' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v120\x64\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Label="v140 and x64 and Debug and dynamic and cdecl" Condition="'$(PlatformToolset.ToLower())' == 'v140' And '$(Platform.ToLower())' == 'x64' And ( $(Configuration.ToLower().IndexOf('debug')) &gt; -1 ) And '$(Linkage-libjpeg.ToLower())' == 'dynamic' And '$(CallingConvention-libjpeg.ToLower())' == 'cdecl'">
+    <Link>
+      <AdditionalDependencies>$(MSBuildThisFileDirectory)../..//build/native/lib/v140\x64\Debug\dynamic\cdecl\jpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <UsingTask TaskName="libjpeg_Contains" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" TaskFactory="CodeTaskFactory">
+    <ParameterGroup>
+      <Text Output="false" ParameterType="System.String" />
+      <Library Output="false" Required="true" ParameterType="System.String" />
+      <Value Output="false" Required="true" ParameterType="System.String" />
+      <Result Output="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code>Result = ((Text ?? "").Split(';').Contains(Library) ) ? Value : String.Empty;</Code>
+    </Task>
+  </UsingTask>
+  <Target Name="libjpeg_init">
+    <libjpeg_Contains Text="Linkage-dynamic" Library="libjpeg" Value="dynamic" Condition="'$(Linkage-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="Linkage-static" Library="libjpeg" Value="static" Condition="'$(Linkage-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="Linkage-ltcg" Library="libjpeg" Value="ltcg" Condition="'$(Linkage-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="Linkage-sxs" Library="libjpeg" Value="sxs" Condition="'$(Linkage-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="Linkage-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="CallingConvention-cdecl" Library="libjpeg" Value="cdecl" Condition="'$(CallingConvention-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="CallingConvention-stdcall" Library="libjpeg" Value="stdcall" Condition="'$(CallingConvention-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="CallingConvention-fastcall" Library="libjpeg" Value="fastcall" Condition="'$(CallingConvention-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="CallingConvention-thiscall" Library="libjpeg" Value="thiscall" Condition="'$(CallingConvention-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libjpeg" />
+    </libjpeg_Contains>
+    <libjpeg_Contains Text="CallingConvention-clrcall" Library="libjpeg" Value="clrcall" Condition="'$(CallingConvention-libjpeg)'==''">
+      <Output TaskParameter="Result" PropertyName="CallingConvention-libjpeg" />
+    </libjpeg_Contains>
+  </Target>
+</Project>
