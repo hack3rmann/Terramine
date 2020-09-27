@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "EventHandler.h"
 #include "Voxels/Chunks.h"
+#include "Graphics/LineBatch.h"
 
 using namespace glm;
 
@@ -15,6 +16,7 @@ class Player {
 	float camX;
 	float camY;
 public:
+	LineBatch* lineBatch;
 	Camera* cam;
 	vec3 speed;
 	int currentBlock;
@@ -22,6 +24,6 @@ public:
 
 	Player();
 	Player(float lastTime, float gravity, vec3 speed);
-	void update(const Chunks* chunks);
+	void update(Chunks* chunks, LineBatch* lineBatch);
 	void updateTime();
 };

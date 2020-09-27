@@ -15,11 +15,11 @@ void Camera::updateVectors() {
 Camera::Camera(vec3 position, float fov) : position(position), fov(fov), rotation(1.0f) {
 	updateVectors();
 }
-mat4 Camera::getProjection() {
+mat4 Camera::getProjection() const {
 	float aspect = (float)Window::width / (float)Window::height;
-	return glm::perspective(fov, aspect, 0.15f, 200.0f);
+	return glm::perspective(fov, aspect, 0.15f, 1000.0f);
 }
-mat4 Camera::getView() {
+mat4 Camera::getView() const {
 	return glm::lookAt(position, position + frontCam, up);
 }
 void Camera::rotate(float x, float y, float z) {

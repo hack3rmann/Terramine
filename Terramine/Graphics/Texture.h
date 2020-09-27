@@ -17,6 +17,7 @@ public:
 	~Texture();
 
 	void bind();
+	void deleteTex();
 	static void unbind();
 };
 

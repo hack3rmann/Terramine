@@ -21,6 +21,7 @@ public:
 	void use();
 	void uniformMatrix(const char* name, glm::mat4 matrix);
 	void uniformVec2u(const char* name, glm::vec2 vec);
+	void uniform3f(const char* name, glm::vec3 vec);
 	void uniform1i(const char* name, int num);
 };
 

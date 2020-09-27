@@ -1,34 +1,15 @@
-﻿  defines.cpp
-  LineBatch.cpp
-  Shader.cpp
-  Texture.cpp
-  VoxelRenderer.cpp
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Graphics\VoxelRenderer.cpp(32,59): warning C4244: инициализация: преобразование "unsigned __int64" в "unsigned int", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Graphics\VoxelRenderer.cpp(242,32): warning C4244: аргумент: преобразование "unsigned __int64" в "size_t", возможна потеря данных
-  Button.cpp
-  GUI.cpp
-  Sprite.cpp
-  pngLoader.cpp
-  main.cpp
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(118,34): warning C4244: инициализация: преобразование "unsigned __int64" в "unsigned int", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(138,62): warning C4244: аргумент: преобразование "genType" в "float", возможна потеря данных
+﻿  Player.cpp
+F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(19,24): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(110,22): warning C4244: =: преобразование "double" в "T", возможна потеря данных
           with
           [
-              genType=double
+              T=float
           ]
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(140,17): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(155,21): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
-  Mesh.cpp
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Mesh.cpp(14,2): warning C4244: аргумент: преобразование "unsigned __int64" в "GLsizeiptr", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Mesh.cpp(20,3): warning C4244: аргумент: преобразование "unsigned __int64" в "GLsizei", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Mesh.cpp(29,2): warning C4244: аргумент: преобразование "unsigned __int64" в "GLsizei", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Mesh.cpp(40,2): warning C4244: аргумент: преобразование "unsigned __int64" в "GLsizeiptr", возможна потеря данных
-  BlockStore.cpp
-  Window.cpp
+F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(95,65): warning C4390: ";": обнаружен пустой контролируемый оператор; это правильно?
   Создание кода
-  76 of 936 functions ( 8.1%) were compiled, the rest were copied from previous compilation.
-    12 functions were new in current compilation
-    40 functions had inline decision re-evaluated but remain unchanged
   Создание кода завершено
-glew32s.lib(glew.obj) : warning LNK4099: "vc100.pdb" PDB не найден с "glew32s.lib(glew.obj)" или на "F:\Svyatoslav\Projects\C++\Terramine\Release\vc100.pdb"; компоновка объекта выполняется как при отсутствии отладочных данных
+glew32s.lib(glew.obj) : warning LNK4099: "vc120.pdb" PDB не найден с "glew32s.lib(glew.obj)" или на "F:\Svyatoslav\Projects\C++\Terramine\Release\vc120.pdb"; компоновка объекта выполняется как при отсутствии отладочных данных
+  1 of 958 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
   Terramine.vcxproj -> F:\Svyatoslav\Projects\C++\Terramine\Release\Terramine.exe

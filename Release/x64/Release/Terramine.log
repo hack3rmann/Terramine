@@ -1,0 +1,7 @@
+﻿  Создание кода
+  Создание кода завершено
+  0 of 224 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+glew32s.lib(glew.obj) : warning LNK4099: "vc100.pdb" PDB не найден с "glew32s.lib(glew.obj)" или на "D:\Svyatoslav\Projects\C++\Terramine\x64\Release\vc100.pdb"; компоновка объекта выполняется как при отсутствии отладочных данных
+  Terramine.vcxproj -> D:\Svyatoslav\Projects\C++\Terramine\x64\Release\Terramine.exe

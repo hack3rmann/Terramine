@@ -90,6 +90,12 @@
     <ClCompile Include="Player.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Voxels\Terrarian.cpp">
+      <Filter>Voxels</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Skybox.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -159,6 +165,12 @@
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Voxels\Terrarian.h">
+      <Filter>Voxels</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Skybox.h">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>

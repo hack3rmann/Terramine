@@ -265,6 +265,19 @@ Texture* load_texture(const char* file) {
 
 	return new Texture(texture, width, height);
 }
+Texture* load_texture2(const char* file) {
+	int width, height;
+	GLuint texture = LoadGLTextures2(file, &width, &height);
+	if (texture == 0) {
+		std::cout << "Could not load texture " << file << "!\n";
+
+#	    ifdef EXIT_ON_ERROR
+		return nullptr;
+#	    endif
+	}
+
+	return new Texture(texture, width, height);
+}
 
 GLuint LoadGLTextures(const char* filename, int* width, int* height) {
 	/* Status indicator */
@@ -291,6 +304,46 @@ GLuint LoadGLTextures(const char* filename, int* width, int* height) {
 		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
 		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4));
+		glcall(glGenerateMipmap(GL_TEXTURE_2D));
+
+		glcall(glBindTexture(GL_TEXTURE_2D, 0));
+
+		*width = TextureImage->w;
+		*height = TextureImage->h;
+	}
+
+	/* Free up any memory we may have used */
+	if (TextureImage)
+		SDL_FreeSurface(TextureImage);
+
+	return texture;
+}
+GLuint LoadGLTextures2(const char* filename, int* width, int* height) {
+	/* Status indicator */
+	GLuint texture = 0;
+
+	/* Create storage space for the texture */
+	SDL_Surface* TextureImage;
+
+	/* Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit */
+	if (TextureImage = IMG_Load(filename)) {
+		/* Create The Texture */
+		glcall(glGenTextures(1, &texture));
+
+		/* Typical Texture Generation Using Data From The Bitmap */
+
+		glcall(glBindTexture(GL_TEXTURE_2D, texture));
+		glcall(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+
+		/* Generate The Texture */
+		glcall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TextureImage->w, TextureImage->h, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage->pixels));
+
+		/* Nearest Filtering */
+		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR));
+		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4));
 		glcall(glGenerateMipmap(GL_TEXTURE_2D));
 

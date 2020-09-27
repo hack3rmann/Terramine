@@ -16,6 +16,10 @@ void Shader::uniformVec2u(const char* name, glm::vec2 vec) {
 	GLuint loc = glGetUniformLocation(id, name);
 	glcall(glUniform2f(loc, vec.x, vec.y));
 }
+void Shader::uniform3f(const char* name, glm::vec3 vec) {
+	GLuint loc = glGetUniformLocation(id, name);
+	glcall(glUniform3f(loc, vec.x, vec.y, vec.z));
+}
 void Shader::uniform1i(const char* name, int num) {
 	GLuint loc = glGetUniformLocation(id, name);
 	glcall(glUniform1i(loc, num));

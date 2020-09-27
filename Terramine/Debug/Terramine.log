@@ -1,4 +1,9 @@
-﻿  main.cpp
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(104,34): warning C4244: инициализация: преобразование "unsigned __int64" в "unsigned int", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(125,38): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+﻿  Player.cpp
+F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(19,24): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(110,22): warning C4244: =: преобразование "double" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(95,65): warning C4390: ";": обнаружен пустой контролируемый оператор; это правильно?
   Terramine.vcxproj -> F:\Svyatoslav\Projects\C++\Terramine\Debug\Terramine.exe

@@ -25,14 +25,15 @@ Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) : vertices(ve
 	glcall(glBindVertexArray(0));
 }
 void Mesh::draw(unsigned int primitive) {
-	glcall(glBindVertexArray(vao));
-	glcall(glDrawArrays(primitive, 0, vertices));
-	glcall(glBindVertexArray(0));
+	if (vertices) {
+		glcall(glBindVertexArray(vao));
+		glcall(glDrawArrays(primitive, 0, vertices));
+		glcall(glBindVertexArray(0));
+	}
 }
 Mesh::~Mesh() {
 	glcall(glDeleteVertexArrays(1, &vao));
 	glcall(glDeleteBuffers(1, &vbo));
-
 }
 void Mesh::reload(const float* buffer, size_t vertices) {
 	glcall(glBindVertexArray(vao));
