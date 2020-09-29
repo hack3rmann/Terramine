@@ -6,7 +6,7 @@
 #include <new>
 #include <iostream>
 
-#define VERTEX_SIZE (3 + 2 + 1)
+#define VERTEX_SIZE (3 + 3 + 2 + 1)
 
 #define CDIV(X,A) (((X) < 0) ? ((X) / (A) - 1) : ((X) / (A)))
 #define LOCAL_NEG(X, SIZE) (((X) < 0) ? ((SIZE)+(X)) : (X))
@@ -15,17 +15,20 @@
 #define GET_CHUNK(X,Y,Z) (chunks[((CDIV(Y, CHUNK_H)+1) * 3 + CDIV(Z, CHUNK_D) + 1) * 3 + CDIV(X, CHUNK_W) + 1])
 
 #define VOXEL(X,Y,Z) (GET_CHUNK(X,Y,Z)->voxels[(LOCAL(Y, CHUNK_H) * CHUNK_D + LOCAL(Z, CHUNK_D)) * CHUNK_W + LOCAL(X, CHUNK_W)])
-#define IS_BLOCKED(X,Y,Z) ((!IS_CHUNK(X, Y, Z)) || VOXEL(X, Y, Z).id && !VOXEL(X, Y, Z).isTransparent)
+#define IS_BLOCKED(X,Y,Z) ((!IS_CHUNK(X,Y,Z)) || VOXEL(X,Y,Z).id && !VOXEL(X,Y,Z).isTransparent)
 
-#define VERTEX(INDEX, X,Y,Z, U,V, L) buffer[INDEX+0] = (X);\
-								  buffer[INDEX+1] = (Y);\
-								  buffer[INDEX+2] = (Z);\
-								  buffer[INDEX+3] = (U);\
-								  buffer[INDEX+4] = (V);\
-								  buffer[INDEX+5] = (L);\
-								  INDEX += VERTEX_SIZE;
+#define VERTEX(INDEX,X,Y,Z,NX,NY,NZ,U,V,L) buffer[INDEX+0] = (X);\
+										   buffer[INDEX+1] = (Y);\
+										   buffer[INDEX+2] = (Z);\
+										   buffer[INDEX+3] = (NX);\
+										   buffer[INDEX+4] = (NY);\
+										   buffer[INDEX+5] = (NZ);\
+										   buffer[INDEX+6] = (U);\
+										   buffer[INDEX+7] = (V);\
+										   buffer[INDEX+8] = (L);\
+										   INDEX += VERTEX_SIZE;
 
-int chunk_attrs[] = { 3, 2, 1, 0 };
+int chunk_attrs[] = { 3, 3, 2, 1, 0 };
 
 VoxelRenderer::VoxelRenderer(unsigned __int64 capacity) : capacity(capacity) {
 	try {
@@ -111,13 +114,13 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 						h = IS_BLOCKED(x + 1, y + 1, z - 1) * aoFactor;
 					}
 
-					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, tu2, tv1, l * (1.0f - c - d - e));
-					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, tu2, tv2, l * (1.0f - c - b - f));
-					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, tu1, tv2, l * (1.0f - a - b - g));
+					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, 0.0f, 1.0f, 0.0f, tu2, tv1, l * (1.0f - c - d - e));
+					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, 0.0f, 1.0f, 0.0f, tu2, tv2, l * (1.0f - c - b - f));
+					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 1.0f, 0.0f, tu1, tv2, l * (1.0f - a - b - g));
 																	 
-					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, tu2, tv1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, tu1, tv2, l * (1.0f - a - b - g));
-					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, tu1, tv1, l * (1.0f - a - d - h));
+					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, 0.0f, 1.0f, 0.0f, tu2, tv1, l * (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 1.0f, 0.0f, tu1, tv2, l * (1.0f - a - b - g));
+					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, 0.0f, 1.0f, 0.0f, tu1, tv1, l * (1.0f - a - d - h));
 				}
 				if (!IS_BLOCKED(x, y - 1, z)) {
 					l = 0.75f;
@@ -134,13 +137,13 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 						h = IS_BLOCKED(x + 1, y - 1, z - 1) * aoFactor;
 					}
 
-					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, bou1, bov1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, bou2, bov2, l * (1.0f - a - b - g));
-					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, bou1, bov2, l * (1.0f - c - b - f));
-															    	  
-					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, bou1, bov1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, bou2, bov1, l * (1.0f - a - d - h));
-					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, bou2, bov2, l * (1.0f - a - b - g));
+					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, -1.0f, 0.0f, bou1, bov1, l * (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, 0.0f, -1.0f, 0.0f, bou2, bov2, l * (1.0f - a - b - g));
+					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, 0.0f, -1.0f, 0.0f, bou1, bov2, l * (1.0f - c - b - f));
+																	  
+					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, -1.0f, 0.0f, bou1, bov1, l * (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, 0.0f, -1.0f, 0.0f, bou2, bov1, l * (1.0f - a - d - h));
+					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, 0.0f, -1.0f, 0.0f, bou2, bov2, l * (1.0f - a - b - g));
 				}
 
 				if (!IS_BLOCKED(x + 1, y, z)) {
@@ -158,13 +161,13 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 						h = IS_BLOCKED(x + 1, y + 1, z - 1) * aoFactor;
 					}
 
-					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, ru2, rv1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, ru2, rv2, l * (1.0f - d - a - h));
-					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, ru1, rv2, l * (1.0f - a - b - g));
-																	 
-					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, ru2, rv1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, ru1, rv2, l * (1.0f - a - b - g));
-					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, ru1, rv1, l * (1.0f - b - c - f));
+					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, 1.0f, 0.0f, 0.0f, ru2, rv1, l * (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, 1.0f, 0.0f, 0.0f, ru2, rv2, l * (1.0f - d - a - h));
+					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, 1.0f, 0.0f, 0.0f, ru1, rv2, l * (1.0f - a - b - g));
+
+					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, 1.0f, 0.0f, 0.0f, ru2, rv1, l * (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, 1.0f, 0.0f, 0.0f, ru1, rv2, l * (1.0f - a - b - g));
+					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, 1.0f, 0.0f, 0.0f, ru1, rv1, l * (1.0f - b - c - f));
 				}
 				if (!IS_BLOCKED(x - 1, y, z)) {
 					l = 0.85f;
@@ -181,13 +184,13 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 						h = IS_BLOCKED(x - 1, y + 1, z - 1) * aoFactor;
 					}
 
-					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, lu1, lv1, l * (1.0f - c - d - e));
-					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, lu2, lv2, l * (1.0f - a - b - g));
-					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, lu1, lv2, l * (1.0f - d - a - h));
-																  	 
-					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, lu1, lv1, l * (1.0f - c - d - e));
-					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, lu2, lv1, l * (1.0f - b - c - f));
-					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, lu2, lv2, l * (1.0f - a - b - g));
+					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, -1.0f, 0.0f, 0.0f, lu1, lv1, l * (1.0f - c - d - e));
+					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, -1.0f, 0.0f, 0.0f, lu2, lv2, l * (1.0f - a - b - g));
+					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, -1.0f, 0.0f, 0.0f, lu1, lv2, l * (1.0f - d - a - h));
+																
+					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, -1.0f, 0.0f, 0.0f, lu1, lv1, l * (1.0f - c - d - e));
+					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, -1.0f, 0.0f, 0.0f, lu2, lv1, l * (1.0f - b - c - f));
+					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, -1.0f, 0.0f, 0.0f, lu2, lv2, l * (1.0f - a - b - g));
 				}
 
 				if (!IS_BLOCKED(x, y, z + 1)) {
@@ -205,13 +208,13 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 						h = IS_BLOCKED(x - 1, y + 1, z + 1) * aoFactor;
 					}
 
-					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, bau1, bav1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, bau2, bav2, l * (1.0f - a - b - g));
-					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, bau1, bav2, l * (1.0f - a - d - h));
-																   
-					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, bau1, bav1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, bau2, bav1, l * (1.0f - b - c - f));
-					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, bau2, bav2, l * (1.0f - a - b - g));
+					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau1, bav1, l* (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau2, bav2, l* (1.0f - a - b - g));
+					VERTEX(index, x - 0.5f, y + 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau1, bav2, l* (1.0f - a - d - h));
+
+					VERTEX(index, x - 0.5f, y - 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau1, bav1, l* (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y - 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau2, bav1, l* (1.0f - b - c - f));
+					VERTEX(index, x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau2, bav2, l * (1.0f - a - b - g));
 				}
 				if (!IS_BLOCKED(x, y, z - 1)) {
 					l = 0.8f;
@@ -228,13 +231,13 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks, bool ambientOccl
 						h = IS_BLOCKED(x - 1, y + 1, z - 1) * aoFactor;
 					}
 
-					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, fu2, fv1, l * (1.0f - c - d - e));
-					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, fu2, fv2, l * (1.0f - a - d - h));
-					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, fu1, fv2, l * (1.0f - a - b - g));
-																 	 
-					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, fu2, fv1, l * (1.0f - c - d - e));
-					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, fu1, fv2, l * (1.0f - a - b - g));
-					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, fu1, fv1, l * (1.0f - b - c - f));
+					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu2, fv1, l* (1.0f - c - d - e));
+					VERTEX(index, x - 0.5f, y + 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu2, fv2, l* (1.0f - a - d - h));
+					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu1, fv2, l* (1.0f - a - b - g));
+																			
+					VERTEX(index, x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu2, fv1, l* (1.0f - c - d - e));
+					VERTEX(index, x + 0.5f, y + 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu1, fv2, l* (1.0f - a - b - g));
+					VERTEX(index, x + 0.5f, y - 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu1, fv1, l * (1.0f - b - c - f));
 				}
 			}
 		}

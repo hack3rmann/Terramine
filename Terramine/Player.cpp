@@ -42,12 +42,16 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 			speed += cam->frontMove / dTime / 10.0f;
 		else {
 			vec3 dir(norm.z, norm.x, -norm.y);
-			vec3 s = dir * dot(dir, cam->frontMove / dTime / 10.0f) / length(dir);
-			if (s != vec3(0.0f))
-				speed += s;
-			else {
-				dir = vec3(-norm.y, norm.z, norm.x);
-				speed += dir * dot(dir, cam->frontMove / dTime / 10.0f) / length(dir);
+			float len = length(dir);
+			float DdotC = dot(dir, cam->frontMove / dTime / 10.0f);
+			if (len != 0.0f) {
+				vec3 s = dir * DdotC / len;
+				if (s != vec3(0.0f))
+					speed += s;
+				else {
+					dir = vec3(-norm.y, norm.z, norm.x);
+					speed += dir * DdotC / len;
+				}
 			}
 		}
 	}

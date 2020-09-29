@@ -1,4 +1,5 @@
 #include "Terrarian.h"
+#include "../EventHandler.h"
 #include "Chunk.h"
 #include "../defines.cpp"
 #include <iostream>
@@ -18,6 +19,8 @@ Terrarian::Terrarian() : renderer(1024 * 1024 * 4) {
 	}
 
 	chunks = new Chunks(8, 8, 8);
+
+	toLightVec = vec3(-0.2f, 0.5f, -1.0f);
 
 	CONSOLE_LOG("Creating 2d meshes array...\t");
 	meshes = new Mesh*[chunks->volume];
@@ -80,8 +83,11 @@ void Terrarian::reload() {
 }
 void Terrarian::render(const Camera* cam) {
 	shader->use();
-	shader->uniformMatrix("projView", cam->getProjection() * cam->getView());
+	shader->uniformMatrix("proj", cam->getProjection());
+	shader->uniformMatrix("view", cam->getView());
 	shader->uniformVec2u("resolution", vec2(Window::width, Window::height));
+	shader->uniform3f("toLightVec", toLightVec);
+	shader->uniform3f("lightColor", vec3(0.96f, 0.24f, 0.0f));
 	textureAtlas->bind();
 	mat4 model(1.0f);
 	glcall(glEnable(GL_DEPTH_TEST));

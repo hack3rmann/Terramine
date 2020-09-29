@@ -104,7 +104,7 @@ int main() {
 			skybox->shader = load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl");
 			if (skybox->shader == nullptr) CONSOLE_LOG("Failed to load Skybox shader!");
 
-			skybox->texture = load_texture2("src/Skybox.png");
+			skybox->texture = load_texture("src/Skybox4.png");
 		}
 
 		glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));

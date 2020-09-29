@@ -12,6 +12,7 @@ class Terrarian {
 	VoxelRenderer renderer;
 	bool onceLoad;
 	Texture* textureAtlas;
+	vec3 toLightVec;
 public:
 	Shader* shader;
 	Chunks* chunks;

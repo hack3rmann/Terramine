@@ -1,15 +1,9 @@
-﻿  Player.cpp
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(19,24): warning C4244: =: преобразование "double" в "float", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(110,22): warning C4244: =: преобразование "double" в "T", возможна потеря данных
-          with
-          [
-              T=float
-          ]
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Player.cpp(95,65): warning C4390: ";": обнаружен пустой контролируемый оператор; это правильно?
+﻿  Terrarian.cpp
+F:\Svyatoslav\Projects\C++\Terramine\Terramine\Voxels\Terrarian.cpp(26,27): warning C4244: инициализация: преобразование "unsigned __int64" в "unsigned int", возможна потеря данных
   Создание кода
-  Создание кода завершено
-glew32s.lib(glew.obj) : warning LNK4099: "vc120.pdb" PDB не найден с "glew32s.lib(glew.obj)" или на "F:\Svyatoslav\Projects\C++\Terramine\Release\vc120.pdb"; компоновка объекта выполняется как при отсутствии отладочных данных
-  1 of 958 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+  1 of 956 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     4 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+glew32s.lib(glew.obj) : warning LNK4099: "vc120.pdb" PDB не найден с "glew32s.lib(glew.obj)" или на "F:\Svyatoslav\Projects\C++\Terramine\Release\vc120.pdb"; компоновка объекта выполняется как при отсутствии отладочных данных
   Terramine.vcxproj -> F:\Svyatoslav\Projects\C++\Terramine\Release\Terramine.exe

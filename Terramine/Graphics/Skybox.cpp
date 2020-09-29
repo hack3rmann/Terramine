@@ -47,7 +47,7 @@
 
 Skybox::Skybox() {
 	int attrs[] = { 3, 2, 0 };
-	texture = load_texture2("src/Skybox.png");
+	texture = load_texture("src/Skybox4.png");
 	shader = load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl");
 	buffer = new float[6 * 6 * SB_VERTEX_SIZE * 2000];
 
