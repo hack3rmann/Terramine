@@ -179,6 +179,7 @@
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="Graphics\LineBatch.cpp" />
+    <ClCompile Include="Graphics\ShadeowFrameBuffer.cpp" />
     <ClCompile Include="Graphics\Shader.cpp" />
     <ClCompile Include="Graphics\Skybox.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="Graphics\LineBatch.h" />
+    <ClInclude Include="Graphics\ShadeowFrameBuffer.h" />
     <ClInclude Include="Graphics\Shader.h" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Player.cpp" />

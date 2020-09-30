@@ -12,13 +12,14 @@ Terrarian::Terrarian() : renderer(1024 * 1024 * 4) {
 		delete textureAtlas;
 	}
 	shader = load_shader("vertexShader.glsl", "fragmentShader.glsl");
+	//shader = load_shader("vertexShadow.glsl", "fragmentShadow.glsl");
 	if (shader == nullptr) {
 		CONSOLE_LOG("Can not load shader in ")CONSOLE_LOG(__FILE__)CONSOLE_LOG(", ")CONSOLE_LOG(__LINE__);
 		delete textureAtlas;
 		delete shader;
 	}
 
-	chunks = new Chunks(8, 8, 8);
+	chunks = new Chunks(32, 8, 32);
 
 	toLightVec = vec3(-0.2f, 0.5f, -1.0f);
 
@@ -99,6 +100,7 @@ void Terrarian::render(const Camera* cam) {
 			continue;
 		model = glm::translate(mat4(1.0f), vec3(chunk->x * CHUNK_W + 0.5f, chunk->y * CHUNK_H + 0.5f, chunk->z * CHUNK_D + 0.5f));
 		shader->uniformMatrix("model", model);
+		//ShadowShader->uniformMatrix("mvp", cam->getProjection() * cam->getView() * model);
 		mesh->draw(GL_TRIANGLES);
 	}
 	glcall(glDisable(GL_DEPTH_TEST));

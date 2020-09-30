@@ -15,6 +15,7 @@ class Terrarian {
 	vec3 toLightVec;
 public:
 	Shader* shader;
+	Shader* ShadowShader;
 	Chunks* chunks;
 	Terrarian();
 	~Terrarian();

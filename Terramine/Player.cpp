@@ -11,7 +11,7 @@ Player::Player() {
 }
 Player::Player(float lastTime, float gravity, vec3 speed)
 	: lastTime(lastTime), gravity(gravity), speed(speed) {
-	cam = new Camera(vec3(2.0f, 70.0f, 2.0f), radians(60.0f));
+	cam = new Camera(vec3(32.0f, 70.0f, 32.0f), radians(60.0f));
 	camX = camY = 0.0f;
 	currentBlock = 1;
 }
@@ -33,28 +33,9 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 	if (Events::justPressed(GLFW_KEY_0)) { currentBlock = 10; }
 	if (Events::justPressed(GLFW_KEY_MINUS)) { currentBlock = 11; }
 
+	float speedFactor = 2.0f;
+
 	/* Movement */
-	if (Events::isPressed(GLFW_KEY_W)) {
-		vec3 norm;
-		if (chunks->rayCast(cam->position, cam->frontMove, 0.3f, norm) == nullptr &&
-			chunks->rayCast(vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z), cam->frontMove, 0.3f, norm) == nullptr &&
-			chunks->rayCast(vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z), cam->frontMove, 0.3f, norm) == nullptr)
-			speed += cam->frontMove / dTime / 10.0f;
-		else {
-			vec3 dir(norm.z, norm.x, -norm.y);
-			float len = length(dir);
-			float DdotC = dot(dir, cam->frontMove / dTime / 10.0f);
-			if (len != 0.0f) {
-				vec3 s = dir * DdotC / len;
-				if (s != vec3(0.0f))
-					speed += s;
-				else {
-					dir = vec3(-norm.y, norm.z, norm.x);
-					speed += dir * DdotC / len;
-				}
-			}
-		}
-	}
 	if (Events::isPressed(GLFW_KEY_W) &&
 		chunks->rayCast(vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z), cam->frontMove, 0.3f) != nullptr &&
 		chunks->rayCast(vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z), cam->frontMove, 0.3f) == nullptr &&
@@ -62,15 +43,36 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 		chunks->rayCast(cam->position, cam->frontMove, 0.3f) == nullptr) {
 		speed.y = 8.5f;
 	}
+	if (Events::isPressed(GLFW_KEY_W)) {
+		vec3 norm;
+		if (chunks->rayCast(cam->position, cam->frontMove, 0.3f, norm) == nullptr &&
+			chunks->rayCast(vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z), cam->frontMove, 0.3f, norm) == nullptr &&
+			chunks->rayCast(vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z), cam->frontMove, 0.3f, norm) == nullptr)
+			speed += cam->frontMove / dTime / 10.0f * speedFactor;
+		else {
+			vec3 dir(norm.z, norm.x, -norm.y);
+			float len = length(dir);
+			float DdotC = dot(dir, cam->frontMove / dTime / 10.0f);
+			if (len != 0.0f) {
+				vec3 s = dir * DdotC / len;
+				if (s != vec3(0.0f))
+					speed += s * speedFactor;
+				else {
+					dir = vec3(-norm.y, norm.z, norm.x);
+					speed += dir * DdotC / len * speedFactor;
+				}
+			}
+		}
+	}
 	if (Events::isPressed(GLFW_KEY_S)) {
 		vec3 norm;
 		if (chunks->rayCast(cam->position, -cam->frontMove, 0.3f, norm) == nullptr &&
 			chunks->rayCast(vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z), -cam->frontMove, 0.3f, norm) == nullptr &&
 			chunks->rayCast(vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z), -cam->frontMove, 0.3f, norm) == nullptr)
-			speed -= cam->frontMove / dTime / 10.0f;
+			speed -= cam->frontMove / dTime / 10.0f * speedFactor;
 		else {
 			vec3 dir(norm.z, norm.x, -norm.y);
-			speed += dir * dot(dir, -cam->frontMove / dTime / 10.0f) / length(dir);
+			speed += dir * dot(dir, -cam->frontMove / dTime / 10.0f) / length(dir) * speedFactor;
 		}
 	}
 	if (Events::isPressed(GLFW_KEY_A)) {
@@ -78,10 +80,10 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 		if (chunks->rayCast(cam->position, -cam->right, 0.3f, norm) == nullptr &&
 			chunks->rayCast(vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z), -cam->right, 0.3f, norm) == nullptr &&
 			chunks->rayCast(vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z), -cam->right, 0.3f, norm) == nullptr)
-			speed -= cam->right / dTime / 10.0f;
+			speed -= cam->right / dTime / 10.0f * speedFactor;
 		else {
 			vec3 dir(norm.z, norm.x, -norm.y);
-			speed += dir * dot(dir, -cam->right / dTime / 10.0f) / length(dir);
+			speed += dir * dot(dir, -cam->right / dTime / 10.0f) / length(dir) * speedFactor;
 		}
 	}
 	if (Events::isPressed(GLFW_KEY_D)) {
@@ -89,10 +91,10 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 		if (chunks->rayCast(cam->position, cam->right, 0.3f, norm) == nullptr &&
 			chunks->rayCast(vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z), cam->right, 0.3f, norm) == nullptr &&
 			chunks->rayCast(vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z), cam->right, 0.3f, norm) == nullptr)
-			speed += cam->right / dTime / 10.0f;
+			speed += cam->right / dTime / 10.0f * speedFactor;
 		else {
 			vec3 dir(norm.z, norm.x, -norm.y);
-			speed += dir * dot(dir, cam->right / dTime / 10.0f) / length(dir);
+			speed += dir * dot(dir, cam->right / dTime / 10.0f) / length(dir) * speedFactor;
 		}
 	}
 	if (Events::isPressed(GLFW_KEY_LEFT_SHIFT)) {

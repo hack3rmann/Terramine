@@ -28,7 +28,7 @@ void main() {
 	float specularFactor = dot(reflectedLight, unitC);
 	specularFactor = max(specularFactor, 0.0f);
 	float dampedFactor = pow(specularFactor, shineDamper);
-	vec4 finalSpec = vec4(dampedFactor * lightColor * reflectivity, 1.0f);
+	vec4 finalSpec = vec4(dampedFactor * lightColor * reflectivity, 0.2f);
 
 	float nDOTl = dot(unitN, unitL);
 	float brightness = max(nDOTl, 0.5f);
