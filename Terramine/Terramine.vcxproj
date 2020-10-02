@@ -178,14 +178,18 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="defines.cpp" />
     <ClCompile Include="EventHandler.cpp" />
+    <ClCompile Include="Graphics\FrameBuffer.cpp" />
     <ClCompile Include="Graphics\LineBatch.cpp" />
-    <ClCompile Include="Graphics\ShadeowFrameBuffer.cpp" />
+    <ClCompile Include="Graphics\MasterHandler.cpp" />
+    <ClCompile Include="Graphics\SceneHandler.cpp" />
     <ClCompile Include="Graphics\Shader.cpp" />
+    <ClCompile Include="Graphics\ShadowFrameBuffer.cpp" />
     <ClCompile Include="Graphics\Skybox.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\VoxelRenderer.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
     <ClCompile Include="GUI\GUI.cpp" />
+    <ClCompile Include="GUI\GUIHandler.cpp" />
     <ClCompile Include="GUI\GUIObject.cpp" />
     <ClCompile Include="GUI\Sprite.cpp" />
     <ClCompile Include="Loaders\pngLoader.cpp" />
@@ -203,8 +207,10 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="Graphics\FrameBuffer.h" />
     <ClInclude Include="Graphics\LineBatch.h" />
-    <ClInclude Include="Graphics\ShadeowFrameBuffer.h" />
+    <ClInclude Include="Graphics\MasterHandler.h" />
+    <ClInclude Include="Graphics\SceneHandler.h" />
     <ClInclude Include="Graphics\Shader.h" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -214,11 +220,13 @@
     <ClCompile Include="Voxels\Terrarian.cpp" />
     <ClCompile Include="Voxels\Voxel.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClInclude Include="Graphics\ShadowFrameBuffer.h" />
     <ClInclude Include="Graphics\Skybox.h" />
     <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Graphics\VoxelRenderer.h" />
     <ClInclude Include="GUI\Button.h" />
     <ClInclude Include="GUI\GUI.h" />
+    <ClInclude Include="GUI\GUIHandler.h" />
     <ClInclude Include="GUI\GUIObject.h" />
     <ClInclude Include="GUI\Sprite.h" />
     <ClInclude Include="Loaders\pngLoader.h" />

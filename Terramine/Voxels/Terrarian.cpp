@@ -3,23 +3,27 @@
 #include "Chunk.h"
 #include "../defines.cpp"
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
-Terrarian::Terrarian() : renderer(1024 * 1024 * 4) {
+mat4 rotation(1.0f);
+
+Terrarian::Terrarian(const char* textureAtlas) : renderer(1024 * 1024 * 4) {
 	onceLoad = 1;
-	textureAtlas = load_texture("src/textureAtlas3.png");
+	this->textureAtlas = load_texture("src/textureAtlas3.png");
+	this->normalAtlas = load_texture("src/normalAtlas3.png");
 	if (textureAtlas == nullptr) {
 		CONSOLE_LOG("Can not load texture in ")CONSOLE_LOG(__FILE__)CONSOLE_LOG(", ")CONSOLE_LOG(__LINE__);
 		delete textureAtlas;
 	}
 	shader = load_shader("vertexShader.glsl", "fragmentShader.glsl");
-	//shader = load_shader("vertexShadow.glsl", "fragmentShadow.glsl");
 	if (shader == nullptr) {
 		CONSOLE_LOG("Can not load shader in ")CONSOLE_LOG(__FILE__)CONSOLE_LOG(", ")CONSOLE_LOG(__LINE__);
 		delete textureAtlas;
 		delete shader;
 	}
 
-	chunks = new Chunks(32, 8, 32);
+	chunks = new Chunks(8, 8, 8);
 
 	toLightVec = vec3(-0.2f, 0.5f, -1.0f);
 
@@ -83,26 +87,37 @@ void Terrarian::reload() {
 	onceLoad = 0;
 }
 void Terrarian::render(const Camera* cam) {
+	rotation = rotate(rotation, 0.01f, vec3(1.0f, 0.0f, 0.0f));
 	shader->use();
 	shader->uniformMatrix("proj", cam->getProjection());
 	shader->uniformMatrix("view", cam->getView());
 	shader->uniformVec2u("resolution", vec2(Window::width, Window::height));
-	shader->uniform3f("toLightVec", toLightVec);
+	shader->uniform3f("toLightVec", vec3(rotation * vec4(toLightVec, 1.0f)));
 	shader->uniform3f("lightColor", vec3(0.96f, 0.24f, 0.0f));
+	//shader->uniform3f("lightColor", vec3(0.73f, 0.54f, 0.95f));
+	glcall(glActiveTexture(GL_TEXTURE0));
 	textureAtlas->bind();
+	shader->uniform1i("u_Texture0", 0);
+	glcall(glActiveTexture(GL_TEXTURE1));
+	normalAtlas->bind();
+	shader->uniform1i("u_Texture1", 1);
 	mat4 model(1.0f);
-	glcall(glEnable(GL_DEPTH_TEST));
-	glcall(glEnable(GL_CULL_FACE));
 	for (unsigned long long i = 0; i < chunks->volume; i++) {
+		shader->use();
 		Chunk* chunk = chunks->chunks[i];
 		Mesh* mesh = meshes[i];
 		if (mesh == nullptr)
 			continue;
 		model = glm::translate(mat4(1.0f), vec3(chunk->x * CHUNK_W + 0.5f, chunk->y * CHUNK_H + 0.5f, chunk->z * CHUNK_D + 0.5f));
 		shader->uniformMatrix("model", model);
-		//ShadowShader->uniformMatrix("mvp", cam->getProjection() * cam->getView() * model);
 		mesh->draw(GL_TRIANGLES);
 	}
-	glcall(glDisable(GL_DEPTH_TEST));
-	glcall(glDisable(GL_CULL_FACE));
+	glcall(glActiveTexture(GL_TEXTURE0));
+}
+void Terrarian::refreshShader() {
+	shader = load_shader("vertexShader.glsl", "fragmentShader.glsl");
+}
+void Terrarian::refreshTextures() {
+	textureAtlas = load_texture("src/textureAtlas3.png");
+	normalAtlas = load_texture("src/normalAtlas3.png");
 }

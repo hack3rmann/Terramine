@@ -6,6 +6,8 @@
 class Mesh;
 
 class LineBatch {
+	friend class LineBatchHandler;
+
 	Mesh* mesh;
 	float* buffer;
 	unsigned __int64 index;

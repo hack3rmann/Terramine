@@ -2,19 +2,24 @@
 
 in vec4 vColor;
 in vec2 a_TexCoord;
-in vec3 surfNorm;
+//in vec3 surfNorm;
 in vec3 toCam;
 
 out vec4 color;
 
 uniform sampler2D u_Texture0;
+uniform sampler2D u_Texture1;
 uniform vec2 resolution;
 uniform vec3 lightColor;
 uniform vec3 toLightVec;
 
 void main() {
+	vec4 normColor = texture(u_Texture1, a_TexCoord);
+	float reflectivity = normColor.a * 1.0f;
+	vec3 surfNorm = (normColor.rgb * 2.0f) - vec3(1.0f);
+
 	float shineDamper = 10.0f;
-	float reflectivity = 0.6f;
+	//float reflectivity = 0.6f;
 
 	vec4 texColor = vColor * texture(u_Texture0, a_TexCoord);
 

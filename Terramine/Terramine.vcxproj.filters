@@ -96,7 +96,19 @@
     <ClCompile Include="Graphics\Skybox.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\ShadeowFrameBuffer.cpp">
+    <ClCompile Include="Graphics\ShadowFrameBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneHandler.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\MasterHandler.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\GUIHandler.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\FrameBuffer.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,7 +188,19 @@
     <ClInclude Include="Graphics\Skybox.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\ShadeowFrameBuffer.h">
+    <ClInclude Include="Graphics\ShadowFrameBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\SceneHandler.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\MasterHandler.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\GUIHandler.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\FrameBuffer.h">
       <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>

@@ -39,9 +39,7 @@ void LineBatch::render(const Camera* cam) {
 	shader->use();
 	shader->uniformMatrix("projView", cam->getProjection() * cam->getView());
 	mesh->reload(buffer, index / LB_VERTEX_SIZE);
-	glcall(glEnable(GL_DEPTH_TEST));
 	mesh->draw(GL_LINES);
-	glcall(glDisable(GL_DEPTH_TEST));
 	index = 0;
 }
 void LineBatch::box(float x, float y, float z, float w, float h, float d, float r, float g, float b, float a) {

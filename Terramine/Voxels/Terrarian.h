@@ -8,17 +8,21 @@
 #include "../Player.h"
 
 class Terrarian {
+	friend class TerrarianHandler;
+
 	Mesh** meshes;
 	VoxelRenderer renderer;
 	bool onceLoad;
 	Texture* textureAtlas;
+	Texture* normalAtlas;
 	vec3 toLightVec;
 public:
 	Shader* shader;
-	Shader* ShadowShader;
 	Chunks* chunks;
-	Terrarian();
+	Terrarian(const char* textureAtlas);
 	~Terrarian();
 	void reload();
+	void refreshShader();
+	void refreshTextures();
 	void render(const Camera* cam);
 };

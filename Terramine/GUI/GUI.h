@@ -8,6 +8,8 @@
 #include "GUIObject.h"
 
 class GUI {
+	friend class GUIHandler;
+
 	Mesh* mesh;
 	float* buffer;
 	int objectsButtons;
