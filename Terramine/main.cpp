@@ -1,3 +1,9 @@
+#include "defines.cpp"
+
+#ifdef _RELEASE
+#	include <windows.h>
+#endif
+
 #include <math.h>
 #include <string>
 #include <glm/glm.hpp>
@@ -8,7 +14,6 @@
 #include "Window.h"
 #include "Camera.h"
 #include "Player.h"
-#include "defines.cpp"
 #include "EventHandler.h"
 
 #include "Voxels/voxel.h"
@@ -23,31 +28,35 @@
 #include "Graphics/VoxelRenderer.h"
 #include "Graphics/MasterHandler.h"
 
-#include "GUI/GUI.h"
+#include "GUI/Text.h"
+#include "GUI/GUIHandler.h"
 
-int main() {
+MAIN {
 	CONSOLE_LOG("Initializing window...\t");
-	if (Window::init(WIDTH, HEIGHT, "Terramine") == -1) {
-		system("pause");
-		return -1;
-	}
+		if (Window::init(WIDTH, HEIGHT, "Terramine") == -1) {
+			system("pause");
+			return -1;
+		}
 	CONSOLE_LOG("DONE\n");
+
+	/* Systems init */
 	Events::init();
+	Text::init();
 	MasterHandler::init();
 
 	CONSOLE_LOG("OpenGL predefines...\t")
-	glcall(glClearColor(0.61f, 0.86f, 1.0f, 1.0f));
-	glcall(glEnable(GL_MULTISAMPLE));
-	glcall(glEnable(GL_BLEND));
-	glcall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-	glcall(glLineWidth(2.0f));
+		glcall(glClearColor(0.61f, 0.86f, 1.0f, 1.0f));
+		glcall(glEnable(GL_MULTISAMPLE));
+		glcall(glEnable(GL_BLEND));
+		glcall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		glcall(glLineWidth(2.0f));
 	CONSOLE_LOG("DONE\n");
 
 	while (!Window::isClosed()) {
 		if (Events::justPressed(GLFW_KEY_T)) Events::toggleCursor();
 		if (Events::justPressed(GLFW_KEY_ESCAPE)) {
-			Window::setShouldClose(true);
-			break;
+			MasterHandler::gui->current = pauseMenu;
+			Events::toggleCursor();
 		}
 
 		MasterHandler::updateAll();
@@ -57,12 +66,15 @@ int main() {
 		Events::pullEvents();
 	}
 
-	CONSOLE_LOG("Terminating systems...\t")
+	CONSOLE_LOG("Terminating systems...\t");
+	MasterHandler::terminate();
 	Events::terminate();
 	Window::terminate();
 	CONSOLE_LOG("DONE\n");
 
-	system("pause");
+#	ifndef _RELEASE
+		system("pause");
+#	endif
 	return 0;
 }
 

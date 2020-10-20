@@ -7,41 +7,31 @@
 
 
 
-
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 #define ASSERT(x) if (!(x)) __debugbreak();
 
 
+
 #ifndef _RELEASE
-#  define glcall(x)                                                         \
- 	   GLClearError();                                                      \
-	   x;                                                                   \
-	   ASSERT(GLLogCall(#x, __FILE__, __LINE__));                           
+#	define glcall(x) GLClearError(); \
+					 x; \
+					 ASSERT(GLLogCall(#x, __FILE__, __LINE__));
+
+#	define MAIN int main(int argc, char** argv)
 #else
-#  define glcall(x) x;
+#	define glcall(x) x;
+#	define MAIN int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #endif
 
-
-#define glretcall(x)                                                      \
-	GLClearError();                                                       \
-	ASSERT(GLLogCall(#x, __FILE__, __LINE__));                            \
-	return x;
-
-
-#define glifcall(x)														  \
-	GLClearError();                                                       \
-	if ((x)) {
-
-
-#define glendifcall(x) } ASSERT(GLLogCall(#x, __FILE__, __LINE__));
 
 
 #ifdef LOGING_IN_CONSOLE
-#  define CONSOLE_LOG(x) std::cout << x;
-#  define CONSOLE_FLUSH_LOG(x) std::cout << x << std::flush;
+#	define CONSOLE_LOG(x) std::cout << x;
 #else
-#  define CONSOLE_LOG(x)
+#	define CONSOLE_LOG(x) ;
 #endif
+
+
 
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);

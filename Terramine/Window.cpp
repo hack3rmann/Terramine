@@ -8,6 +8,7 @@ GLFWwindow* Window::window;
 int Window::width = 0;
 int Window::height = 0;
 bool Window::viewPortChange = true;
+bool Window::isHidden = false;
 
 int Window::init(int width, int height, const char* title) {
 	if (!glfwInit()) {
@@ -45,7 +46,7 @@ void Window::terminate() {
 	glfwTerminate();
 }
 bool Window::isClosed() {
-	glretcall(glfwWindowShouldClose(window));
+	return glfwWindowShouldClose(window);
 }
 void Window::setShouldClose(bool flag) {
 	glcall(glfwSetWindowShouldClose(window, flag));

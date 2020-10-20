@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ShadowFrameBuffer.h"
 #include "../Mesh.h"
 #include "../Player.h"
 #include "../Camera.h"
@@ -20,7 +19,7 @@ class SceneHandler {
 	LineBatchHandler* lines;
 	SkyboxHandler* skybox;
 	FrameBuffer* fb;
-	//ShadowFB* shadowFB;
+	FrameBuffer* shadowBuff;
 public:
 	SceneHandler();
 
@@ -38,10 +37,11 @@ class TerrarianHandler {
 	Terrarian* terra;
 public:
 	TerrarianHandler();
-	void reloadChunks();
+	void reloadChunks(const Camera* cam);
 	void refreshRes();
 	void terminate();
 	void render(const Camera* cam);
+	void renderShadows(const Camera* cam, FrameBuffer* shadowBuff);
 };
 
 class LineBatchHandler {

@@ -139,7 +139,7 @@
       <AdditionalIncludeDirectories>E:\Libs\GLEW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -183,15 +183,16 @@
     <ClCompile Include="Graphics\MasterHandler.cpp" />
     <ClCompile Include="Graphics\SceneHandler.cpp" />
     <ClCompile Include="Graphics\Shader.cpp" />
-    <ClCompile Include="Graphics\ShadowFrameBuffer.cpp" />
     <ClCompile Include="Graphics\Skybox.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\VoxelRenderer.cpp" />
     <ClCompile Include="GUI\Button.cpp" />
+    <ClCompile Include="GUI\DynamicText.cpp" />
     <ClCompile Include="GUI\GUI.cpp" />
     <ClCompile Include="GUI\GUIHandler.cpp" />
     <ClCompile Include="GUI\GUIObject.cpp" />
     <ClCompile Include="GUI\Sprite.cpp" />
+    <ClCompile Include="GUI\Text.cpp" />
     <ClCompile Include="Loaders\pngLoader.cpp" />
     <ClCompile Include="main.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
@@ -220,15 +221,16 @@
     <ClCompile Include="Voxels\Terrarian.cpp" />
     <ClCompile Include="Voxels\Voxel.cpp" />
     <ClCompile Include="Window.cpp" />
-    <ClInclude Include="Graphics\ShadowFrameBuffer.h" />
     <ClInclude Include="Graphics\Skybox.h" />
     <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Graphics\VoxelRenderer.h" />
     <ClInclude Include="GUI\Button.h" />
+    <ClInclude Include="GUI\DynamicText.h" />
     <ClInclude Include="GUI\GUI.h" />
     <ClInclude Include="GUI\GUIHandler.h" />
     <ClInclude Include="GUI\GUIObject.h" />
     <ClInclude Include="GUI\Sprite.h" />
+    <ClInclude Include="GUI\Text.h" />
     <ClInclude Include="Loaders\pngLoader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Player.h" />

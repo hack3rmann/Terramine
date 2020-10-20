@@ -46,24 +46,32 @@
 				  SB_VERTEX(I,-0.5f, 0.5f, 0.5f, 1.0f,        0.5f)
 
 Skybox::Skybox(const char* name) {
+	/* Init */
 	int attrs[] = { 3, 2, 0 };
 	texture = load_texture(name);
 	shader = load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl");
-	buffer = new float[6 * 6 * SB_VERTEX_SIZE * 2000];
+	buffer = new float[6 * 6 * SB_VERTEX_SIZE];
 
+	/* Load to buffer */
 	int I = 0;
-
 	SB_BOX(I);
 	index = I;
 
 	mesh = new Mesh(buffer, 36, attrs);
 }
 void Skybox::render(const Camera* cam) {
+	/* Texture */
+	texture->bind();
+
+	/* Shader */
 	shader->use();
+
+	/* Shader uniforms */
 	shader->uniformMatrix("projView", cam->getProjection() * cam->getView());
 	shader->uniform3f("camPos", cam->position);
 	shader->uniformVec2u("resolution", vec2(Window::width, Window::height));
-	texture->bind();
+
+	/* Draw */
 	mesh->reload(buffer, 36);
 	mesh->draw(GL_TRIANGLES);
 }

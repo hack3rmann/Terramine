@@ -23,10 +23,6 @@ void Player::updateTime() {
 void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 	updateTime();
 	if (Events::justPressed(GLFW_KEY_F)) { isSpeedUp = !isSpeedUp; }
-	for (unsigned int i = 0; i < 9; i++)
-		if (Events::justPressed(GLFW_KEY_1 + i)) { currentBlock = i + 1; }
-	if (Events::justPressed(GLFW_KEY_0)) { currentBlock = 10; }
-	if (Events::justPressed(GLFW_KEY_MINUS)) { currentBlock = 11; }
 
 	for (unsigned int i = 0; i < 9; i++)
 		if (Events::justPressed(GLFW_KEY_1 + i)) { currentBlock = i + 1; }

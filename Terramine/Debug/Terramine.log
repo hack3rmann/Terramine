@@ -1,3 +1,4 @@
-﻿  Terrarian.cpp
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\Voxels\Terrarian.cpp(31,27): warning C4244: инициализация: преобразование "unsigned __int64" в "unsigned int", возможна потеря данных
+﻿  Window.cpp
+LINK : warning LNK4098: библиотека по умолчанию "LIBCMTD" конфликтует с использованием других библиотек; используйте /NODEFAULTLIB:library
+glew32s.lib(glew.obj) : warning LNK4099: "vc120.pdb" PDB не найден с "glew32s.lib(glew.obj)" или на "F:\Svyatoslav\Projects\C++\Terramine\Debug\vc120.pdb"; компоновка объекта выполняется как при отсутствии отладочных данных
   Terramine.vcxproj -> F:\Svyatoslav\Projects\C++\Terramine\Debug\Terramine.exe

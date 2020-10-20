@@ -16,6 +16,7 @@ public:
 	~VoxelRenderer();
 
 	Mesh* render(Chunk* chunk, const Chunk** chunks, bool AmbientOcclusion);
+	void loadToCache();
 };
 
 #endif // !VOXELRENDERER_H_

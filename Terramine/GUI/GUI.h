@@ -6,23 +6,43 @@
 #include "Sprite.h"
 #include "../Mesh.h"
 #include "GUIObject.h"
+#include <functional>
+
+#define GUI_VERTEX_SIZE (2 + 2 + 4) /* XY TS RGBA */
+#define GUI_VERTEX(I,X,Y,T,S,R,G,B,A) buffer[I+0] = X; \
+									  buffer[I+1] = Y; \
+									  buffer[I+2] = T; \
+									  buffer[I+3] = S; \
+									  buffer[I+4] = R; \
+									  buffer[I+5] = G; \
+									  buffer[I+6] = B; \
+									  buffer[I+7] = A; \
+									  I += GUI_VERTEX_SIZE;
+#define GUI_RECT(I,X,Y,W,H,R,G,B,A) GUI_VERTEX(I, X-W/2, Y-H/2, 0.0f, 0.0f, R, G, B, A); \
+									GUI_VERTEX(I, X-W/2, Y+H/2, 0.0f, 1.0f, R, G, B, A); \
+									GUI_VERTEX(I, X+W/2, Y+H/2, 1.0f, 1.0f, R, G, B, A); \
+									GUI_VERTEX(I, X-W/2, Y-H/2, 0.0f, 0.0f, R, G, B, A); \
+									GUI_VERTEX(I, X+W/2, Y-H/2, 1.0f, 0.0f, R, G, B, A); \
+									GUI_VERTEX(I, X+W/2, Y+H/2, 1.0f, 1.0f, R, G, B, A);
 
 class GUI {
 	friend class GUIHandler;
 
-	Mesh* mesh;
-	float* buffer;
 	int objectsButtons;
 	int objectsSprites;
-	int index;
-	GUIObject* buttons;
+	int size;
+	Button* buttons[64];
+	Sprite* sprites[64];
 public:
-	Sprite* sprites;
 	GUI();
-	void addButton(float posX, float posY, float width, float height, const Texture* defTexture, const Texture* hoverTexture, const Texture* clickedTexture);
+	void addButton(float posX, float posY, float width, float height,
+				   const Texture* defTexture, const Texture* hoverTexture, const Texture* clickedTexture,
+				   std::string tex,
+				   std::function<void()> function);
 	void addSprite(float posX, float posY, float width, float height, const Texture* texture);
 	int getObjects();
 	void render();
+	void cleanUp();
 };
 
 #endif // !GUI_H_

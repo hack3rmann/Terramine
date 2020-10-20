@@ -3,7 +3,7 @@
 #define CHUNK_H_
 
 #define CHUNK_W 8
-#define CHUNK_H 16
+#define CHUNK_H 8
 #define CHUNK_D 8
 #define CHUNK_VOL (CHUNK_W * CHUNK_H * CHUNK_D)
 

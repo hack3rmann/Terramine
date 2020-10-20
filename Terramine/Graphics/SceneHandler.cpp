@@ -3,39 +3,39 @@
 
 /* Scene Handler */ 
 SceneHandler::SceneHandler() {
-	plr = new Player(glfwGetTime(), -30.0f, vec3(0.0f));
-	terrarian = new TerrarianHandler();
-	lines = new LineBatchHandler();
-	skybox = new SkyboxHandler();
-	//shadowFB = new ShadowFB();
-	fb = new FrameBuffer();
+	fb         = new FrameBuffer("PPVertex.glsl", "PPFragment.glsl");
+	plr        = new Player(glfwGetTime(), -30.0f, vec3(0.0f));
+	lines      = new LineBatchHandler();
+	skybox     = new SkyboxHandler();
+	terrarian  = new TerrarianHandler();
+	shadowBuff = new FrameBuffer("PPVertex.glsl", "PPFragment.glsl");
 }
 void SceneHandler::terminate() {
 	terrarian->terminate();
 	lines->terminate();
 	skybox->terminate();
-	//shadowFB->terminate();
 	fb->terminate();
+
 	delete plr;
 	delete fb;
 	delete terrarian;
 	delete lines;
 	delete skybox;
-	//delete shadowFB;
 }
 void SceneHandler::updateAll() {
 	plr->update(terrarian->terra->chunks, lines->lineBatch);
-	terrarian->reloadChunks();
+	terrarian->reloadChunks(plr->cam);
 }
 void SceneHandler::updateChunks() {
-	terrarian->reloadChunks();
+	terrarian->reloadChunks(plr->cam);
 }
 void SceneHandler::updatePlayer() {
 	plr->update(terrarian->terra->chunks, lines->lineBatch);
 }
 void SceneHandler::render() {
+	/* Viewport change handle */
 	if (Window::viewPortChange) {
-		fb->reload();
+		fb->reload("PPVertex.glsl", "PPFragment.glsl");
 		Window::viewPortChange = !Window::viewPortChange;
 	}
 
@@ -43,16 +43,26 @@ void SceneHandler::render() {
 		terrarian->refreshRes();
 		fb->refreshShader();
 	}
+	
+	/* Render to shadow view */
+	shadowBuff->bind();
+		glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
+		terrarian->render(plr->cam);
+	shadowBuff->unbind();
 
+	/* Render to post-processing framebuffer */
 	fb->bind();
 		glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
 		if (!fb->check()) CONSOLE_LOG("Frame buffer in not complete...");
+
 		skybox->render(plr->cam);
-		terrarian->render(plr->cam);
+		terrarian->renderShadows(plr->cam, shadowBuff);
 		lines->render(plr->cam);
 	fb->unbind();
 
-	fb->draw();
+	/* Draw result of postprocessing */
+	fb->drawColor();
 }
 
 /* Skybox Handler */
@@ -74,8 +84,8 @@ void SkyboxHandler::render(const Camera* cam) {
 TerrarianHandler::TerrarianHandler() {
 	terra = new Terrarian("src/textureAtlas3.png");
 }
-void TerrarianHandler::reloadChunks() {
-	terra->reload();
+void TerrarianHandler::reloadChunks(const Camera* cam) {
+	terra->reload(cam);
 }
 void TerrarianHandler::terminate() {
 	delete terra;
@@ -83,7 +93,14 @@ void TerrarianHandler::terminate() {
 void TerrarianHandler::render(const Camera* cam) {
 	glcall(glEnable(GL_DEPTH_TEST));
 	glcall(glEnable(GL_CULL_FACE));
-	terra->render(cam);
+	terra->renderTerrarian(cam);
+	glcall(glDisable(GL_DEPTH_TEST));
+	glcall(glDisable(GL_CULL_FACE));
+}
+void TerrarianHandler::renderShadows(const Camera* cam, FrameBuffer* shadowBuff) {
+	glcall(glEnable(GL_DEPTH_TEST));
+	glcall(glEnable(GL_CULL_FACE));
+	terra->render(cam, shadowBuff);
 	glcall(glDisable(GL_DEPTH_TEST));
 	glcall(glDisable(GL_CULL_FACE));
 }

@@ -11,5 +11,6 @@ public:
 
 	static void init();
 	static void render();
+	static void terminate();
 	static void updateAll();
 };

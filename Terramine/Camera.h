@@ -10,8 +10,8 @@ using namespace glm;
 
 
 class Camera {
-	void updateVectors();
 public:
+	void updateVectors();
 	vec3 frontCam;
 	vec3 frontMove;
 	vec3 up;
@@ -24,6 +24,7 @@ public:
 
 	void rotate(float x, float y, float z);
 	mat4 getProjection() const;
+	mat4 getOrtho() const;
 	mat4 getView() const;
 };
 

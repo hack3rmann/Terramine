@@ -10,6 +10,7 @@ public:
 	static int width;
 	static int height;
 	static bool viewPortChange;
+	static bool isHidden;
 	static int init(int width, int height, const char* title);
 	static void terminate();
 	static bool isClosed();

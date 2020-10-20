@@ -11,34 +11,49 @@ using namespace std;
 using namespace rapidjson;
 
 BlockStore::BlockStore(const std::string& BlockFile, const std::string& BlockTextureFile) {
+	/* Init reading */
 	string jsonBlock;
 	string jsonTexture;
 	ifstream fileBlock;
 	ifstream fileTexture;
 	stringstream fileBlockStream;
 	stringstream fileTextureStream;
+
+	/* Opening */
 	fileBlock.open(BlockFile);
 	fileTexture.open(BlockTextureFile);
-	if (!fileBlock.is_open() || !fileTexture.is_open())
+
+	/* If not open, throw console log */
+	if (!fileBlock.is_open() || !fileTexture.is_open()) {
 		CONSOLE_LOG("Can not load file " + BlockFile + " or " + BlockTextureFile + "!\n")
+	}
+	/* If load, parse */
 	else {
+		/* Read */
 		fileBlockStream << fileBlock.rdbuf();
 		fileTextureStream << fileTexture.rdbuf();
+
+		/* Close used files */
 		fileBlock.close();
 		fileTexture.close();
+
+		/* Creating documents and parse */
 		jsonBlock = fileBlockStream.str();
 		jsonTexture = fileTextureStream.str();
 		BlockDOC.Parse(jsonBlock.c_str());
 		TextureDOC.Parse(jsonTexture.c_str());
 		
+		/* It's wrong, if documents are not arrays */
 		if (!BlockDOC.IsArray())
 			CONSOLE_LOG("Document \"Voxels\\" + BlockFile + "\" is not array!\n");
 		if (!TextureDOC.IsArray())
 			CONSOLE_LOG("Document \"Voxels\\" + BlockTextureFile + "\" is not array!\n");
 
+		/* Creating arrays */
 		textures = new BlockTexture[TextureDOC.Size()];
 		blockTypes = new Block[BlockDOC.Size()];
 
+		/* Initing textures */
 		for (uint32_t i = 0; i < TextureDOC.Size(); i++) {
 			textures[i].name = TextureDOC[i]["Name"].GetString();
 			textures[i].id = TextureDOC[i]["id"].GetInt();
@@ -54,6 +69,7 @@ BlockStore::BlockStore(const std::string& BlockFile, const std::string& BlockTex
 				blockTypes[i].isTransparent = false;
 
 			blockTypes[i].Variation = BlockDOC[i]["Variation"].GetInt();
+
 			/* Have "AllSides" */
 			if (BlockDOC[i].HasMember("AllSides")) {
 				uint8_t id;

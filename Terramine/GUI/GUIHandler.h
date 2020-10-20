@@ -1,11 +1,28 @@
 #pragma once
 
 #include "GUI.h"
+#include "../Graphics/Shader.h"
+#include <list>
+
+enum GUIstate {
+	nothing,
+	startMenu,
+	pauseMenu,
+	settings
+};
 
 class GUIHandler {
-	GUI* GUIs[8];
-	int current;
+	GUI** GUIs;
+	Shader* shader;
+
+	Texture* bg;
+	Texture* bDef;
+	Texture* bHover;
+	Texture* bClicked;
+	Texture* darker;
 public:
-	GUIHandler();
+	GUIstate current;
+	GUIHandler(GUIstate current);
+	~GUIHandler();
 	void render();
 };
