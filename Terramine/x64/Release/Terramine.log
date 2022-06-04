@@ -1,7 +1,166 @@
-﻿  Создание кода
-  Создание кода завершено
-  0 of 224 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-glew32s.lib(glew.obj) : warning LNK4099: "vc100.pdb" PDB не найден с "glew32s.lib(glew.obj)" или на "D:\Svyatoslav\Projects\C++\Terramine\x64\Release\vc100.pdb"; компоновка объекта выполняется как при отсутствии отладочных данных
-  Terramine.vcxproj -> D:\Svyatoslav\Projects\C++\Terramine\x64\Release\Terramine.exe
+﻿  Camera.cpp
+  defines.cpp
+  BlockStore.cpp
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(118,5): error C4996: 'std::iterator<std::random_access_iterator_tag,internal::MaybeAddConst<Const,rapidjson::GenericMember<Encoding,Allocator>>::Type,ptrdiff_t,internal::MaybeAddConst<Const,rapidjson::GenericMember<Encoding,Allocator>>::Type*,internal::MaybeAddConst<Const,rapidjson::GenericMember<Encoding,Allocator>>::Type&>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(201): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericMemberIterator<Const,Encoding,Allocator>"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(110,19): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(426): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericMemberIterator<false,Encoding,Allocator>"
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(1720): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericValue<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>>"
+D:\Svyatoslav\Projects\TerramineDevPreview\Terramine\Voxels\BlockStore.h(13): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericDocument<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>,rapidjson::CrtAllocator>"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(118,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(129,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>::pointer': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(131,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>::reference': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(133,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>::difference_type': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(110,19): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(427): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericMemberIterator<true,Encoding,Allocator>"
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(118,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(129,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>::pointer': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(131,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>::reference': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(133,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>::difference_type': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+  Voxel.cpp
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(118,5): error C4996: 'std::iterator<std::random_access_iterator_tag,internal::MaybeAddConst<Const,rapidjson::GenericMember<Encoding,Allocator>>::Type,ptrdiff_t,internal::MaybeAddConst<Const,rapidjson::GenericMember<Encoding,Allocator>>::Type*,internal::MaybeAddConst<Const,rapidjson::GenericMember<Encoding,Allocator>>::Type&>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(201): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericMemberIterator<Const,Encoding,Allocator>"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(110,19): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(426): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericMemberIterator<false,Encoding,Allocator>"
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(1720): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericValue<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>>"
+D:\Svyatoslav\Projects\TerramineDevPreview\Terramine\Voxels\BlockStore.h(13): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericDocument<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>,rapidjson::CrtAllocator>"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(118,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(129,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>::pointer': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(131,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>::reference': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(133,5): error C4996: 'std::iterator<std::random_access_iterator_tag,rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,rapidjson::GenericMember<Encoding,Allocator> *,rapidjson::GenericMember<Encoding,Allocator> &>::difference_type': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(110,19): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(427): message : выполняется компиляция ссылки на экземпляр класс шаблон функции "rapidjson::GenericMemberIterator<true,Encoding,Allocator>"
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(118,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.32.31326\include\xutility(6053,1): message : см. объявление "std::iterator"
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(129,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>::pointer': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(131,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>::reference': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]
+D:\Svyatoslav\Projects\TerramineDevPreview\packages\rapidjson.1.0.2\build\native\include\rapidjson\document.h(133,5): error C4996: 'std::iterator<std::random_access_iterator_tag,const rapidjson::GenericMember<Encoding,Allocator>,ptrdiff_t,const rapidjson::GenericMember<Encoding,Allocator> *,const rapidjson::GenericMember<Encoding,Allocator> &>::difference_type': warning STL4015: The std::iterator class template (used as a base class to provide typedefs) is deprecated in C++17. (The <iterator> header is NOT deprecated.) The C++ Standard has never required user-defined iterators to derive from std::iterator. To fix this warning, stop deriving from std::iterator and start providing publicly accessible typedefs named iterator_category, value_type, difference_type, pointer, and reference. Note that value_type is required to be non-const, even for constant iterators. You can define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning.
+          with
+          [
+              Encoding=rapidjson::UTF8<char>,
+              Allocator=rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>
+          ]

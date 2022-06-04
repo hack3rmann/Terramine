@@ -55,12 +55,12 @@ BlockStore::BlockStore(const std::string& BlockFile, const std::string& BlockTex
 
 		/* Initing textures */
 		for (uint32_t i = 0; i < TextureDOC.Size(); i++) {
-			textures[i].name = TextureDOC[i]["Name"].GetString();
+			textures[i].name = new std::string(TextureDOC[i]["Name"].GetString());
 			textures[i].id = TextureDOC[i]["id"].GetInt();
 		}
 		
 		for (uint32_t i = 0; i < BlockDOC.Size(); i++) {
-			blockTypes[i].name = BlockDOC[i]["Name"].GetString();
+			blockTypes[i].name = new std::string(BlockDOC[i]["Name"].GetString());
 			blockTypes[i].id = BlockDOC[i]["id"].GetInt();
 
 			if (BlockDOC[i].HasMember("isTransparent"))
@@ -74,7 +74,7 @@ BlockStore::BlockStore(const std::string& BlockFile, const std::string& BlockTex
 			if (BlockDOC[i].HasMember("AllSides")) {
 				uint8_t id;
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["AllSides"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["AllSides"].GetString()) {
 						id = textures[j].id;
 						break;
 					}
@@ -87,19 +87,19 @@ BlockStore::BlockStore(const std::string& BlockFile, const std::string& BlockTex
 			} else if (BlockDOC[i].HasMember("Sides")) {
 				uint8_t idSides, idTop, idBottom;
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Sides"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Sides"].GetString()) {
 						idSides = textures[j].id;
 						break;
 					}
 				}
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Top"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Top"].GetString()) {
 						idTop = textures[j].id;
 						break;
 					}
 				}
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Bottom"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Bottom"].GetString()) {
 						idBottom = textures[j].id;
 						break;
 					}
@@ -113,37 +113,37 @@ BlockStore::BlockStore(const std::string& BlockFile, const std::string& BlockTex
 			} else {
 				uint8_t idTop, idBottom, idLeft, idRight, idFront, idBack;
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Top"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Top"].GetString()) {
 						idTop = textures[j].id;
 						break;
 					}
 				}
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Bottom"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Bottom"].GetString()) {
 						idBottom = textures[j].id;
 						break;
 					}
 				}
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Left"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Left"].GetString()) {
 						idLeft = textures[j].id;
 						break;
 					}
 				}
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Right"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Right"].GetString()) {
 						idRight = textures[j].id;
 						break;
 					}
 				}
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Front"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Front"].GetString()) {
 						idFront = textures[j].id;
 						break;
 					}
 				}
 				for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
-					if (textures[j].name == BlockDOC[i]["Back"].GetString()) {
+					if (*textures[j].name == BlockDOC[i]["Back"].GetString()) {
 						idBack = textures[j].id;
 						break;
 					}

@@ -9,23 +9,11 @@ Chunks::Chunks(int w, int h, int d) : w(w), h(h), d(d) {
 	chunks = new Chunk*[volume];
 
 	int index = 0;
-	int percentage = 0;
-	for (int y = 0; y < h; y++) {
-		for (int z = 0; z < d; z++) {
-			for (int x = 0; x < w; x++, index++) {
-				Chunk* chunk = new Chunk(x, y, z);
-				chunks[index] = chunk;
-			}
-		}
-		if (percentage != ((float)y / (float)(h - 1)) * 100.f || y == 0) {
-			CONSOLE_LOG("Generating terrarian...\t");
-			percentage = ((float)y / (float)(h - 1)) * 100.f;
-			CONSOLE_LOG(percentage)CONSOLE_LOG("%   \r");
-		}
-		if (y == h - 1) {
-			CONSOLE_LOG("\n");
-		}
-	}
+
+	for (int y = 0; y < h; y++)
+	for (int z = 0; z < d; z++)
+	for (int x = 0; x < w; x++, index++)
+		chunks[index] = new Chunk(x, y, z);
 }
 Chunks::~Chunks() {
 	for (int i = 0; i < volume; i++) {

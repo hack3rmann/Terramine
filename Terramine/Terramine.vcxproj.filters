@@ -114,6 +114,9 @@
     <ClCompile Include="GUI\DynamicText.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Loaders\spng.c">
+      <Filter>Loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="GUI\DynamicText.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Loaders\spng.h">
+      <Filter>Loaders</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

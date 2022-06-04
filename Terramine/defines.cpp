@@ -4,8 +4,7 @@
 #define COMFORT_CAM
 //#define _RELEASE
 #define LOGING_IN_CONSOLE
-
-
+#define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 #define ASSERT(x) if (!(x)) __debugbreak();

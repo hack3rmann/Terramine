@@ -11,7 +11,7 @@ class voxel {
 public:
 	static BlockStore blocks;
 	bool isTransparent;
-	std::string name;
+	std::string* name;
 	uint8_t id;
 	uint8_t TopTexId;
 	uint8_t BottomTexId;

@@ -25,7 +25,7 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 	if (Events::justPressed(GLFW_KEY_F)) { isSpeedUp = !isSpeedUp; }
 
 	for (unsigned int i = 0; i < 9; i++)
-		if (Events::justPressed(GLFW_KEY_1 + i)) { currentBlock = i + 1; }
+	if (Events::justPressed(GLFW_KEY_1 + i)) { currentBlock = i + 1; }
 	if (Events::justPressed(GLFW_KEY_0)) { currentBlock = 10; }
 	if (Events::justPressed(GLFW_KEY_MINUS)) { currentBlock = 11; }
 
@@ -134,7 +134,7 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
 		vec3 iend;
 		voxel* vox = chunks->rayCast(cam->position, cam->frontCam, 10.0f, end, norm, iend);
 		if (vox != nullptr) {
-			CONSOLE_LOG(vox->name)CONSOLE_LOG("                                 \r");
+			CONSOLE_LOG(*vox->name)CONSOLE_LOG("                                 \r");
 			lineBatch->box(iend.x + 0.5f, iend.y + 0.5f, iend.z + 0.5f, 1.001f, 1.001f, 1.001f, 60.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 0.5f);
 
 			if (Events::justClicked(GLFW_MOUSE_BUTTON_1)) {

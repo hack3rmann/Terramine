@@ -17,21 +17,14 @@ class Terrarian {
 	Texture* textureAtlas;
 	Texture* normalAtlas;
 	vec3 toLightVec;
-	mat4 rotation;
 
-	Camera* lightVision;
 public:
 	Shader* shader;
 	Chunks* chunks;
-	Chunk* chunksRend[125];
-
 	Terrarian(const char* textureAtlas);
 	~Terrarian();
-	void reload(const Camera* cam);
+	void reload();
 	void refreshShader();
 	void refreshTextures();
-	void render(const Camera* cam, FrameBuffer* shadowBuff);
-	void renderTerrarian(const Camera* cam);
-	void refreshLightVision(const Camera* cam);
-	void renderTerrarianIsometric(const Camera* cam);
+	void render(const Camera* cam);
 };

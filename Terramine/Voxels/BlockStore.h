@@ -25,7 +25,7 @@ public:
 
 struct Block {
 	bool isTransparent;
-	std::string name;
+	std::string* name;
 	uint8_t Variation; // if == 0 then not exist
 	uint8_t id;
 	uint8_t TopTexId;
@@ -37,6 +37,6 @@ struct Block {
 };
 
 struct BlockTexture {
-	std::string name;
+	std::string* name;
 	uint8_t id;
 };
