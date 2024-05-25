@@ -35,7 +35,7 @@ int Window::init(int width, int height, const char* title) {
 		std::cout << "GLEW init error" << std::endl;
 		return -1;
 	}
-	glcall(glViewport(NULL, NULL, width, height));
+	glcall(glViewport(0, 0, width, height));
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
