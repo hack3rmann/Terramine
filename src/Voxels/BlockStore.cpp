@@ -25,7 +25,7 @@ BlockStore::BlockStore(const std::string& BlockFile, const std::string& BlockTex
 
 	/* If not open, throw console log */
 	if (!fileBlock.is_open() || !fileTexture.is_open()) {
-		CONSOLE_LOG("Can not load file " + BlockFile + " or " + BlockTextureFile + "!\n")
+		CONSOLE_LOG("Can not load file " + BlockFile + " or " + BlockTextureFile + "!\n");
 	}
 	/* If load, parse */
 	else {

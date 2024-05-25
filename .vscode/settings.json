@@ -3,5 +3,10 @@
         "-I${workspaceFolder}/deps/glm",
         "-I${workspaceFolder}/deps/glew-2.1.0/include",
         "-I${workspaceFolder}/deps/glfw-3.4/include",
-    ]
+        "-I${workspaceFolder}/deps/rapidjson/include",
+        "-I${workspaceFolder}/deps/SDL_image/include",
+        "-I${workspaceFolder}/deps/SDL/include",
+        "-I${workspaceFolder}/deps/zlib/zlib",
+    ],
+    "dotnet.defaultSolution": "disable"
 }

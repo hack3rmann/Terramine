@@ -8,6 +8,10 @@ pub fn build(b: *std.Build) !void {
     exe.addIncludePath(std.Build.LazyPath.relative("deps/glm"));
     exe.addIncludePath(std.Build.LazyPath.relative("deps/glew-2.1.0/include"));
     exe.addIncludePath(std.Build.LazyPath.relative("deps/glfw-3.4/include"));
+    exe.addIncludePath(std.Build.LazyPath.relative("deps/rapidjson/include"));
+    exe.addIncludePath(std.Build.LazyPath.relative("deps/SDL_image/include"));
+    exe.addIncludePath(std.Build.LazyPath.relative("deps/SDL/include"));
+    exe.addIncludePath(std.Build.LazyPath.relative("deps/zlib/zlib"));
     exe.addCSourceFiles(&.{
         "src/Camera.cpp",
         "src/defines.cpp",

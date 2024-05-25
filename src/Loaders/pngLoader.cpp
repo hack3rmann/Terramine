@@ -1,7 +1,7 @@
 #include "pngLoader.h"
 #include <GL/glew.h>
 #include <iostream>
-#include <SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "../Graphics/Texture.h"
 #include "../defines.cpp"
 #include "spng.h"

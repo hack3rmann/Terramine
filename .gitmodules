@@ -1,3 +1,18 @@
 [submodule "deps/glm"]
 	path = deps/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "deps/rapidjson"]
+	path = deps/rapidjson
+	url = https://github.com/Tencent/rapidjson.git
+[submodule "deps/SDL_image"]
+	path = deps/SDL_image
+	url = https://github.com/libsdl-org/SDL_image.git
+[submodule "deps/SDL"]
+	path = deps/SDL
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "deps/zlib"]
+	path = deps/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "deps/zlib/zlib"]
+	path = deps/zlib/zlib
+	url = https://github.com/madler/zlib.git
