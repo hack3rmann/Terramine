@@ -46,7 +46,7 @@ void SceneHandler::render() {
 	
 	/* Render to shadow view */
 	shadowBuff->bind();
-		glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
+		glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 		terrarian->render(plr->cam);
 	shadowBuff->unbind();
 

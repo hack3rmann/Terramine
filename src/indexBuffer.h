@@ -2,8 +2,6 @@
 #ifndef INDEX_BUFFER_H
 #define INDEX_BUFFER_H
 
-#include "renderer.h"
-
 class iBuffer {
 private:
 	unsigned int m_RendererID;

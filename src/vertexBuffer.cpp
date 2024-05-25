@@ -1,4 +1,7 @@
 #include "vertexBuffer.h"
+#include "defines.cpp"
+#include <GL/glew.h>
+
 
 vBuffer::vBuffer(const void* data, unsigned int size) {
 	glcall(glGenBuffers(1, &m_RendererID));
@@ -12,5 +15,5 @@ void vBuffer::bind() {
 	glcall(glBindBuffer(GL_ARRAY_BUFFER, m_RendererID));
 }
 void vBuffer::unbind() {
-	glcall(glBindBuffer(GL_ARRAY_BUFFER, NULL));
+	glcall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }

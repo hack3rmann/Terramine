@@ -37,7 +37,9 @@ VoxelRenderer::VoxelRenderer(unsigned __int64 capacity) : capacity(capacity) {
 	try {
 		buffer = new/*(std::nothrow)*/ float[capacity * VERTEX_SIZE * 6];
 	} catch (std::bad_alloc& ba) {
-		CONSOLE_LOG("bad_alloc caught: ")CONSOLE_LOG(ba.what())CONSOLE_LOG('\n');
+		CONSOLE_LOG("bad_alloc caught: ");
+		CONSOLE_LOG(ba.what());
+		CONSOLE_LOG('\n');
 	}
 }
 

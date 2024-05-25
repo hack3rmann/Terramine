@@ -12,22 +12,21 @@
 
 
 #ifndef _RELEASE
-#	define glcall(x) GLClearError(); \
-					 x; \
-					 ASSERT(GLLogCall(#x, __FILE__, __LINE__));
-
-#	define MAIN int main(int argc, char** argv)
+    #define glcall(call) do { \
+        GLClearError(); \
+        call; \
+        ASSERT(GLLogCall(#call, __FILE__, __LINE__)); \
+    } while (false)
 #else
-#	define glcall(x) x;
-#	define MAIN int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+    #define glcall(call) call
 #endif
 
 
 
 #ifdef LOGING_IN_CONSOLE
-#	define CONSOLE_LOG(x) std::cout << x;
+    #define CONSOLE_LOG(x) do { std::cout << x; } while (false)
 #else
-#	define CONSOLE_LOG(x) ;
+    #define CONSOLE_LOG(x) do {} while (false)
 #endif
 
 

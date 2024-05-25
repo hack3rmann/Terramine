@@ -1,0 +1,7 @@
+{
+    "clangd.fallbackFlags": [
+        "-I${workspaceFolder}/deps/glm",
+        "-I${workspaceFolder}/deps/glew-2.1.0/include",
+        "-I${workspaceFolder}/deps/glfw-3.4/include",
+    ]
+}

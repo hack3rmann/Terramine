@@ -1,8 +1,6 @@
 #include "Terrarian.h"
-#include "../EventHandler.h"
 #include "Chunk.h"
 #include "../defines.cpp"
-#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
@@ -42,12 +40,18 @@ Terrarian::Terrarian(const char* textureAtlas) : renderer(1024 * 1024 * 4) {
 	this->textureAtlas = load_texture("src/textureAtlas3.png");
 	this->normalAtlas = load_texture("src/normalAtlas3.png");
 	if (textureAtlas == nullptr) {
-		CONSOLE_LOG("Can not load texture in ")CONSOLE_LOG(__FILE__)CONSOLE_LOG(", ")CONSOLE_LOG(__LINE__);
+		CONSOLE_LOG("Can not load texture in ");
+		CONSOLE_LOG(__FILE__);
+		CONSOLE_LOG(", ");
+		CONSOLE_LOG(__LINE__);
 		delete textureAtlas;
 	}
 	shader = load_shader("vertexShader.glsl", "fragmentShader.glsl");
 	if (shader == nullptr) {
-		CONSOLE_LOG("Can not load shader in ")CONSOLE_LOG(__FILE__)CONSOLE_LOG(", ")CONSOLE_LOG(__LINE__);
+		CONSOLE_LOG("Can not load shader in ");
+		CONSOLE_LOG(__FILE__);
+		CONSOLE_LOG(", ");
+		CONSOLE_LOG(__LINE__);
 		delete textureAtlas;
 		delete shader;
 	}
@@ -83,9 +87,9 @@ void Terrarian::reload() {
 		if (percentage != (int)((float)i / (float)(chunks->volume - 1) * 100.0f) || i == 0) {
 			percentage = (int)((float)i / (float)(chunks->volume - 1) * 100.0f);
 			if (onceLoad) {
-				CONSOLE_LOG("Reloading chunks...\t")
-					CONSOLE_LOG(percentage)
-					CONSOLE_LOG("%\r")
+				CONSOLE_LOG("Reloading chunks...\t");
+				CONSOLE_LOG(percentage);
+				CONSOLE_LOG("%\r");
 			}
 		}
 		if (i == chunks->volume - 1) {

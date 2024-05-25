@@ -1,4 +1,4 @@
-#include "voxel.h"
+#include "Voxel.h"
 #include "BlockStore.h"
 
 BlockStore voxel::blocks = BlockStore("Voxels/Blocks.json", "Voxels/BlockTextures.json");

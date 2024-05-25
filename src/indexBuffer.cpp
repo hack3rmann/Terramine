@@ -1,4 +1,8 @@
 #include "indexBuffer.h"
+#include "defines.cpp"
+#include <GL/glew.h>
+
+
 
 iBuffer::iBuffer(const unsigned int* data, unsigned int count) : m_Count(count) {
 	glcall(glGenBuffers(1, &m_RendererID));
