@@ -1,7 +1,7 @@
 #include "Voxel.h"
 #include "BlockStore.h"
 
-BlockStore voxel::blocks = BlockStore("Voxels/Blocks.json", "Voxels/BlockTextures.json");
+BlockStore voxel::blocks = BlockStore("assets/Blocks.json", "assets/BlockTextures.json");
 
 void voxel::setID(uint8_t id) {
 	if (id != 0)

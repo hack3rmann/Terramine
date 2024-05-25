@@ -15,8 +15,8 @@
 
 
 auto main() -> int {
-    if (!Window::init(WIDTH, HEIGHT, "Terramine")) {
-        std::cin.get();
+    if (Window::init(WIDTH, HEIGHT, "Terramine") != 0) {
+        std::fprintf(stderr, "failed to initialize a window\n");
         return -1;
     }
 
@@ -50,10 +50,6 @@ auto main() -> int {
     MasterHandler::terminate();
     Events::terminate();
     Window::terminate();
-
-#	ifndef _RELEASE
-        std::cin.get();
-#	endif
 
     return 0;
 }

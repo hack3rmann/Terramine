@@ -37,8 +37,8 @@ void Terrarian::render(const Camera* cam) {
 
 Terrarian::Terrarian(const char* textureAtlas) : renderer(1024 * 1024 * 4) {
 	onceLoad = 1;
-	this->textureAtlas = load_texture("src/textureAtlas3.png");
-	this->normalAtlas = load_texture("src/normalAtlas3.png");
+	this->textureAtlas = load_texture("assets/textureAtlas3.png");
+	this->normalAtlas = load_texture("assets/normalAtlas3.png");
 	if (textureAtlas == nullptr) {
 		CONSOLE_LOG("Can not load texture in ");
 		CONSOLE_LOG(__FILE__);
@@ -119,10 +119,12 @@ void Terrarian::reload() {
 	}
 	onceLoad = 0;
 }
+
 void Terrarian::refreshShader() {
 	shader = load_shader("vertexShader.glsl", "fragmentShader.glsl");
 }
+
 void Terrarian::refreshTextures() {
-	textureAtlas = load_texture("src/textureAtlas3.png");
-	normalAtlas = load_texture("src/normalAtlas3.png");
+	textureAtlas = load_texture("assets/textureAtlas3.png");
+	normalAtlas = load_texture("assets/normalAtlas3.png");
 }

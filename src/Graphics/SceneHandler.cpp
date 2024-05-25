@@ -68,7 +68,7 @@ void SceneHandler::render() {
 /* Skybox Handler */
 SkyboxHandler::SkyboxHandler() {
 	current = 0;
-	skyboxes[0] = new Skybox("src/Skybox4.png");
+	skyboxes[0] = new Skybox("assets/Skybox4.png");
 }
 void SkyboxHandler::terminate() {
 	for (unsigned int i = 0; i < 5; i++) {
@@ -82,7 +82,7 @@ void SkyboxHandler::render(const Camera* cam) {
 
 /* Terrarian handler */
 TerrarianHandler::TerrarianHandler() {
-	terra = new Terrarian("src/textureAtlas3.png");
+	terra = new Terrarian("assets/textureAtlas3.png");
 }
 void TerrarianHandler::reloadChunks(const Camera* cam) {
 	terra->reload();

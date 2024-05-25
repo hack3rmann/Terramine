@@ -24,7 +24,7 @@ Shader* Text::shader;
 
 void Text::init() {
 	ParseFont(chars);
-	fontTex = load_texture_NO_MIPMAP_LINEAR("src/font.png");
+	fontTex = load_texture_NO_MIPMAP_LINEAR("assets/font.png");
 	shader = load_shader("textVertex.glsl", "textFragment.glsl");
 }
 
@@ -152,7 +152,7 @@ bool ParseFont(Charset& CharsetDesc) {
 	std::string Line;
 	std::string Read, Key, Value;
 	std::size_t i;
-	Stream.open("src/font.fnt");
+	Stream.open("assets/font.fnt");
 	while (!Stream.eof()) {
 		std::stringstream LineStream;
 		std::getline(Stream, Line);

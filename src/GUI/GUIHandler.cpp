@@ -12,11 +12,11 @@ GUIHandler::GUIHandler(GUIstate current) {
 		GUIs[i] = nullptr;
 
 	/* Loading basic textures */
-	bg       = load_texture("src/startScreenBackground.png");
-	bDef     = load_texture("src/testButtonDef.png");
-	bHover   = load_texture("src/testButtonHover.png");
-	bClicked = load_texture("src/testButtonClicked.png");
-	darker   = load_texture("src/darker.png");
+	bg       = load_texture("assets/startScreenBackground.png");
+	bDef     = load_texture("assets/testButtonDef.png");
+	bHover   = load_texture("assets/testButtonHover.png");
+	bClicked = load_texture("assets/testButtonClicked.png");
+	darker   = load_texture("assets/darker.png");
 
 	/* Empty menu init */
 	GUIs[nothing] = new GUI();

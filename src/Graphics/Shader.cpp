@@ -32,9 +32,9 @@ Shader* load_shader(const std::string vertexFile, const std::string fragmentFile
 	fShaderFile.exceptions(std::ifstream::badbit);
 
 	try {
-		vShaderFile.open("Graphics/Shaders/" + vertexFile);
+		vShaderFile.open("assets/Shaders/" + vertexFile);
 		if (!vShaderFile.is_open()) std::cout << "Vertex shader file not opened!\n";
-		fShaderFile.open("Graphics/Shaders/" + fragmentFile);
+		fShaderFile.open("assets/Shaders/" + fragmentFile);
 		if (!fShaderFile.is_open()) std::cout << "Fragment shader file not opened!\n";
 		std::stringstream vShaderStream, fShaderStream;
 
