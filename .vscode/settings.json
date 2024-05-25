@@ -8,5 +8,6 @@
         "-I${workspaceFolder}/deps/SDL/include",
         "-I${workspaceFolder}/deps/zlib/zlib",
     ],
-    "dotnet.defaultSolution": "disable"
+    "dotnet.defaultSolution": "disable",
+    "git.ignoreLimitWarning": true
 }
