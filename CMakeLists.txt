@@ -38,26 +38,34 @@ add_executable(
 
 set(DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
 
+add_subdirectory(${DEPS_DIR}/glew)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glew/include)
 target_link_directories(terramine PRIVATE ${DEPS_DIR}/glew/out/lib)
 target_link_libraries(terramine glew opengl32)
 target_compile_definitions(terramine PRIVATE GLEW_STATIC)
 
+add_subdirectory(${DEPS_DIR}/glfw)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glfw/include)
 target_link_directories(terramine PRIVATE ${DEPS_DIR}/glfw/build/src)
 target_link_libraries(terramine glfw3)
 
+add_subdirectory(${DEPS_DIR}/glm)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glm)
 target_link_directories(terramine PRIVATE ${DEPS_DIR}/glm/build/glm)
 target_link_libraries(terramine glm)
 
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/rapidjson/include)
 
+set(ZLIB_BUILD_EXAMPLES false)
+add_subdirectory(${DEPS_DIR}/zlib)
+target_include_directories(terramine PRIVATE ${DEPS_DIR}/zlib)
+target_link_directories(terramine PRIVATE ${DEPS_DIR}/zlib)
+target_link_libraries(terramine z)
+
+set(ZLIB_LIBRARY ${DEPS_DIR}/zlib/libz.a)
+set(ZLIB_INCLUDE_DIR ${DEPS_DIR}/zlib)
+add_subdirectory(${DEPS_DIR}/spng)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/spng/spng)
 target_link_directories(terramine PRIVATE ${DEPS_DIR}/spng/build)
 target_link_libraries(terramine spng_static)
 target_compile_definitions(terramine PRIVATE SPNG_STATIC)
-
-target_include_directories(terramine PRIVATE ${DEPS_DIR}/zlib)
-target_link_directories(terramine PRIVATE ${DEPS_DIR}/zlib)
-target_link_libraries(terramine z)
