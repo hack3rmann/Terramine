@@ -1,0 +1,11 @@
+{
+    "clangd.fallbackFlags": [
+        "-I${workspaceFolder}/deps/glm",
+        "-I${workspaceFolder}/deps/glew/include",
+        "-I${workspaceFolder}/deps/glfw/include",
+        "-I${workspaceFolder}/deps/rapidjson/include",
+        "-I${workspaceFolder}/deps/zlib",
+        "-I${workspaceFolder}/deps/spng/spng",
+    ],
+    "git.ignoreLimitWarning": true
+}

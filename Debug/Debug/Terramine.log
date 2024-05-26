@@ -1,4 +1,0 @@
-﻿  main.cpp
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(104,34): warning C4244: инициализация: преобразование "unsigned __int64" в "unsigned int", возможна потеря данных
-F:\Svyatoslav\Projects\C++\Terramine\Terramine\main.cpp(125,38): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
-  Terramine.vcxproj -> F:\Svyatoslav\Projects\C++\Terramine\Debug\Terramine.exe
