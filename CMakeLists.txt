@@ -56,14 +56,16 @@ target_link_libraries(terramine glm)
 
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/rapidjson/include)
 
-set(ZLIB_BUILD_EXAMPLES false)
+set(ZLIB_ENABLE_TESTS OFF)
+set(ZLIB_COMPAT ON)
 add_subdirectory(${DEPS_DIR}/zlib)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/zlib)
 target_link_directories(terramine PRIVATE ${DEPS_DIR}/zlib)
 target_link_libraries(terramine z)
 
-set(ZLIB_LIBRARY ${DEPS_DIR}/zlib/libz.a)
+set(ZLIB_LIBRARY ${DEPS_DIR}/zlib/build/libz.a)
 set(ZLIB_INCLUDE_DIR ${DEPS_DIR}/zlib)
+set(BUILD_EXAMPLES OFF)
 add_subdirectory(${DEPS_DIR}/spng)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/spng/spng)
 target_link_directories(terramine PRIVATE ${DEPS_DIR}/spng/build)
