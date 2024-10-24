@@ -1,78 +1,78 @@
 [
-	{
-		"Name" : "Grass",
-		"id" : 1,
-		"Variation" : 0,
-		"Top" : "grass_top",
-		"Sides" : "grass_side",
-		"Bottom" : "dirt"
-	},
-	{
-		"Name" : "Dirt",
-		"id" : 2,
-		"Variation" : 0,
-		"AllSides" : "dirt"
-	},
-	{
-		"Name" : "Stone",
-		"id" : 3,
-		"Variation" : 0,
-		"AllSides" : "stone"
-	},
-	{
-		"Name" : "Cobblestone",
-		"id" : 4,
-		"Variation" : 0,
-		"AllSides" : "cobblestone"
-	},
-	{
-		"Name" : "Oak_log",
-		"id" : 5,
-		"Variation" : 0,
-		"subType" : "Verticall",
-		"Top" : "oak_log_top",
-		"Sides" : "oak_log_sides_verticall",
-		"Bottom" : "oak_log_top"
-	},
-	{
-		"Name" : "Oak_log_east",
-		"id" : 6,
-		"Variation" : 0,
-		"Top" : "oak_log_sides_horizontall",
-		"Bottom" : "oak_log_sides_horizontall",
-		"Front" : "oak_log_sides_horizontall",
-		"Back" : "oak_log_sides_horizontall",
-		"Left" : "oak_log_top",
-		"Right" : "oak_log_top"
-	},
-	{
-		"Name" : "Oak_log_north",
-		"id" : 7,
-		"Variation" : 0,
-		"Top" : "oak_log_sides_verticall",
-		"Bottom" : "oak_log_sides_verticall",
-		"Front" : "oak_log_top",
-		"Back" : "oak_log_top",
-		"Left" : "oak_log_sides_horizontall",
-		"Right" : "oak_log_sides_horizontall"
-	},
-	{
-		"Name" : "Oak_planks",
-		"id" : 8,
-		"Variation" : 0,
-		"AllSides" : "oak_planks"
-	},
-	{
-		"Name" : "Oak_leaves",
-		"id" : 9,
-		"Variation" : 0,
-		"AllSides" : "oak_leaves"
-	},
-	{
-		"Name" : "White_glass",
-		"id" : 10,
-		"Variation" : 0,
-		"isTransparent" : true,
-		"AllSides" : "transparent_white"
-	}
+    {
+        "Name": "Grass",
+        "id": 1,
+        "Variation": 0,
+        "Top": "grass_top",
+        "Sides": "grass_side",
+        "Bottom": "dirt"
+    },
+    {
+        "Name": "Dirt",
+        "id": 2,
+        "Variation": 0,
+        "AllSides": "dirt"
+    },
+    {
+        "Name": "Stone",
+        "id": 3,
+        "Variation": 0,
+        "AllSides": "stone"
+    },
+    {
+        "Name": "Cobblestone",
+        "id": 4,
+        "Variation": 0,
+        "AllSides": "cobblestone"
+    },
+    {
+        "Name": "Oak_log",
+        "id": 5,
+        "Variation": 0,
+        "subType": "Verticall",
+        "Top": "oak_log_top",
+        "Sides": "oak_log_sides_verticall",
+        "Bottom": "oak_log_top"
+    },
+    {
+        "Name": "Oak_log_east",
+        "id": 6,
+        "Variation": 0,
+        "Top": "oak_log_sides_horizontall",
+        "Bottom": "oak_log_sides_horizontall",
+        "Front": "oak_log_sides_horizontall",
+        "Back": "oak_log_sides_horizontall",
+        "Left": "oak_log_top",
+        "Right": "oak_log_top"
+    },
+    {
+        "Name": "Oak_log_north",
+        "id": 7,
+        "Variation": 0,
+        "Top": "oak_log_sides_verticall",
+        "Bottom": "oak_log_sides_verticall",
+        "Front": "oak_log_top",
+        "Back": "oak_log_top",
+        "Left": "oak_log_sides_horizontall",
+        "Right": "oak_log_sides_horizontall"
+    },
+    {
+        "Name": "Oak_planks",
+        "id": 8,
+        "Variation": 0,
+        "AllSides": "oak_planks"
+    },
+    {
+        "Name": "Oak_leaves",
+        "id": 9,
+        "Variation": 0,
+        "AllSides": "oak_leaves"
+    },
+    {
+        "Name": "White_glass",
+        "id": 10,
+        "Variation": 0,
+        "isTransparent": true,
+        "AllSides": "transparent_white"
+    }
 ]

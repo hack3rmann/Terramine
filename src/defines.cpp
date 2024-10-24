@@ -7,7 +7,9 @@
 #define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
-#define ASSERT(x) if (!(x)) __debugbreak();
+// FIXME(hack3rmann): remove debug break
+// #define ASSERT(x) if (!(x)) __debugbreak();
+#define ASSERT(x) x
 
 
 

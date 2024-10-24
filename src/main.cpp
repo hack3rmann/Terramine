@@ -1,18 +1,16 @@
-#include "defines.cpp"
-
-#include <iostream>
-#include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
-#include "Mesh.h"
-#include "Window.h"
 #include "Camera.h"
 #include "EventHandler.h"
-#include "Graphics/Texture.h"
 #include "GUI/Text.h"
 #include "Graphics/MasterHandler.h"
-
+#include "Graphics/Texture.h"
+#include "Mesh.h"
+#include "Window.h"
+#include "defines.cpp"
 
 auto main() -> int {
     if (Window::init(WIDTH, HEIGHT, "Terramine") != 0) {
@@ -54,13 +52,12 @@ auto main() -> int {
     return 0;
 }
 
-void GLClearError() {
-    while (glGetError() != GL_NO_ERROR);
-}
+void GLClearError() { while (glGetError() != GL_NO_ERROR); }
 
-bool GLLogCall(const char* function, const char* file, int line) {
+bool GLLogCall(char const* function, char const* file, int line) {
     while (GLenum error = glGetError()) {
-        std::cout << "OpenGL error : " << error << ' ' << function << " : " << line << std::endl;
+        std::cout << "OpenGL error : " << error << ' ' << function << " : "
+                  << line << std::endl;
         return false;
     }
     return true;

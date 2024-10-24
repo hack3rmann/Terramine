@@ -1,23 +1,21 @@
 #pragma once
-#ifndef MESH_H_
 
-#include "defines.cpp"
-#include "Graphics/Shader.h"
-#include <stdlib.h>
 #include <GL/glew.h>
+#include <stdlib.h>
+
+#include "Graphics/Shader.h"
+#include "defines.cpp"
 
 class Mesh {
-	unsigned int vao;
-	unsigned int vbo;
-	unsigned __int64 vertices;
-	unsigned __int64 vertex_size;
+    unsigned int vao;
+    unsigned int vbo;
+    uint64_t vertices;
+    uint64_t vertex_size;
+
 public:
-	Mesh(const float* buffer, size_t vertices, const int* attrs);
-	~Mesh();
+    Mesh(float const* buffer, size_t vertices, int const* attrs);
+    ~Mesh();
 
-	void reload(const float* buffer, size_t vertices);
-	void draw(unsigned int primitive);
+    void reload(float const* buffer, size_t vertices);
+    void draw(unsigned int primitive);
 };
-
-#define MESH_H_
-#endif // !MESH_H_
