@@ -1,6 +1,4 @@
 #pragma once
-#ifndef CHUNK_H_
-#define CHUNK_H_
 
 #define CHUNK_W 8
 #define CHUNK_H 8
@@ -11,11 +9,9 @@ class voxel;
 
 class Chunk {
 public:
-	int x, y, z;
-	voxel* voxels;
-	bool modified = true;
-	Chunk(int x, int y, int z);
-	~Chunk();
+    int x, y, z;
+    voxel* voxels;
+    bool modified = true;
+    Chunk(int x, int y, int z);
+    ~Chunk();
 };
-
-#endif // !CHUNK_H_

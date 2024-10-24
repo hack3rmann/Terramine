@@ -1,66 +1,70 @@
 #pragma once
 
+#include "../Camera.h"
 #include "../Mesh.h"
 #include "../Player.h"
-#include "../Camera.h"
 #include "../Voxels/Terrarian.h"
-#include "Skybox.h"
 #include "FrameBuffer.h"
+#include "Skybox.h"
 
 class TerrarianHandler;
 class LineBatchHandler;
 class SkyboxHandler;
 
 class SceneHandler {
-	friend class MasterHandler;
+    friend class MasterHandler;
 
-	Player* plr;
-	TerrarianHandler* terrarian;
-	LineBatchHandler* lines;
-	SkyboxHandler* skybox;
-	FrameBuffer* fb;
-	FrameBuffer* shadowBuff;
+    Player* plr;
+    TerrarianHandler* terrarian;
+    LineBatchHandler* lines;
+    SkyboxHandler* skybox;
+    FrameBuffer* fb;
+    FrameBuffer* shadowBuff;
+
 public:
-	SceneHandler();
+    SceneHandler();
 
-	void terminate();
-	void updateAll();
-	void updatePlayer();
-	void updateChunks();
+    void terminate();
+    void updateAll();
+    void updatePlayer();
+    void updateChunks();
 
-	void render();
+    void render();
 };
 
 class TerrarianHandler {
-	friend class SceneHandler;
+    friend class SceneHandler;
 
-	Terrarian* terra;
+    Terrarian* terra;
+
 public:
-	TerrarianHandler();
-	void reloadChunks(const Camera* cam);
-	void refreshRes();
-	void terminate();
-	void render(const Camera* cam);
-	void renderShadows(const Camera* cam, FrameBuffer* shadowBuff);
+    TerrarianHandler();
+    void reloadChunks(Camera const* cam);
+    void refreshRes();
+    void terminate();
+    void render(Camera const* cam);
+    void renderShadows(Camera const* cam, FrameBuffer* shadowBuff);
 };
 
 class LineBatchHandler {
-	friend class SceneHandler;
+    friend class SceneHandler;
 
-	LineBatch* lineBatch;
+    LineBatch* lineBatch;
+
 public:
-	LineBatchHandler();
-	void terminate();
-	void render(const Camera* cam);
+    LineBatchHandler();
+    void terminate();
+    void render(Camera const* cam);
 };
 
 class SkyboxHandler {
-	friend class SceneHandler;
+    friend class SceneHandler;
 
-	Skybox* skyboxes[5];
-	int current;
+    Skybox* skyboxes[5];
+    int current;
+
 public:
-	SkyboxHandler();
-	void terminate();
-	void render(const Camera* cam);
+    SkyboxHandler();
+    void terminate();
+    void render(Camera const* cam);
 };

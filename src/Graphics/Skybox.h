@@ -1,19 +1,20 @@
 #pragma once
 
-#include "Texture.h"
-#include "Shader.h"
-#include "../Mesh.h"
 #include "../Camera.h"
+#include "../Mesh.h"
+#include "Shader.h"
+#include "Texture.h"
 
 class Skybox {
-	friend class SkyboxHandler;
+    friend class SkyboxHandler;
 
-	Mesh* mesh;
-	float* buffer;
-	unsigned int index;
+    Mesh* mesh;
+    float* buffer;
+    unsigned int index;
+
 public:
-	Shader* shader;
-	Texture* texture;
-	Skybox(const char* name);
-	void render(const Camera* cam);
+    Shader* shader;
+    Texture* texture;
+    Skybox(char const* name);
+    void render(Camera const* cam);
 };
