@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include <GLFW/glfw3.h>
+#include <glm/ext.hpp>
 
 #include "../EventHandler.h"
 #include "../Window.h"
@@ -33,12 +34,12 @@ using namespace tmine;
 /* Static fields init */
 Texture Text::fontTex;
 Charset Text::chars;
-Shader* Text::shader;
+ShaderProgram Text::shader;
 
 void Text::init() {
     ParseFont(chars);
     fontTex = Texture::from_image(load_png("assets/font.png").value(), TextureLoad::NO_MIPMAP_LINEAR);
-    shader = load_shader("textVertex.glsl", "textFragment.glsl");
+    shader = ShaderProgram::from_source(load_shader("textVertex.glsl", "textFragment.glsl").value()).value();
 }
 
 Text::Text(std::string text, glm::vec2 position, float fontSize)
@@ -90,10 +91,10 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
 
 void Text::render() {
     if (Events::justPressed(GLFW_KEY_R)) {
-        shader = load_shader("textVertex.glsl", "textFragment.glsl");
+        shader = ShaderProgram::from_source(load_shader("textVertex.glsl", "textFragment.glsl").value()).value();
         reload();
     }
-    shader->use();
+    shader.bind();
 
     /* Texture */
     fontTex.bind();
@@ -106,7 +107,7 @@ void Text::render() {
     );
 
     /* Shader uniforms */
-    shader->uniformMatrix("modelProj", model * proj);
+    shader.uniform_mat4("modelProj", model * proj);
 
     /* Draw */
     mesh->reload(buffer, vertices);

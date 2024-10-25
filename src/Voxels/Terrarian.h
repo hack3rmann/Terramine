@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../graphics/Shader.h"
 #include "../graphics/VoxelRenderer.h"
 #include "../graphics.hpp"
 #include "../Mesh.h"
@@ -18,7 +17,7 @@ class Terrarian {
     vec3 toLightVec;
 
 public:
-    Shader* shader;
+    tmine::ShaderProgram shader;
     Chunks* chunks;
     Terrarian(char const* textureAtlas);
     ~Terrarian();

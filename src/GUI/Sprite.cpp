@@ -1,7 +1,9 @@
-#include "Sprite.h"
+#include <glm/ext.hpp>
 
+#include "Sprite.h"
 #include "../Window.h"
 #include "GUI.h"
+#include "../loaders.hpp"
 
 using namespace tmine;
 
@@ -24,7 +26,7 @@ Sprite::Sprite(
     this->texture = std::move(texture);
 
     /* Shader */
-    shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl");
+    shader = ShaderProgram::from_source(load_shader("GUIVertex.glsl", "GUIFragment.glsl").value()).value();
 
     /* Buffer */
     int i = 0;
@@ -40,7 +42,7 @@ void Sprite::render() {
     texture.bind();
 
     /* Shader */
-    shader->use();
+    shader.bind();
 
     /* Matrix init */
     float aspect = (float) Window::height / (float) Window::width;
@@ -48,7 +50,7 @@ void Sprite::render() {
     model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
 
     /* Shader uniforms */
-    shader->uniformMatrix("modelProj", glm::mat4(1.0f));
+    shader.uniform_mat4("modelProj", glm::mat4(1.0f));
 
     /* Draw */
     mesh->reload(buffer, 6);

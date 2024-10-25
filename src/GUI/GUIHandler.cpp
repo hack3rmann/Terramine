@@ -11,7 +11,7 @@ using namespace tmine;
 GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
     /* Init */
     GUIs = new GUI*[8];
-    shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl");
+    shader = ShaderProgram::from_source(load_shader("GUIVertex.glsl", "GUIFragment.glsl").value()).value();
     this->current = startMenu;
     for (int i = 0; i < 8; i++) {
         GUIs[i] = nullptr;
@@ -67,7 +67,7 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
 }
 
 void GUIHandler::render() {
-    shader->use();
+    shader.bind();
     GUIs[current]->render();
 }
 
@@ -80,5 +80,4 @@ GUIHandler::~GUIHandler() {
         delete GUIs[i];
     }
     delete[] GUIs;
-    delete shader;
 }

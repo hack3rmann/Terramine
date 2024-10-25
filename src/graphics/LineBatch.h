@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Camera.h"
-#include "Shader.h"
+#include "../graphics.hpp"
 
 class Mesh;
 
@@ -14,7 +14,7 @@ class LineBatch {
     uint64_t capacity;
 
 public:
-    Shader* shader;
+    tmine::ShaderProgram shader;
 
     LineBatch(uint64_t capacity);
     ~LineBatch();

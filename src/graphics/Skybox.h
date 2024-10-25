@@ -2,7 +2,6 @@
 
 #include "../Camera.h"
 #include "../Mesh.h"
-#include "Shader.h"
 #include "../graphics.hpp"
 
 class Skybox {
@@ -13,7 +12,7 @@ class Skybox {
     unsigned int index;
 
 public:
-    Shader* shader;
+    tmine::ShaderProgram shader;
     tmine::Texture texture;
     Skybox(char const* name);
     void render(Camera const* cam);

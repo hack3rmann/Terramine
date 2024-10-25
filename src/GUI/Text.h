@@ -3,7 +3,6 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "../graphics/Shader.h"
 #include "../graphics.hpp"
 #include "../Mesh.h"
 #include "../cmp_bmfont.hpp"
@@ -14,7 +13,7 @@ class Text {
     std::string text;
     static Charset chars;
     static tmine::Texture fontTex;
-    static Shader* shader;
+    static tmine::ShaderProgram shader;
 
     float* buffer;
     Mesh* mesh;

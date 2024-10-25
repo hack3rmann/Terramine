@@ -1,15 +1,18 @@
 #include "LineBatch.h"
 
 #include "../Mesh.h"
+#include "../loaders.hpp"
 
 #define LB_VERTEX_SIZE (3 + 4)
+
+using namespace tmine;
 
 LineBatch::LineBatch(uint64_t capacity)
     : capacity(capacity) {
     int attrs[] = {3, 4, 0};
     buffer = new float[capacity * LB_VERTEX_SIZE * 2];
     mesh = new Mesh(buffer, 0, attrs);
-    shader = load_shader("linesVertex.glsl", "linesFragment.glsl");
+    shader = ShaderProgram::from_source(load_shader("linesVertex.glsl", "linesFragment.glsl").value()).value();
     index = 0;
 }
 
@@ -45,8 +48,8 @@ void LineBatch::render(Camera const* cam) {
     if (index == 0) {
         return;
     }
-    shader->use();
-    shader->uniformMatrix("projView", cam->getProjection() * cam->getView());
+    shader.bind();
+    shader.uniform_mat4("projView", cam->getProjection() * cam->getView());
     mesh->reload(buffer, index / LB_VERTEX_SIZE);
     mesh->draw(GL_LINES);
     index = 0;

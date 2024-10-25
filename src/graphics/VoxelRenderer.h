@@ -4,7 +4,6 @@
 
 class Mesh;
 class Chunk;
-class Shader;
 
 class VoxelRenderer {
     float* buffer;

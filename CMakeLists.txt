@@ -35,7 +35,7 @@ add_executable(
   src/graphics/LineBatch.cpp
   src/graphics/MasterHandler.cpp
   src/graphics/SceneHandler.cpp
-  src/graphics/Shader.cpp
+  src/graphics/shader.cpp
   src/graphics/Skybox.cpp
   src/graphics/texture.cpp
   src/graphics/VoxelRenderer.cpp
@@ -46,6 +46,8 @@ add_executable(
   src/GUI/Sprite.cpp
   src/GUI/Text.cpp
   src/loaders/png.cpp
+  src/loaders/shader.cpp
+  src/loaders/string.cpp
   src/data/image.cpp
   src/Voxels/BlockStore.cpp
   src/Voxels/Chunk.cpp
