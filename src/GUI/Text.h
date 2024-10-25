@@ -3,21 +3,17 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "../Graphics/Shader.h"
-#include "../Graphics/Texture.h"
+#include "../graphics/Shader.h"
+#include "../graphics.hpp"
 #include "../Mesh.h"
 #include "../cmp_bmfont.hpp"
-
-namespace FUCK {
-    inline int min(int a, int b) { return a > b ? a : b; }
-}  // namespace FUCK
 
 struct Charset;
 
 class Text {
     std::string text;
     static Charset chars;
-    static Texture* fontTex;
+    static tmine::Texture fontTex;
     static Shader* shader;
 
     float* buffer;

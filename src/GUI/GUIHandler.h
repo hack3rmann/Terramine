@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Graphics/Shader.h"
+#include "../graphics/Shader.h"
 #include "GUI.h"
 
 enum GUIstate { nothing, startMenu, pauseMenu, settings };
@@ -9,11 +9,11 @@ class GUIHandler {
     GUI** GUIs;
     Shader* shader;
 
-    Texture* bg;
-    Texture* bDef;
-    Texture* bHover;
-    Texture* bClicked;
-    Texture* darker;
+    tmine::Texture bg;
+    tmine::Texture bDef;
+    tmine::Texture bHover;
+    tmine::Texture bClicked;
+    tmine::Texture darker;
 
 public:
     GUIstate current;

@@ -1,8 +1,12 @@
 #include "GUIHandler.h"
 
-#include "../Graphics/Texture.h"
+#include "../graphics.hpp"
 #include "../Window.h"
 #include "../EventHandler.h"
+
+#include "../loaders.hpp"
+
+using namespace tmine;
 
 GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
     /* Init */
@@ -14,11 +18,22 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
     }
 
     /* Loading basic textures */
-    bg = load_texture("assets/startScreenBackground.png");
-    bDef = load_texture("assets/testButtonDef.png");
-    bHover = load_texture("assets/testButtonHover.png");
-    bClicked = load_texture("assets/testButtonClicked.png");
-    darker = load_texture("assets/darker.png");
+    bg = Texture::from_image(
+        load_png("assets/startScreenBackground.png").value(),
+        TextureLoad::DEFAULT
+    );
+    bDef = Texture::from_image(
+        load_png("assets/testButtonDef.png").value(), TextureLoad::DEFAULT
+    );
+    bHover = Texture::from_image(
+        load_png("assets/testButtonHover.png").value(), TextureLoad::DEFAULT
+    );
+    bClicked = Texture::from_image(
+        load_png("assets/testButtonClicked.png").value(), TextureLoad::DEFAULT
+    );
+    darker = Texture::from_image(
+        load_png("assets/darker.png").value(), TextureLoad::DEFAULT
+    );
 
     /* Empty menu init */
     GUIs[nothing] = new GUI();
@@ -66,14 +81,4 @@ GUIHandler::~GUIHandler() {
     }
     delete[] GUIs;
     delete shader;
-
-    bg->deleteTex();
-    bDef->deleteTex();
-    bHover->deleteTex();
-    bClicked->deleteTex();
-
-    delete bg;
-    delete bDef;
-    delete bHover;
-    delete bClicked;
 }

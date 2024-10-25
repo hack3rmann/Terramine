@@ -1,5 +1,7 @@
 CompileFlags:
   Add:
-  - -std=c++23
-  - -Wall
-  - -Wextra
+    - -std=c++23
+    - -Wall
+    - -Wextra
+    - -Wno-unknown-warning-option
+  Remove: [-m*, -f*]

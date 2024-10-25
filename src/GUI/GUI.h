@@ -37,13 +37,13 @@ public:
     GUI();
     void addButton(
         float posX, float posY, float width, float height,
-        Texture const* defTexture, Texture const* hoverTexture,
-        Texture const* clickedTexture, std::string tex,
+        tmine::Texture defTexture, tmine::Texture hoverTexture,
+        tmine::Texture clickTexture, std::string tex,
         std::function<void()> function
     );
     void addSprite(
         float posX, float posY, float width, float height,
-        Texture const* texture
+        tmine::Texture texture
     );
     int getObjects();
     void render();

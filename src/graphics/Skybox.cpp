@@ -1,6 +1,7 @@
 #include "Skybox.h"
 
 #include "../Window.h"
+#include "../loaders.hpp"
 
 #define SB_VERTEX_SIZE (3 + 2)
 #define SB_VERTEX(I, X, Y, Z, T, S) \
@@ -48,10 +49,12 @@
     SB_VERTEX(I, -0.5f, 0.5f, -0.5f, 1.0f, 0.0f)                    \
     SB_VERTEX(I, -0.5f, 0.5f, 0.5f, 1.0f, 0.5f)
 
+using namespace tmine;
+
 Skybox::Skybox(char const* name) {
     /* Init */
     int attrs[] = {3, 2, 0};
-    texture = load_texture(name);
+    texture = Texture::from_image(load_png(name).value(), TextureLoad::DEFAULT);
     shader = load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl");
     buffer = new float[6 * 6 * SB_VERTEX_SIZE];
 
@@ -65,7 +68,7 @@ Skybox::Skybox(char const* name) {
 
 void Skybox::render(Camera const* cam) {
     /* Texture */
-    texture->bind();
+    texture.bind();
 
     /* Shader */
     shader->use();

@@ -7,6 +7,8 @@
 #include "GUI.h"
 #include "Text.h"
 
+using namespace tmine;
+
 Button::Button() {
     int attrs[] = {2, 2, 4, 0};
     state = Default;
@@ -16,8 +18,8 @@ Button::Button() {
 
 Button::Button(
     float posX, float posY, float width, float height,
-    Texture const* defTexture, Texture const* hoverTexture,
-    Texture const* clickedTexture, std::string text,
+    Texture defTexture, Texture hoverTexture,
+    Texture clickedTexture, std::string text,
     std::function<void()> function
 )
     : GUIObject(posX, posY, width, height)
@@ -28,9 +30,9 @@ Button::Button(
     mesh = new Mesh(buffer, 0, attrs);
 
     /* Textures */
-    textures[Default] = new Texture(*defTexture);
-    textures[onHover] = new Texture(*hoverTexture);
-    textures[onClick] = new Texture(*clickedTexture);
+    textures[Default] = new Texture(std::move(defTexture));
+    textures[onHover] = new Texture(std::move(hoverTexture));
+    textures[onClick] = new Texture(std::move(clickedTexture));
     state = Default;
 
     /* Sahder */
@@ -105,7 +107,6 @@ void Button::refreshState() {
 
 void Button::cleanUp() {
     for (int i = 0; i < 3; i++) {
-        textures[i]->deleteTex();
         delete textures[i];
     }
     delete mesh;

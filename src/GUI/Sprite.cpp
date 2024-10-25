@@ -3,6 +3,8 @@
 #include "../Window.h"
 #include "GUI.h"
 
+using namespace tmine;
+
 Sprite::Sprite() {
     int attrs[] = {2, 2, 4, 0};
     buffer = new float[GUI_VERTEX_SIZE * 6];
@@ -10,7 +12,7 @@ Sprite::Sprite() {
 }
 
 Sprite::Sprite(
-    float posX, float posY, float width, float height, Texture const* texture
+    float posX, float posY, float width, float height, Texture texture
 )
     : GUIObject(posX, posY, width, height) {
     /* Mesh */
@@ -19,7 +21,7 @@ Sprite::Sprite(
     mesh = new Mesh(buffer, 0, attrs);
 
     /* Texture */
-    this->texture = new Texture(*texture);
+    this->texture = std::move(texture);
 
     /* Shader */
     shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl");
@@ -35,7 +37,7 @@ Sprite::Sprite(
 
 void Sprite::render() {
     /* Texture */
-    texture->bind();
+    texture.bind();
 
     /* Shader */
     shader->use();
@@ -54,8 +56,6 @@ void Sprite::render() {
 }
 
 void Sprite::cleanUp() {
-    texture->deleteTex();
     delete mesh;
-    delete texture;
     delete[] buffer;
 }

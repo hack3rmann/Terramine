@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Camera.h"
-#include "Graphics/LineBatch.h"
+#include "graphics/LineBatch.h"
 #include "Voxels/Chunks.h"
 
 using namespace glm;
