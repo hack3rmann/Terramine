@@ -1,5 +1,8 @@
 #include "Shader.h"
 
+#include <glad/gl.h>
+#include <GLFW/glfw3.h>
+
 #include "../defines.cpp"
 
 Shader::Shader(unsigned int id)

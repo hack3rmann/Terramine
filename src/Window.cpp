@@ -1,9 +1,10 @@
 #include "Window.h"
 
-#include <GL/glew.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <cstdio>
 
 #include "defines.cpp"
 
@@ -27,20 +28,19 @@ int Window::init(int width, int height, char const* title) {
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
     window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+
     if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
+
     glfwMakeContextCurrent(window);
 
-    if (glewInit() != GLEW_OK) {
-        std::cout << "GLEW init error" << std::endl;
-        return -1;
-    }
-    glcall(glViewport(0, 0, width, height));
+    auto gl_version = gladLoadGL(glfwGetProcAddress);
+    std::printf("GL version %d.%d\n", GLAD_VERSION_MAJOR(gl_version), GLAD_VERSION_MINOR(gl_version));
 
-    std::cout << glGetString(GL_VERSION) << std::endl;
+    glcall(glViewport(0, 0, width, height));
 
     return 0;
 }

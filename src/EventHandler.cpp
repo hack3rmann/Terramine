@@ -54,7 +54,8 @@ void key_callback(
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
-    glcall(glViewport(0, 0, width, height));
+    // FIXME(hack3rmann): find this function in GLAD
+    // glcall(glViewport(0, 0, width, height));
     Window::width = width;
     Window::height = height;
     Window::viewPortChange = true;
