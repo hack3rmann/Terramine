@@ -1,5 +1,6 @@
 #include "EventHandler.h"
 
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <string.h>
 
@@ -55,7 +56,7 @@ void key_callback(
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
     // FIXME(hack3rmann): find this function in GLAD
-    // glcall(glViewport(0, 0, width, height));
+    glcall(glViewport(0, 0, width, height));
     Window::width = width;
     Window::height = height;
     Window::viewPortChange = true;

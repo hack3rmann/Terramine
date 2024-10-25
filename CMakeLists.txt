@@ -13,7 +13,7 @@ project(terramine)
 
 add_executable(
   terramine
-  deps/glad/src/gl.c
+  ${DEPS_DIR}/glad/src/gl.c
   src/main.cpp
   src/Camera.cpp
   src/defines.cpp
