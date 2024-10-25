@@ -12,7 +12,10 @@ using namespace rapidjson;
 
 BlockStore::BlockStore(
     std::string const& BlockFile, std::string const& BlockTextureFile
-) {
+)
+    : BlockDOC{}
+    , TextureDOC{}
+{
     /* Init reading */
     string jsonBlock;
     string jsonTexture;
@@ -84,7 +87,7 @@ BlockStore::BlockStore(
 
             /* Have "AllSides" */
             if (BlockDOC[i].HasMember("AllSides")) {
-                uint8_t id;
+                uint8_t id = 0;
                 for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
                     if (*textures[j].name ==
                         BlockDOC[i]["AllSides"].GetString())
@@ -99,7 +102,7 @@ BlockStore::BlockStore(
 
                 /* Have "Sides" */
             } else if (BlockDOC[i].HasMember("Sides")) {
-                uint8_t idSides, idTop, idBottom;
+                uint8_t idSides = 0, idTop = 0, idBottom = 0;
                 for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
                     if (*textures[j].name == BlockDOC[i]["Sides"].GetString()) {
                         idSides = textures[j].id;
@@ -127,7 +130,7 @@ BlockStore::BlockStore(
 
                 /* All sides unique */
             } else {
-                uint8_t idTop, idBottom, idLeft, idRight, idFront, idBack;
+                uint8_t idTop = 0, idBottom = 0, idLeft = 0, idRight = 0, idFront = 0, idBack = 0;
                 for (uint32_t j = 0; j < TextureDOC.Size(); j++) {
                     if (*textures[j].name == BlockDOC[i]["Top"].GetString()) {
                         idTop = textures[j].id;
