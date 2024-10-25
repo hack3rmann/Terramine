@@ -18,7 +18,9 @@ float Events::y = 0.0f;
 bool Events::_cursor_locked = false;
 bool Events::_cursor_started = false;
 
-void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+void cursor_position_callback(
+    [[maybe_unused]] GLFWwindow* window, double xpos, double ypos
+) {
     if (Events::_cursor_locked) {
         Events::dx += xpos - Events::x;
         Events::dy += ypos - Events::y;
@@ -31,7 +33,8 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void mouse_button_callback(
-    GLFWwindow* window, int button, int action, int mode
+    [[maybe_unused]] GLFWwindow* window, int button, int action,
+    [[maybe_unused]] int mode
 ) {
     if (action == GLFW_PRESS) {
         Events::_keys[_MOUSE_BUTTONS + button] = true;
@@ -43,7 +46,8 @@ void mouse_button_callback(
 }
 
 void key_callback(
-    GLFWwindow* window, int key, int scancode, int action, int mode
+    [[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode,
+    int action, [[maybe_unused]] int mode
 ) {
     if (action == GLFW_PRESS) {
         Events::_keys[key] = true;
@@ -54,7 +58,9 @@ void key_callback(
     }
 }
 
-void window_size_callback(GLFWwindow* window, int width, int height) {
+void window_size_callback(
+    [[maybe_unused]] GLFWwindow* window, int width, int height
+) {
     glViewport(0, 0, width, height);
     Window::width = width;
     Window::height = height;

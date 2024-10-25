@@ -133,8 +133,6 @@ void FrameBuffer::reload(std::string const& vName, std::string const& fName) {
 }
 
 void FrameBuffer::reload() {
-    this->vName = vName;
-    this->fName = fName;
     msaa = 4;
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);

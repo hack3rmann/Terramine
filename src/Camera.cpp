@@ -15,9 +15,9 @@ void Camera::updateVectors() {
 }
 
 Camera::Camera(vec3 position, float fov)
-    : position(position)
+    : rotation(1.0f)
     , fov(fov)
-    , rotation(1.0f) {
+    , position(position) {
     updateVectors();
 }
 
@@ -34,7 +34,7 @@ mat4 Camera::getView() const {
     return glm::lookAt(position, position + frontCam, up);
 }
 
-void Camera::rotate(float x, float y, float z) {
+void Camera::rotate(float x, float y, [[maybe_unused]] float z) {
     // rotation = glm::rotate(rotation, z, vec3(0.0f, 0.0f, 1.0f));
     rotation = glm::rotate(rotation, y, vec3(0.0f, 1.0f, 0.0f));
     rotation = glm::rotate(rotation, x, vec3(1.0f, 0.0f, 0.0f));

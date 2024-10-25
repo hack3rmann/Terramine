@@ -42,12 +42,12 @@ unsigned char* load_texture_bytes(
     /* Set source PNG */
     spng_set_png_file(ctx, png); /* or _buffer(), _stream() */
 
-    struct spng_ihdr ihdr;
+    auto ihdr = (struct spng_ihdr){};
     if (spng_get_ihdr(ctx, &ihdr)) {
         return 0;
     }
 
-    struct spng_plte plte = {0};
+    auto plte = (struct spng_plte){};
 
     result = spng_get_plte(ctx, &plte);
     if (result && result != SPNG_ECHUNKAVAIL) {
@@ -96,7 +96,7 @@ unsigned char* load_texture_bytes(
     /* ihdr.height will always be non-zero if spng_get_ihdr() succeeds */
     image_width = image_size / ihdr.height;
 
-    struct spng_row_info row_info = {0};
+    auto row_info = (struct spng_row_info){};
 
     do {
         result = spng_get_row_info(ctx, &row_info);

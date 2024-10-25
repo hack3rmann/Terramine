@@ -7,6 +7,7 @@
 
 #include "../EventHandler.h"
 #include "../Window.h"
+#include "../types.hpp"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */
 #define TEXT_VERTEX(I, X, Y, T, S, R, G, B) \
@@ -25,6 +26,8 @@
     TEXT_VERTEX(I, RX, RY + RH, X, Y, R, G, B);           \
     TEXT_VERTEX(I, RX + RW, RY + RH, X + W, Y, R, G, B);  \
     TEXT_VERTEX(I, RX + RW, RY, X + W, Y - H, R, G, B);
+
+using namespace tmine;
 
 /* Static fields init */
 Texture* Text::fontTex;
@@ -51,9 +54,8 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
     /* Calculating length */
     float length = 0.0;
     for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[text[i]];
+        auto& curr = chars.Chars[(usize) text[i]];
         float sizeW = chars.Width;
-        float w = curr.Width;
 
         length += (curr.XAdvance) / sizeW * fontSize;
     }
@@ -63,7 +65,7 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
 
     /* Load all quads to array */
     for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[text[i]];
+        auto& curr = chars.Chars[(usize) text[i]];
         float sizeW = chars.Width;
         float sizeH = chars.Height;
         float lh = chars.LineHeight;
@@ -114,14 +116,10 @@ void Text::reload() {
     float aspect = (float) Window::width / (float) Window::height;
     proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
 
-    this->fontSize = fontSize;
-    float locFontSize = fontSize / FUCK::min(Window::width, Window::height);
-
     float length = 0.0;
     for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[text[i]];
+        auto& curr = chars.Chars[(usize) text[i]];
         float sizeW = chars.Width;
-        float w = curr.Width;
 
         length += (curr.XAdvance) / sizeW * fontSize;
     }
@@ -130,7 +128,7 @@ void Text::reload() {
     vertices = 0;
 
     for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[text[i]];
+        auto& curr = chars.Chars[(usize) text[i]];
         float sizeW = chars.Width;
         float sizeH = chars.Height;
         float lh = chars.LineHeight;

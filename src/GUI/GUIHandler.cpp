@@ -4,7 +4,7 @@
 #include "../Window.h"
 #include "../EventHandler.h"
 
-GUIHandler::GUIHandler(GUIstate current) {
+GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
     /* Init */
     GUIs = new GUI*[8];
     shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl");

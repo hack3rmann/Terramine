@@ -3,6 +3,10 @@
 #include "Chunk.h"
 #include "Voxel.h"
 
+#include "../types.hpp"
+
+using namespace tmine;
+
 Chunks::Chunks(int w, int h, int d)
     : w(w)
     , h(h)
@@ -22,7 +26,7 @@ Chunks::Chunks(int w, int h, int d)
 }
 
 Chunks::~Chunks() {
-    for (int i = 0; i < volume; i++) {
+    for (usize i = 0; i < volume; i++) {
         delete chunks[i];
     }
     delete[] chunks;
@@ -41,7 +45,7 @@ voxel* Chunks::get(int x, int y, int z) const {
     if (z < 0) {
         cz--;
     }
-    if (cx < 0 || cy < 0 || cz < 0 || cx >= w || cy >= h || cz >= d) {
+    if (cx < 0 || cy < 0 || cz < 0 || cx >= (int) w || cy >= (int) h || cz >= (int) d) {
         return nullptr;
     }
     // Chunk* chunk = ;
@@ -53,7 +57,7 @@ voxel* Chunks::get(int x, int y, int z) const {
 }
 
 Chunk* Chunks::getChunk(int x, int y, int z) const {
-    if (x < 0 || y < 0 || z < 0 || x >= w || y >= h || z >= d) {
+    if (x < 0 || y < 0 || z < 0 || x >= (int) w || y >= (int) h || z >= (int) d) {
         return nullptr;
     }
     return chunks[(y * d + z) * w + x];
@@ -72,7 +76,7 @@ void Chunks::set(int x, int y, int z, int id) {
     if (z < 0) {
         cz--;
     }
-    if (cx < 0 || cy < 0 || cz < 0 || cx >= w || cy >= h || cz >= d) {
+    if (cx < 0 || cy < 0 || cz < 0 || cx >= (int) w || cy >= (int) h || cz >= (int) d) {
         return;
     }
     Chunk* chunk = chunks[(cy * d + cz) * w + cx];
@@ -231,8 +235,6 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist) const {
     float tyMax = (tyDelta < infinity) ? tyDelta * ydist : infinity;
     float tzMax = (tzDelta < infinity) ? tzDelta * zdist : infinity;
 
-    int steppedIndex = -1;
-
     while (t <= maxDist) {
         voxel* voxel = get(ix, iy, iz);
         if (voxel == nullptr || voxel->id) {
@@ -255,24 +257,20 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist) const {
                 ix += stepx;
                 t = txMax;
                 txMax += txDelta;
-                steppedIndex = 0;
             } else {
                 iz += stepz;
                 t = tzMax;
                 tzMax += tzDelta;
-                steppedIndex = 2;
             }
         } else {
             if (tyMax < tzMax) {
                 iy += stepy;
                 t = tyMax;
                 tyMax += tyDelta;
-                steppedIndex = 1;
             } else {
                 iz += stepz;
                 t = tzMax;
                 tzMax += tzDelta;
-                steppedIndex = 2;
             }
         }
     }

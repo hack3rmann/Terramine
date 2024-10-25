@@ -96,7 +96,7 @@ TerrarianHandler::TerrarianHandler() {
     terra = new Terrarian("assets/textureAtlas3.png");
 }
 
-void TerrarianHandler::reloadChunks(Camera const* cam) { terra->reload(); }
+void TerrarianHandler::reloadChunks([[maybe_unused]] Camera const* cam) { terra->reload(); }
 
 void TerrarianHandler::terminate() { delete terra; }
 
@@ -109,7 +109,7 @@ void TerrarianHandler::render(Camera const* cam) {
 }
 
 void TerrarianHandler::renderShadows(
-    Camera const* cam, FrameBuffer* shadowBuff
+    Camera const* cam, [[maybe_unused]] FrameBuffer* shadowBuff
 ) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
