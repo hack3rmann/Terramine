@@ -14,8 +14,6 @@ Texture::Texture(GLuint id, usize width, usize height)
     AVAILABLE_SLOT += 1;
 }
 
-Texture::Texture() {}
-
 Texture::~Texture() {
     if (Texture::DUMMY_ID == this->id) {
         return;

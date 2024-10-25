@@ -1,11 +1,13 @@
 #include "Button.h"
 
 #include <GLFW/glfw3.h>
+#include <glm/ext.hpp>
 
 #include "../EventHandler.h"
 #include "../Window.h"
 #include "GUI.h"
 #include "Text.h"
+#include "../loaders.hpp"
 
 using namespace tmine;
 
@@ -36,7 +38,7 @@ Button::Button(
     state = Default;
 
     /* Sahder */
-    shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl");
+    shader = ShaderProgram::from_source(load_shader("GUIVertex.glsl", "GUIFragment.glsl").value()).value();
 
     /* Buffer */
     int i = 0;
@@ -57,7 +59,7 @@ void Button::render() {
     textures[state]->bind();
 
     /* Use shader program */
-    shader->use();
+    shader.bind();
 
     /* Matrix init */
     float aspect = (float) Window::height / (float) Window::width;
@@ -65,7 +67,7 @@ void Button::render() {
     model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
 
     /* Uniforms */
-    shader->uniformMatrix("modelProj", glm::mat4(1.0f));
+    shader.uniform_mat4("modelProj", glm::mat4(1.0f));
 
     /* Draw */
     mesh->reload(buffer, 6);

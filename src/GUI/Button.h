@@ -17,7 +17,7 @@ class Button : public GUIObject {
     Mesh* mesh;
     float* buffer;
     States state;
-    Shader* shader;
+    tmine::ShaderProgram shader;
     float x, y, w, h;
     Text* text;
 

@@ -1,6 +1,9 @@
 #include "FrameBuffer.h"
 
 #include "../Window.h"
+#include "../loaders.hpp"
+
+using namespace tmine;
 
 float FrameBuffer::screenQuad[24] = {
     //    X      Y       T     S
@@ -92,7 +95,7 @@ void FrameBuffer::reload(std::string const& vName, std::string const& fName) {
 
     glBindVertexArray(0);
 
-    screenShader = load_shader(vName, fName);
+    screenShader = ShaderProgram::from_source(load_shader(vName, fName).value()).value();
 
     /* Attaching color renderbuffer */
     glGenRenderbuffers(1, &color_rbo);
@@ -234,7 +237,7 @@ void FrameBuffer::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 void FrameBuffer::terminate() { glDeleteFramebuffers(1, &fbo); }
 
 void FrameBuffer::drawColor() {
-    screenShader->use();
+    screenShader.bind();
 
     /* Vertices */
     glBindVertexArray(vao);
@@ -251,7 +254,7 @@ void FrameBuffer::drawColor() {
 }
 
 void FrameBuffer::drawDepth() {
-    screenShader->use();
+    screenShader.bind();
 
     /* Vertices */
     glBindVertexArray(vao);
@@ -268,15 +271,15 @@ void FrameBuffer::drawDepth() {
 }
 
 void FrameBuffer::drawBoth() {
-    screenShader->use();
+    screenShader.bind();
 
     /* Vertices */
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     /* Shader uniforms */
-    screenShader->uniform1i("screenDepth", 0);
-    screenShader->uniform1i("screenColor", 1);
+    screenShader.uniform_int("screenDepth", 0);
+    screenShader.uniform_int("screenColor", 1);
 
     /* Binding Textures */
     glActiveTexture(GL_TEXTURE0);
@@ -298,7 +301,7 @@ int FrameBuffer::check() {
     return 0;
 }
 
-void FrameBuffer::refreshShader() { screenShader = load_shader(vName, fName); }
+void FrameBuffer::refreshShader() { screenShader = ShaderProgram::from_source(load_shader(vName, fName).value()).value(); }
 
 void FrameBuffer::bindColorTex() {
     glBindTexture(GL_TEXTURE_2D, colorAtt);

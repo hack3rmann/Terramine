@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../graphics/Shader.h"
 #include "GUI.h"
+#include "../graphics.hpp"
 
 enum GUIstate { nothing, startMenu, pauseMenu, settings };
 
 class GUIHandler {
     GUI** GUIs;
-    Shader* shader;
+    tmine::ShaderProgram shader;
 
     tmine::Texture bg;
     tmine::Texture bDef;

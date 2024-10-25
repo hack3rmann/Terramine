@@ -2,7 +2,6 @@
 
 #include <glm/glm.hpp>
 
-#include "../graphics/Shader.h"
 #include "../graphics.hpp"
 #include "../Mesh.h"
 #include "GUIObject.h"
@@ -13,7 +12,7 @@ public:
     float* buffer;
     tmine::Texture texture;
 
-    Shader* shader;
+    tmine::ShaderProgram shader;
 
     glm::mat4 proj;
     glm::mat4 model;

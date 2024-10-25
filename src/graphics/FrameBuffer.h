@@ -1,16 +1,15 @@
 #pragma once
 
+#include <string>
 #include <glad/gl.h>
 
-#include <string>
-
-#include "Shader.h"
+#include "../graphics.hpp"
 
 class FrameBuffer {
     friend class SceneHandler;
     std::string vName, fName;
 
-    Shader* screenShader;
+    tmine::ShaderProgram screenShader;
     static float screenQuad[24];
     GLuint vao;
     GLuint vbo;

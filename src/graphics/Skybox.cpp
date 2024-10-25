@@ -55,7 +55,7 @@ Skybox::Skybox(char const* name) {
     /* Init */
     int attrs[] = {3, 2, 0};
     texture = Texture::from_image(load_png(name).value(), TextureLoad::DEFAULT);
-    shader = load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl");
+    shader = ShaderProgram::from_source(load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl").value()).value();
     buffer = new float[6 * 6 * SB_VERTEX_SIZE];
 
     /* Load to buffer */
@@ -71,12 +71,12 @@ void Skybox::render(Camera const* cam) {
     texture.bind();
 
     /* Shader */
-    shader->use();
+    shader.bind();
 
     /* Shader uniforms */
-    shader->uniformMatrix("projView", cam->getProjection() * cam->getView());
-    shader->uniform3f("camPos", cam->position);
-    shader->uniformVec2u("resolution", vec2(Window::width, Window::height));
+    shader.uniform_mat4("projView", cam->getProjection() * cam->getView());
+    shader.uniform_vec3("camPos", cam->position);
+    shader.uniform_vec2("resolution", vec2(Window::width, Window::height));
 
     /* Draw */
     mesh->reload(buffer, 36);
