@@ -5,6 +5,8 @@
 #include "../EventHandler.h"
 #include "../Window.h"
 
+using namespace tmine;
+
 /* Scene Handler */
 SceneHandler::SceneHandler() {
     fb = new FrameBuffer("PPVertex.glsl", "PPFragment.glsl");
@@ -82,7 +84,6 @@ SkyboxHandler::SkyboxHandler() {
 
 void SkyboxHandler::terminate() {
     for (unsigned int i = 0; i < 5; i++) {
-        skyboxes[i]->texture->deleteTex();
         delete skyboxes[i];
     }
 }

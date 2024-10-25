@@ -4,8 +4,10 @@
 #include <glm/glm.hpp>
 
 #include "Chunk.h"
-
 #include "../Window.h"
+#include "../loaders.hpp"
+
+using namespace tmine;
 
 mat4 rotation(1.0f);
 
@@ -19,10 +21,10 @@ void Terrarian::render(Camera const* cam) {
     shader->uniform3f("lightColor", vec3(0.96f, 0.24f, 0.0f));
     // shader->uniform3f("lightColor", vec3(0.73f, 0.54f, 0.95f));
     glActiveTexture(GL_TEXTURE0);
-    textureAtlas->bind();
+    textureAtlas.bind();
     shader->uniform1i("u_Texture0", 0);
     glActiveTexture(GL_TEXTURE1);
-    normalAtlas->bind();
+    normalAtlas.bind();
     shader->uniform1i("u_Texture1", 1);
     mat4 model(1.0f);
     for (unsigned long long i = 0; i < chunks->volume; i++) {
@@ -47,8 +49,8 @@ void Terrarian::render(Camera const* cam) {
 Terrarian::Terrarian(char const* textureAtlas)
     : renderer(1024 * 1024 * 4) {
     onceLoad = 1;
-    this->textureAtlas = load_texture("assets/textureAtlas3.png");
-    this->normalAtlas = load_texture("assets/normalAtlas3.png");
+    this->textureAtlas = Texture::from_image(load_png("assets/textureAtlas3.png").value(), TextureLoad::DEFAULT);
+    this->normalAtlas = Texture::from_image(load_png("assets/normalAtlas3.png").value(), TextureLoad::DEFAULT);
     if (textureAtlas == nullptr) {
         fprintf(stderr, "Can not load texture in %s, %d\n", __FILE__, __LINE__);
         delete textureAtlas;
@@ -74,8 +76,6 @@ Terrarian::Terrarian(char const* textureAtlas)
 
 Terrarian::~Terrarian() {
     delete shader;
-    textureAtlas->deleteTex();
-    // delete textureAtlas;
     delete chunks;
 }
 
@@ -139,6 +139,6 @@ void Terrarian::refreshShader() {
 }
 
 void Terrarian::refreshTextures() {
-    textureAtlas = load_texture("assets/textureAtlas3.png");
-    normalAtlas = load_texture("assets/normalAtlas3.png");
+    textureAtlas = Texture::from_image(load_png("assets/textureAtlas3.png").value(), TextureLoad::DEFAULT);
+    normalAtlas = Texture::from_image(load_png("assets/normalAtlas3.png").value(), TextureLoad::DEFAULT);
 }

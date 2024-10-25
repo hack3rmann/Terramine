@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include "../Graphics/Shader.h"
-#include "../Graphics/Texture.h"
+#include "../graphics/Shader.h"
+#include "../graphics.hpp"
 #include "../Mesh.h"
 #include "GUIObject.h"
 
@@ -11,7 +11,7 @@ class Sprite : public GUIObject {
 public:
     Mesh* mesh;
     float* buffer;
-    Texture* texture;
+    tmine::Texture texture;
 
     Shader* shader;
 
@@ -23,7 +23,7 @@ public:
     Sprite();
     Sprite(
         float posX, float posY, float width, float height,
-        Texture const* texture
+        tmine::Texture texture
     );
     void render();
     void cleanUp();

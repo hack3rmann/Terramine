@@ -8,6 +8,7 @@
 #include "../EventHandler.h"
 #include "../Window.h"
 #include "../types.hpp"
+#include "../loaders.hpp"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */
 #define TEXT_VERTEX(I, X, Y, T, S, R, G, B) \
@@ -30,13 +31,13 @@
 using namespace tmine;
 
 /* Static fields init */
-Texture* Text::fontTex;
+Texture Text::fontTex;
 Charset Text::chars;
 Shader* Text::shader;
 
 void Text::init() {
     ParseFont(chars);
-    fontTex = load_texture_NO_MIPMAP_LINEAR("assets/font.png");
+    fontTex = Texture::from_image(load_png("assets/font.png").value(), TextureLoad::NO_MIPMAP_LINEAR);
     shader = load_shader("textVertex.glsl", "textFragment.glsl");
 }
 
@@ -95,7 +96,7 @@ void Text::render() {
     shader->use();
 
     /* Texture */
-    fontTex->bind();
+    fontTex.bind();
 
     /* Matrix init */
     float aspect = (float) Window::height / (float) Window::width;

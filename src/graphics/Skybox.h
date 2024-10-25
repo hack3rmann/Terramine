@@ -3,7 +3,7 @@
 #include "../Camera.h"
 #include "../Mesh.h"
 #include "Shader.h"
-#include "Texture.h"
+#include "../graphics.hpp"
 
 class Skybox {
     friend class SkyboxHandler;
@@ -14,7 +14,7 @@ class Skybox {
 
 public:
     Shader* shader;
-    Texture* texture;
+    tmine::Texture texture;
     Skybox(char const* name);
     void render(Camera const* cam);
 };

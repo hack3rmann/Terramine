@@ -5,9 +5,20 @@ include(FetchContent)
 set(DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
+set(CMAKE_CXX_STANDARD 23)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 execute_process(COMMAND ln -sfT ${BUILD_DIR}/compile_commands.json
                         ${CMAKE_SOURCE_DIR}/compile_commands.json)
+
+option(SANITIZE "Enable sanitizers" OFF)
+
+if(${SANITIZE})
+    message(STATUS "Build with sanitizers")
+  set(CMAKE_CXX_FLAGS
+      "${CMAKE_CXX_FLAGS} -g -fsanitize=address -fsanitize=undefined -fsanitize=leak"
+  )
+endif()
 
 project(terramine)
 
@@ -17,26 +28,25 @@ add_executable(
   src/main.cpp
   src/Camera.cpp
   src/EventHandler.cpp
-  src/indexBuffer.cpp
   src/Mesh.cpp
   src/Player.cpp
-  src/vertexBuffer.cpp
   src/Window.cpp
-  src/Graphics/FrameBuffer.cpp
-  src/Graphics/LineBatch.cpp
-  src/Graphics/MasterHandler.cpp
-  src/Graphics/SceneHandler.cpp
-  src/Graphics/Shader.cpp
-  src/Graphics/Skybox.cpp
-  src/Graphics/Texture.cpp
-  src/Graphics/VoxelRenderer.cpp
+  src/graphics/FrameBuffer.cpp
+  src/graphics/LineBatch.cpp
+  src/graphics/MasterHandler.cpp
+  src/graphics/SceneHandler.cpp
+  src/graphics/Shader.cpp
+  src/graphics/Skybox.cpp
+  src/graphics/texture.cpp
+  src/graphics/VoxelRenderer.cpp
   src/GUI/Button.cpp
   src/GUI/GUI.cpp
   src/GUI/GUIHandler.cpp
   src/GUI/GUIObject.cpp
   src/GUI/Sprite.cpp
   src/GUI/Text.cpp
-  src/Loaders/pngLoader.cpp
+  src/loaders/png.cpp
+  src/data/image.cpp
   src/Voxels/BlockStore.cpp
   src/Voxels/Chunk.cpp
   src/Voxels/Chunks.cpp

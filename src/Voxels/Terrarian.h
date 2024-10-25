@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Graphics/Shader.h"
-#include "../Graphics/Texture.h"
-#include "../Graphics/VoxelRenderer.h"
+#include "../graphics/Shader.h"
+#include "../graphics/VoxelRenderer.h"
+#include "../graphics.hpp"
 #include "../Mesh.h"
 #include "../Camera.h"
 #include "Chunks.h"
@@ -13,8 +13,8 @@ class Terrarian {
     Mesh** meshes;
     VoxelRenderer renderer;
     bool onceLoad;
-    Texture* textureAtlas;
-    Texture* normalAtlas;
+    tmine::Texture textureAtlas;
+    tmine::Texture normalAtlas;
     vec3 toLightVec;
 
 public:

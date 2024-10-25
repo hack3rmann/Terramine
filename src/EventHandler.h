@@ -2,15 +2,15 @@
 
 class Events {
 public:
-    static bool* _keys;
-    static unsigned int* _frames;
-    static unsigned int _current;
+    static bool* keys;
+    static unsigned int* frames;
+    static unsigned int cureent;
     static float dx;
     static float dy;
     static float x;
     static float y;
-    static bool _cursor_locked;
-    static bool _cursor_started;
+    static bool cursor_locked;
+    static bool cursor_started;
 
     static int init();
     static void terminate();

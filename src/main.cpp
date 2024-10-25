@@ -7,7 +7,7 @@
 
 #include "EventHandler.h"
 #include "GUI/Text.h"
-#include "Graphics/MasterHandler.h"
+#include "graphics/MasterHandler.h"
 #include "Window.h"
 
 #include "types.hpp"

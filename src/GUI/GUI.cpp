@@ -1,5 +1,7 @@
 #include "GUI.h"
 
+using namespace tmine;
+
 GUI::GUI() {
     objectsButtons = 0;
     objectsSprites = 0;
@@ -7,14 +9,13 @@ GUI::GUI() {
 }
 
 void GUI::addButton(
-    float posX, float posY, float width, float height,
-    Texture const* defTexture, Texture const* hoverTexture,
-    Texture const* clickedTexture, std::string text,
+    float posX, float posY, float width, float height, Texture defTexture,
+    Texture hoverTexture, Texture clickedTexture, std::string text,
     std::function<void()> function
 ) {
     buttons[objectsButtons] = new Button(
-        posX, posY, width, height, defTexture, hoverTexture, clickedTexture,
-        text, function
+        posX, posY, width, height, std::move(defTexture),
+        std::move(hoverTexture), std::move(clickedTexture), text, function
     );
 
     objectsButtons++;
@@ -22,9 +23,10 @@ void GUI::addButton(
 }
 
 void GUI::addSprite(
-    float posX, float posY, float width, float height, Texture const* texture
+    float posX, float posY, float width, float height, Texture texture
 ) {
-    sprites[objectsSprites] = new Sprite(posX, posY, width, height, texture);
+    sprites[objectsSprites] =
+        new Sprite(posX, posY, width, height, std::move(texture));
 
     objectsSprites++;
     size++;
