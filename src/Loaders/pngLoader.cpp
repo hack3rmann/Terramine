@@ -1,6 +1,6 @@
 #include "pngLoader.h"
 
-#include <GL/glew.h>
+#include <glad/gl.h>
 #include <spng.h>
 #include <stdio.h>
 

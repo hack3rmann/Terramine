@@ -1,5 +1,7 @@
 #include "Text.h"
 
+#include <GLFW/glfw3.h>
+
 #include "../EventHandler.h"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */

@@ -1,5 +1,7 @@
 #include "Button.h"
 
+#include <GLFW/glfw3.h>
+
 #include "../EventHandler.h"
 #include "../Window.h"
 #include "../defines.cpp"

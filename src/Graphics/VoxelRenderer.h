@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdlib.h>
+#include <cstdint>
 
 class Mesh;
 class Chunk;
@@ -11,7 +11,7 @@ class VoxelRenderer {
     unsigned long long capacity;
 
 public:
-    VoxelRenderer(unsigned long long capacity);
+    VoxelRenderer(std::uint64_t capacity);
     ~VoxelRenderer();
 
     Mesh* render(Chunk* chunk, Chunk const** chunks, bool AmbientOcclusion);

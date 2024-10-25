@@ -1,8 +1,9 @@
 #pragma once
 
+#include <glad/gl.h>
+
 #include <string>
 
-#include "GL/glew.h"
 #include "Shader.h"
 
 class FrameBuffer {

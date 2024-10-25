@@ -1,7 +1,5 @@
 #pragma once
 
-#include <GL/glew.h>
-
 #include "../Loaders/pngLoader.h"
 #include "../defines.cpp"
 

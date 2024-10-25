@@ -1,5 +1,7 @@
 #include "SceneHandler.h"
 
+#include <GLFW/glfw3.h>
+
 #include "../EventHandler.h"
 
 /* Scene Handler */
