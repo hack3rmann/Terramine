@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../Graphics/FrameBuffer.h"
 #include "../Graphics/Shader.h"
 #include "../Graphics/Texture.h"
 #include "../Graphics/VoxelRenderer.h"
 #include "../Mesh.h"
-#include "../Player.h"
+#include "../Camera.h"
 #include "Chunks.h"
 
 class Terrarian {

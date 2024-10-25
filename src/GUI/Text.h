@@ -1,9 +1,7 @@
 #pragma once
 
-#include <fstream>
-#include <glm/glm.hpp>
-#include <sstream>
 #include <string>
+#include <glm/glm.hpp>
 
 #include "../Graphics/Shader.h"
 #include "../Graphics/Texture.h"

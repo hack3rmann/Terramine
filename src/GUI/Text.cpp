@@ -1,8 +1,12 @@
 #include "Text.h"
 
+#include <fstream>
+#include <sstream>
+
 #include <GLFW/glfw3.h>
 
 #include "../EventHandler.h"
+#include "../Window.h"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */
 #define TEXT_VERTEX(I, X, Y, T, S, R, G, B) \

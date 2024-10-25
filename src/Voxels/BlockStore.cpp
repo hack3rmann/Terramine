@@ -7,8 +7,6 @@
 #include <sstream>
 #include <string>
 
-#include "../defines.cpp"
-
 using namespace std;
 using namespace rapidjson;
 
@@ -29,8 +27,9 @@ BlockStore::BlockStore(
 
     /* If not open, throw console log */
     if (!fileBlock.is_open() || !fileTexture.is_open()) {
-        CONSOLE_LOG(
-            "Can not load file " + BlockFile + " or " + BlockTextureFile + "!\n"
+        fprintf(
+            stderr, "Can not load file %s or %s!\n", BlockFile.c_str(),
+            BlockTextureFile.c_str()
         );
     }
     /* If load, parse */
@@ -52,14 +51,10 @@ BlockStore::BlockStore(
 
         /* It's wrong, if documents are not arrays */
         if (!BlockDOC.IsArray()) {
-            CONSOLE_LOG(
-                "Document \"Voxels\\" + BlockFile + "\" is not array!\n"
-            );
+            fprintf(stderr, "Document 'Voxels/%s' is not an array!\n", BlockFile.c_str());
         }
         if (!TextureDOC.IsArray()) {
-            CONSOLE_LOG(
-                "Document \"Voxels\\" + BlockTextureFile + "\" is not array!\n"
-            );
+            fprintf(stderr, "Document 'Voxels/%s' is not an array!\n", BlockTextureFile.c_str());
         }
 
         /* Creating arrays */

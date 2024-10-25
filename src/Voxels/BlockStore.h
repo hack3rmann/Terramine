@@ -1,10 +1,7 @@
 #pragma once
 
 #include <rapidjson/document.h>
-
-#include <list>
 #include <string>
-#include <vector>
 
 #include "Voxel.h"
 

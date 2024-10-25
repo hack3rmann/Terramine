@@ -2,8 +2,6 @@
 
 #include <glad/gl.h>
 
-#include <string>
-
 class Texture;
 
 extern Texture* load_texture(char const* file);

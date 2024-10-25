@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Loaders/pngLoader.h"
-#include "../defines.cpp"
 
 class Texture {
 public:

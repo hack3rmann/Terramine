@@ -6,8 +6,6 @@
 #include <iostream>
 #include <cstdio>
 
-#include "defines.cpp"
-
 GLFWwindow* Window::window;
 int Window::width = 0;
 int Window::height = 0;
@@ -40,7 +38,7 @@ int Window::init(int width, int height, char const* title) {
     auto gl_version = gladLoadGL(glfwGetProcAddress);
     std::printf("GL version %d.%d\n", GLAD_VERSION_MAJOR(gl_version), GLAD_VERSION_MINOR(gl_version));
 
-    glcall(glViewport(0, 0, width, height));
+    glViewport(0, 0, width, height);
 
     return 0;
 }
@@ -53,10 +51,10 @@ void Window::terminate() {
 bool Window::isClosed() { return glfwWindowShouldClose(window); }
 
 void Window::setShouldClose(bool flag) {
-    glcall(glfwSetWindowShouldClose(window, flag));
+    glfwSetWindowShouldClose(window, flag);
 }
 
-void Window::swapBuffers() { glcall(glfwSwapBuffers(window)); }
+void Window::swapBuffers() { glfwSwapBuffers(window); }
 
 void Window::setCursorMode(int mode) {
     glfwSetInputMode(window, GLFW_CURSOR, mode);

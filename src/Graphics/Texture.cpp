@@ -2,11 +2,6 @@
 
 #include <glad/gl.h>
 
-#include <iostream>
-#include <string>
-
-#include "../defines.cpp"
-
 int Texture::AviableSlot = 0;
 
 Texture::Texture(GLuint id, int width, int height)
@@ -21,8 +16,8 @@ Texture::Texture() {}
 
 Texture::~Texture() {}
 
-void Texture::bind() { glcall(glBindTexture(GL_TEXTURE_2D, id)); }
+void Texture::bind() { glBindTexture(GL_TEXTURE_2D, id); }
 
-void Texture::unbind() { glcall(glBindTexture(GL_TEXTURE_2D, 0)); }
+void Texture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
 
-void Texture::deleteTex() { glcall(glDeleteTextures(1, &id)); }
+void Texture::deleteTex() { glDeleteTextures(1, &id); }

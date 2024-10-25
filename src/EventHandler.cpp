@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <string.h>
 
-#include "defines.cpp"
+#include "Window.h"
 
 #define _MOUSE_BUTTONS 1024
 
@@ -55,8 +55,7 @@ void key_callback(
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height) {
-    // FIXME(hack3rmann): find this function in GLAD
-    glcall(glViewport(0, 0, width, height));
+    glViewport(0, 0, width, height);
     Window::width = width;
     Window::height = height;
     Window::viewPortChange = true;

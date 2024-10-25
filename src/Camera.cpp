@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include "Window.h"
+
 void Camera::updateVectors() {
 #ifdef COMFORT_CAM
     frontCam = vec3(rotation * vec4(0.0f, 0.0f, -1.0f, 1.0f));

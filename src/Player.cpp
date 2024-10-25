@@ -2,10 +2,9 @@
 
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-
 #include "Voxels/Voxel.h"
-#include "defines.cpp"
+#include "EventHandler.h"
+#include "Window.h"
 
 Player::Player() {
     lineBatch = new LineBatch(4096);
@@ -211,8 +210,8 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
             cam->position, cam->frontCam, 10.0f, end, norm, iend
         );
         if (vox != nullptr) {
-            CONSOLE_LOG(*vox->name);
-            CONSOLE_LOG("                                 \r");
+            std::fprintf(stderr, "%s\n", vox->name->c_str());
+            std::fprintf(stderr, "                                 \r");
             lineBatch->box(
                 iend.x + 0.5f, iend.y + 0.5f, iend.z + 0.5f, 1.001f, 1.001f,
                 1.001f, 60.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 0.5f
@@ -228,7 +227,7 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
                 );
             }
         } else {
-            CONSOLE_LOG("                                     \r");
+            std::fprintf(stderr, "                                     \r");
         }
     }
 }

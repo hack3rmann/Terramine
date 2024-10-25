@@ -3,9 +3,6 @@
 #include <glad/gl.h>
 #include <stdlib.h>
 
-#include "Graphics/Shader.h"
-#include "defines.cpp"
-
 class Mesh {
     unsigned int vao;
     unsigned int vbo;

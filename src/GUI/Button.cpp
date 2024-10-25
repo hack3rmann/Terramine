@@ -4,7 +4,6 @@
 
 #include "../EventHandler.h"
 #include "../Window.h"
-#include "../defines.cpp"
 #include "GUI.h"
 #include "Text.h"
 

@@ -1,8 +1,5 @@
 #include "Chunks.h"
 
-#include <iostream>
-
-#include "../defines.cpp"
 #include "Chunk.h"
 #include "Voxel.h"
 
