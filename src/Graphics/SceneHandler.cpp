@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../EventHandler.h"
+#include "../Window.h"
 
 /* Scene Handler */
 SceneHandler::SceneHandler() {
@@ -52,16 +53,16 @@ void SceneHandler::render() {
 
     /* Render to shadow view */
     shadowBuff->bind();
-    glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     terrarian->render(plr->cam);
     shadowBuff->unbind();
 
     /* Render to post-processing framebuffer */
     fb->bind();
-    glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (!fb->check()) {
-        CONSOLE_LOG("Frame buffer in not complete...");
+        fprintf(stderr, "Frame buffer in not complete...");
     }
 
     skybox->render(plr->cam);
@@ -100,21 +101,21 @@ void TerrarianHandler::reloadChunks(Camera const* cam) { terra->reload(); }
 void TerrarianHandler::terminate() { delete terra; }
 
 void TerrarianHandler::render(Camera const* cam) {
-    glcall(glEnable(GL_DEPTH_TEST));
-    glcall(glEnable(GL_CULL_FACE));
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     terra->render(cam);
-    glcall(glDisable(GL_DEPTH_TEST));
-    glcall(glDisable(GL_CULL_FACE));
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 }
 
 void TerrarianHandler::renderShadows(
     Camera const* cam, FrameBuffer* shadowBuff
 ) {
-    glcall(glEnable(GL_DEPTH_TEST));
-    glcall(glEnable(GL_CULL_FACE));
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     terra->render(cam);
-    glcall(glDisable(GL_DEPTH_TEST));
-    glcall(glDisable(GL_CULL_FACE));
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 }
 
 void TerrarianHandler::refreshRes() {
@@ -128,7 +129,7 @@ LineBatchHandler::LineBatchHandler() { lineBatch = new LineBatch(4096); }
 void LineBatchHandler::terminate() { delete lineBatch; }
 
 void LineBatchHandler::render(Camera const* cam) {
-    glcall(glEnable(GL_DEPTH_TEST));
+    glEnable(GL_DEPTH_TEST);
     lineBatch->render(cam);
-    glcall(glDisable(GL_DEPTH_TEST));
+    glDisable(GL_DEPTH_TEST);
 }

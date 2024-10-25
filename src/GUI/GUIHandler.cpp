@@ -1,8 +1,8 @@
 #include "GUIHandler.h"
 
-#include "../Graphics/MasterHandler.h"
 #include "../Graphics/Texture.h"
 #include "../Window.h"
+#include "../EventHandler.h"
 
 GUIHandler::GUIHandler(GUIstate current) {
     /* Init */

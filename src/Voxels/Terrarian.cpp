@@ -3,8 +3,9 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
-#include "../defines.cpp"
 #include "Chunk.h"
+
+#include "../Window.h"
 
 mat4 rotation(1.0f);
 
@@ -17,10 +18,10 @@ void Terrarian::render(Camera const* cam) {
     shader->uniform3f("toLightVec", vec3(rotation * vec4(toLightVec, 1.0f)));
     shader->uniform3f("lightColor", vec3(0.96f, 0.24f, 0.0f));
     // shader->uniform3f("lightColor", vec3(0.73f, 0.54f, 0.95f));
-    glcall(glActiveTexture(GL_TEXTURE0));
+    glActiveTexture(GL_TEXTURE0);
     textureAtlas->bind();
     shader->uniform1i("u_Texture0", 0);
-    glcall(glActiveTexture(GL_TEXTURE1));
+    glActiveTexture(GL_TEXTURE1);
     normalAtlas->bind();
     shader->uniform1i("u_Texture1", 1);
     mat4 model(1.0f);
@@ -40,7 +41,7 @@ void Terrarian::render(Camera const* cam) {
         shader->uniformMatrix("model", model);
         mesh->draw(GL_TRIANGLES);
     }
-    glcall(glActiveTexture(GL_TEXTURE0));
+    glActiveTexture(GL_TEXTURE0);
 }
 
 Terrarian::Terrarian(char const* textureAtlas)
@@ -49,18 +50,12 @@ Terrarian::Terrarian(char const* textureAtlas)
     this->textureAtlas = load_texture("assets/textureAtlas3.png");
     this->normalAtlas = load_texture("assets/normalAtlas3.png");
     if (textureAtlas == nullptr) {
-        CONSOLE_LOG("Can not load texture in ");
-        CONSOLE_LOG(__FILE__);
-        CONSOLE_LOG(", ");
-        CONSOLE_LOG(__LINE__);
+        fprintf(stderr, "Can not load texture in %s, %d\n", __FILE__, __LINE__);
         delete textureAtlas;
     }
     shader = load_shader("vertexShader.glsl", "fragmentShader.glsl");
     if (shader == nullptr) {
-        CONSOLE_LOG("Can not load shader in ");
-        CONSOLE_LOG(__FILE__);
-        CONSOLE_LOG(", ");
-        CONSOLE_LOG(__LINE__);
+        fprintf(stderr, "Can not load shader in %s, %d\n", __FILE__, __LINE__);
         delete textureAtlas;
         delete shader;
     }
@@ -69,12 +64,12 @@ Terrarian::Terrarian(char const* textureAtlas)
 
     toLightVec = vec3(-0.2f, 0.5f, -1.0f);
 
-    CONSOLE_LOG("Creating 2d meshes array...\t");
+    fprintf(stderr, "Creating 2d meshes array...\t");
     meshes = new Mesh*[chunks->volume];
     for (unsigned long long i = 0; i < chunks->volume; i++) {
         meshes[i] = nullptr;
     }
-    CONSOLE_LOG("DONE\n");
+    fprintf(stderr, "DONE\n");
 }
 
 Terrarian::~Terrarian() {
@@ -105,14 +100,12 @@ void Terrarian::reload() {
             percentage =
                 (int) ((float) i / (float) (chunks->volume - 1) * 100.0f);
             if (onceLoad) {
-                CONSOLE_LOG("Reloading chunks...\t");
-                CONSOLE_LOG(percentage);
-                CONSOLE_LOG("%\r");
+                fprintf(stderr, "Reloading chunks...\t%d%%\r", percentage);
             }
         }
         if (i == chunks->volume - 1) {
             if (onceLoad) {
-                CONSOLE_LOG("\n");
+                fputc('\n', stderr);
             }
         }
 

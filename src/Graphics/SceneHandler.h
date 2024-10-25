@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Camera.h"
-#include "../Mesh.h"
 #include "../Player.h"
 #include "../Voxels/Terrarian.h"
 #include "FrameBuffer.h"

@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include "../Graphics/Texture.h"
-#include "../defines.cpp"
 
 void GLClearError();
 bool GLLogCall(char const* function, char const* file, int line);
@@ -149,32 +148,32 @@ GLuint LoadGLTextures(char const* filename, int* width, int* height) {
     unsigned char* bytes = load_texture_bytes(filename, width, height);
 
     /* Create The Texture */
-    glcall(glGenTextures(1, &texture));
+    glGenTextures(1, &texture);
 
     /* Typical Texture Generation Using Data From The Bitmap */
 
-    glcall(glBindTexture(GL_TEXTURE_2D, texture));
-    glcall(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     /* Generate The Texture */
-    glcall(glTexImage2D(
+    glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGBA, *width, *height, 0, GL_RGBA,
         GL_UNSIGNED_BYTE, bytes
-    ));
+    );
 
     /* Nearest Filtering */
-    glcall(glTexParameteri(
+    glTexParameteri(
         GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR
-    ));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3));
-    glcall(glGenerateMipmap(GL_TEXTURE_2D));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3));
-    glcall(glGenerateMipmap(GL_TEXTURE_2D));
+    );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
-    glcall(glBindTexture(GL_TEXTURE_2D, 0));
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     return texture;
 }
@@ -201,30 +200,30 @@ GLuint LoadGLTexturesRGB(char const* filename, int* width, int* height) {
     unsigned char* bytes = load_texture_bytes(filename, width, height);
 
     /* Create The Texture */
-    glcall(glGenTextures(1, &texture));
+    glGenTextures(1, &texture);
 
     /* Typical Texture Generation Using Data From The Bitmap */
 
-    glcall(glBindTexture(GL_TEXTURE_2D, texture));
-    glcall(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     /* Generate The Texture */
-    glcall(glTexImage2D(
+    glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGB, *width, *height, 0, GL_RGB, GL_UNSIGNED_BYTE,
         bytes
-    ));
+    );
 
     /* Nearest Filtering */
-    glcall(glTexParameteri(
+    glTexParameteri(
         GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR
-    ));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4));
-    glcall(glGenerateMipmap(GL_TEXTURE_2D));
+    );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
-    // glcall(glBindTexture(GL_TEXTURE_2D, 0));
+    // glBindTexture(GL_TEXTURE_2D, 0);
 
     return texture;
 }
@@ -253,24 +252,24 @@ GLuint LoadGLTextures_NO_MIPMAP_LINEAR(
     unsigned char* bytes = load_texture_bytes(filename, width, height);
 
     /* Create The Texture */
-    glcall(glGenTextures(1, &texture));
+    glGenTextures(1, &texture);
 
     /* Typical Texture Generation Using Data From The Bitmap */
 
-    glcall(glBindTexture(GL_TEXTURE_2D, texture));
-    glcall(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     /* Generate The Texture */
-    glcall(glTexImage2D(
+    glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGBA, *width, *height, 0, GL_RGBA,
         GL_UNSIGNED_BYTE, bytes
-    ));
+    );
 
     /* Nearest Filtering */
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    glcall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     return texture;
 }

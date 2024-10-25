@@ -16,7 +16,6 @@ add_executable(
   ${DEPS_DIR}/glad/src/gl.c
   src/main.cpp
   src/Camera.cpp
-  src/defines.cpp
   src/EventHandler.cpp
   src/indexBuffer.cpp
   src/Mesh.cpp
@@ -32,7 +31,6 @@ add_executable(
   src/Graphics/Texture.cpp
   src/Graphics/VoxelRenderer.cpp
   src/GUI/Button.cpp
-  src/GUI/DynamicText.cpp
   src/GUI/GUI.cpp
   src/GUI/GUIHandler.cpp
   src/GUI/GUIObject.cpp

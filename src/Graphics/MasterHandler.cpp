@@ -1,6 +1,6 @@
 #include "MasterHandler.h"
 
-#include "../defines.cpp"
+#include "../Window.h"
 
 /* Static fields init */
 SceneHandler* MasterHandler::sceneHandler;
@@ -14,7 +14,7 @@ void MasterHandler::init() {
 void MasterHandler::render() {
     /* Normal rendering (if window not hidden) */
     if (Window::width + Window::height) {
-        glcall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (gui->current == startMenu) {
             gui->render();
         } else if (gui->current == pauseMenu) {

@@ -4,9 +4,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
-#include <iostream>
 
-#include "../defines.cpp"
 #include "Voxel.h"
 
 Chunk::Chunk(int xpos, int ypos, int zpos)

@@ -3,9 +3,6 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
-#include "Window.h"
-#include "defines.cpp"
-
 using namespace glm;
 
 class Camera {

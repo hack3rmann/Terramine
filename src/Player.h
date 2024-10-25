@@ -3,7 +3,6 @@
 #include <glm/glm.hpp>
 
 #include "Camera.h"
-#include "EventHandler.h"
 #include "Graphics/LineBatch.h"
 #include "Voxels/Chunks.h"
 

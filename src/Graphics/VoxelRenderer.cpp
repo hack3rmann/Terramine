@@ -1,12 +1,10 @@
 #include "VoxelRenderer.h"
 
-#include <iostream>
 #include <new>
 
 #include "../Mesh.h"
 #include "../Voxels/Chunk.h"
 #include "../Voxels/Voxel.h"
-#include "../defines.cpp"
 
 #define VERTEX_SIZE    \
     (3 + 3 + 2 + 1 + 3 \
@@ -50,9 +48,7 @@ VoxelRenderer::VoxelRenderer(uint64_t capacity)
     try {
         buffer = new /*(std::nothrow)*/ float[capacity * VERTEX_SIZE * 6];
     } catch (std::bad_alloc& ba) {
-        CONSOLE_LOG("bad_alloc caught: ");
-        CONSOLE_LOG(ba.what());
-        CONSOLE_LOG('\n');
+        fprintf(stderr, "bad_alloc caught: %s\n", ba.what());
     }
 }
 

@@ -1,7 +1,5 @@
 #include "GUI.h"
 
-#include "../defines.cpp"
-
 GUI::GUI() {
     objectsButtons = 0;
     objectsSprites = 0;
