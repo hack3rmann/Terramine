@@ -82,4 +82,49 @@ private:
     static auto constexpr DUMMY_ID = ~GLuint{0};
 };
 
+enum class Primitive {
+    Points = GL_POINTS,
+    LineStrip = GL_LINE_STRIP,
+    LineLoop = GL_LINE_LOOP,
+    Lines = GL_LINES,
+    LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
+    LinesAdjacency = GL_LINES_ADJACENCY,
+    TriangleStrip = GL_TRIANGLE_STRIP,
+    TriangleFan = GL_TRIANGLE_FAN,
+    Triangles = GL_TRIANGLES,
+    TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
+    TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+    Patches = GL_PATCHES,
+};
+
+class Mesh {
+public:
+    // TODO(hack3rmann): make span of attribute descriptors
+    Mesh(
+        std::vector<f32> vertices, std::span<usize const> attribute_sizes,
+        Primitive primitive
+    );
+    ~Mesh();
+    Mesh(Mesh const&) = delete;
+    Mesh(Mesh&& other) noexcept;
+    auto operator=(this Mesh&, Mesh const&) -> Mesh& = delete;
+    auto operator=(this Mesh& self, Mesh&& other) noexcept -> Mesh&;
+
+    template <typename Self>
+    inline auto&& get_buffer(this Self&& self) noexcept {
+        return std::forward<Self>(self).vertices;
+    }
+
+    auto reload_buffer(this Mesh const& self) noexcept -> void;
+    auto draw(this Mesh const& self) -> void;
+
+private:
+    GLuint vertex_array_object_id{DUMMY_ID};
+    GLuint vertex_buffer_object_id{DUMMY_ID};
+    std::vector<f32> vertices;
+    usize vertex_size;
+    Primitive primitive;
+    static auto constexpr DUMMY_ID = ~GLuint{0};
+};
+
 }  // namespace tmine

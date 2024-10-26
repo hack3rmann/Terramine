@@ -3,13 +3,13 @@
 #include <glm/glm.hpp>
 
 #include "../graphics.hpp"
-#include "../Mesh.h"
 #include "GUIObject.h"
 
 class Sprite : public GUIObject {
 public:
-    Mesh* mesh;
-    float* buffer;
+    tmine::Mesh mesh;
+    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
+        std::array<tmine::usize, 3>{2, 2, 4};
     tmine::Texture texture;
 
     tmine::ShaderProgram shader;

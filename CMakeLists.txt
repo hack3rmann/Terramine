@@ -28,7 +28,6 @@ add_executable(
   src/main.cpp
   src/Camera.cpp
   src/EventHandler.cpp
-  src/Mesh.cpp
   src/Player.cpp
   src/Window.cpp
   src/graphics/FrameBuffer.cpp
@@ -36,6 +35,7 @@ add_executable(
   src/graphics/MasterHandler.cpp
   src/graphics/SceneHandler.cpp
   src/graphics/shader.cpp
+  src/graphics/mesh.cpp
   src/graphics/Skybox.cpp
   src/graphics/texture.cpp
   src/graphics/VoxelRenderer.cpp

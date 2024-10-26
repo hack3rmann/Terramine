@@ -1,8 +1,6 @@
 #include "VoxelRenderer.h"
 
-#include <new>
-
-#include "../Mesh.h"
+#include "../graphics.hpp"
 #include "../Voxels/Chunk.h"
 #include "../Voxels/Voxel.h"
 
@@ -26,39 +24,24 @@
 #define IS_BLOCKED(X, Y, Z) \
     ((!IS_CHUNK(X, Y, Z)) || VOXEL(X, Y, Z).id && !VOXEL(X, Y, Z).isTransparent)
 
-#define VERTEX(INDEX, X, Y, Z, NX, NY, NZ, U, V, L, TX, TY, TZ) \
-    buffer[INDEX + 0] = (X);                                    \
-    buffer[INDEX + 1] = (Y);                                    \
-    buffer[INDEX + 2] = (Z);                                    \
-    buffer[INDEX + 3] = (NX);                                   \
-    buffer[INDEX + 4] = (NY);                                   \
-    buffer[INDEX + 5] = (NZ);                                   \
-    buffer[INDEX + 6] = (U);                                    \
-    buffer[INDEX + 7] = (V);                                    \
-    buffer[INDEX + 8] = (L);                                    \
-    buffer[INDEX + 9] = (TX);                                   \
-    buffer[INDEX + 10] = (TY);                                  \
-    buffer[INDEX + 11] = (TZ);                                  \
-    INDEX += VERTEX_SIZE;
+#define VERTEX(I, X, Y, Z, NX, NY, NZ, U, V, L, TX, TY, TZ)       \
+    ({                                                            \
+        auto const elems =                                        \
+            std::array<f32, 12>{(X), (Y), (Z), (NX), (NY), (NZ),  \
+                                (U), (V), (L), (TX), (TY), (TZ)}; \
+        buffer.insert(buffer.end(), elems.begin(), elems.end());  \
+    })
 
-int chunk_attrs[] = {3, 3, 2, 1, 3, 0};
+using namespace tmine;
 
-VoxelRenderer::VoxelRenderer(uint64_t capacity)
-    : capacity(capacity) {
-    try {
-        buffer = new /*(std::nothrow)*/ float[capacity * VERTEX_SIZE * 6];
-    } catch (std::bad_alloc& ba) {
-        fprintf(stderr, "bad_alloc caught: %s\n", ba.what());
-    }
-}
-
-VoxelRenderer::~VoxelRenderer() { delete[] buffer; }
-
-Mesh* VoxelRenderer::render(
+Mesh VoxelRenderer::render(
     Chunk* chunk, Chunk const** chunks, bool ambientOcclusion
 ) {
     float aoFactor = 0.15f;
-    uint64_t index = 0;
+
+    auto mesh =
+        Mesh{{}, VoxelRenderer::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles};
+
     for (int y = 0; y < CHUNK_H; y++) {
         for (int z = 0; z < CHUNK_D; z++) {
             for (int x = 0; x < CHUNK_W; x++) {
@@ -112,6 +95,8 @@ Mesh* VoxelRenderer::render(
                 /* Ambient Occlusion values */
                 float a, b, c, d, e, f, g, h;
                 a = b = c = d = e = f = g = h = 0.0f;
+
+                auto& buffer = mesh.get_buffer();
 
                 if (!IS_BLOCKED(x, y + 1, z)) {
                     l = 1.0f;
@@ -364,5 +349,8 @@ Mesh* VoxelRenderer::render(
             }
         }
     }
-    return new Mesh(buffer, index / VERTEX_SIZE, chunk_attrs);
+
+    mesh.reload_buffer();
+
+    return mesh;
 }

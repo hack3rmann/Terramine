@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 #include "../graphics.hpp"
-#include "../Mesh.h"
 #include "../cmp_bmfont.hpp"
 
 struct Charset;
@@ -14,10 +13,10 @@ class Text {
     static Charset chars;
     static tmine::Texture fontTex;
     static tmine::ShaderProgram shader;
+    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
+        std::array<tmine::usize, 3>{2, 2, 3};
 
-    float* buffer;
-    Mesh* mesh;
-    int vertices;
+    tmine::Mesh mesh;
     glm::vec2 position;
     glm::mat4 proj;
     glm::mat4 model;
@@ -41,14 +40,14 @@ struct CharDescriptor {
     unsigned short Page;
 
     CharDescriptor()
-        : x(0)
-        , y(0)
-        , Width(0)
-        , Height(0)
-        , XOffset(0)
-        , YOffset(0)
-        , XAdvance(0)
-        , Page(0) {}
+    : x(0)
+    , y(0)
+    , Width(0)
+    , Height(0)
+    , XOffset(0)
+    , YOffset(0)
+    , XAdvance(0)
+    , Page(0) {}
 };
 
 struct Charset {
