@@ -2,14 +2,13 @@
 
 #include "../graphics/VoxelRenderer.h"
 #include "../graphics.hpp"
-#include "../Mesh.h"
 #include "../Camera.h"
 #include "Chunks.h"
 
 class Terrarian {
     friend class TerrarianHandler;
 
-    Mesh** meshes;
+    tmine::Mesh** meshes;
     VoxelRenderer renderer;
     bool onceLoad;
     tmine::Texture textureAtlas;

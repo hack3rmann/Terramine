@@ -20,7 +20,6 @@ void Terrarian::render(Camera const* cam) {
     shader.uniform_vec2("resolution", vec2(Window::width, Window::height));
     shader.uniform_vec3("toLightVec", vec3(rotation * vec4(toLightVec, 1.0f)));
     shader.uniform_vec3("lightColor", vec3(0.96f, 0.24f, 0.0f));
-    // shader.uniform3f("lightColor", vec3(0.73f, 0.54f, 0.95f));
     glActiveTexture(GL_TEXTURE0);
     textureAtlas.bind();
     shader.uniform_int("u_Texture0", 0);
@@ -31,8 +30,8 @@ void Terrarian::render(Camera const* cam) {
     for (unsigned long long i = 0; i < chunks->volume; i++) {
         shader.bind();
         Chunk* chunk = chunks->chunks[i];
-        Mesh* mesh = meshes[i];
-        if (mesh == nullptr) {
+        auto const mesh_ptr = meshes[i];
+        if (mesh_ptr == nullptr) {
             continue;
         }
         model = glm::translate(
@@ -42,13 +41,12 @@ void Terrarian::render(Camera const* cam) {
                         )
         );
         shader.uniform_mat4("model", model);
-        mesh->draw(GL_TRIANGLES);
+        mesh_ptr->draw();
     }
     glActiveTexture(GL_TEXTURE0);
 }
 
-Terrarian::Terrarian(char const* textureAtlas)
-: renderer(1024 * 1024 * 4) {
+Terrarian::Terrarian(char const* textureAtlas) {
     onceLoad = 1;
     this->textureAtlas = Texture::from_image(
         load_png("assets/textureAtlas3.png").value(), TextureLoad::DEFAULT
@@ -61,7 +59,8 @@ Terrarian::Terrarian(char const* textureAtlas)
         delete textureAtlas;
     }
     shader = ShaderProgram::from_source(
-                 load_shader("vertexShader.glsl", "fragmentShader.glsl").value()
+                 load_shader_source("vertexShader.glsl", "fragmentShader.glsl")
+                     .value()
     )
                  .value();
 
@@ -70,7 +69,7 @@ Terrarian::Terrarian(char const* textureAtlas)
     toLightVec = vec3(-0.2f, 0.5f, -1.0f);
 
     fprintf(stderr, "Creating 2d meshes array...\t");
-    meshes = new Mesh*[chunks->volume];
+    meshes = new tmine::Mesh*[chunks->volume];
     for (unsigned long long i = 0; i < chunks->volume; i++) {
         meshes[i] = nullptr;
     }
@@ -128,17 +127,14 @@ void Terrarian::reload() {
             oz += 1;
             closes[(oy * 3 + oz) * 3 + ox] = other;
         }
-        Mesh* mesh = renderer.render(chunk, (Chunk const**) closes, true);
-        meshes[i] = mesh;
+        auto mesh = renderer.render(chunk, (Chunk const**) closes, true);
+        meshes[i] = new Mesh{std::move(mesh)};
     }
     onceLoad = 0;
 }
 
 void Terrarian::refreshShader() {
-    shader = ShaderProgram::from_source(
-                 load_shader("vertexShader.glsl", "fragmentShader.glsl").value()
-    )
-                 .value();
+    shader = load_shader("vertexShader.glsl", "fragmentShader.glsl").value();
 }
 
 void Terrarian::refreshTextures() {

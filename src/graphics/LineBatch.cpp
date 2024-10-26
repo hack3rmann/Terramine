@@ -1,80 +1,62 @@
 #include "LineBatch.h"
 
-#include "../Mesh.h"
+#include "../graphics.hpp"
 #include "../loaders.hpp"
 
 #define LB_VERTEX_SIZE (3 + 4)
 
 using namespace tmine;
 
-LineBatch::LineBatch(uint64_t capacity)
-    : capacity(capacity) {
-    int attrs[] = {3, 4, 0};
-    buffer = new float[capacity * LB_VERTEX_SIZE * 2];
-    mesh = new Mesh(buffer, 0, attrs);
-    shader = ShaderProgram::from_source(load_shader("linesVertex.glsl", "linesFragment.glsl").value()).value();
-    index = 0;
+LineBatch::LineBatch(usize capacity)
+: mesh{{}, LineBatch::VERTEX_ATTRIBUTE_SIZES, Primitive::Lines}
+, shader{load_shader("linesVertex.glsl", "linesFragment.glsl").value()} {
+    this->mesh.get_buffer().reserve(capacity * LB_VERTEX_SIZE * 2);
 }
 
-LineBatch::~LineBatch() {
-    delete[] buffer;
-    delete mesh;
+auto LineBatch::line(
+    this LineBatch& self, float x1, float y1, float z1, float x2, float y2,
+    float z2, float r, float g, float b, float a
+) -> void {
+    auto const next_vertices =
+        std::array<f32, 14>{x1, y1, z1, r, g, b, a, x2, y2, z2, r, g, b, a};
+
+    auto& buffer = self.mesh.get_buffer();
+
+    buffer.insert(buffer.end(), next_vertices.begin(), next_vertices.end());
 }
 
-void LineBatch::line(
-    float x1, float y1, float z1, float x2, float y2, float z2, float r,
-    float g, float b, float a
-) {
-    buffer[index] = x1;
-    buffer[index + 1] = y1;
-    buffer[index + 2] = z1;
-    buffer[index + 3] = r;
-    buffer[index + 4] = g;
-    buffer[index + 5] = b;
-    buffer[index + 6] = a;
-    index += LB_VERTEX_SIZE;
+auto LineBatch::render(this LineBatch& self, Camera const* cam) -> void {
+    self.shader.bind();
+    self.shader.uniform_mat4("projView", cam->getProjection() * cam->getView());
 
-    buffer[index] = x2;
-    buffer[index + 1] = y2;
-    buffer[index + 2] = z2;
-    buffer[index + 3] = r;
-    buffer[index + 4] = g;
-    buffer[index + 5] = b;
-    buffer[index + 6] = a;
-    index += LB_VERTEX_SIZE;
+    self.mesh.get_buffer().resize(LB_VERTEX_SIZE * 2 * 12);
+
+    self.mesh.reload_buffer();
+    self.mesh.draw();
 }
 
-void LineBatch::render(Camera const* cam) {
-    if (index == 0) {
-        return;
-    }
-    shader.bind();
-    shader.uniform_mat4("projView", cam->getProjection() * cam->getView());
-    mesh->reload(buffer, index / LB_VERTEX_SIZE);
-    mesh->draw(GL_LINES);
-    index = 0;
-}
-
-void LineBatch::box(
-    float x, float y, float z, float w, float h, float d, float r, float g,
-    float b, float a
-) {
+auto LineBatch::box(
+    this LineBatch& self, float x, float y, float z, float w, float h, float d,
+    float r, float g, float b, float a
+) -> void {
     w *= 0.5f;
     h *= 0.5f;
     d *= 0.5f;
 
-    line(x - w, y - h, z - d, x + w, y - h, z - d, r, g, b, a);
-    line(x - w, y + h, z - d, x + w, y + h, z - d, r, g, b, a);
-    line(x - w, y - h, z + d, x + w, y - h, z + d, r, g, b, a);
-    line(x - w, y + h, z + d, x + w, y + h, z + d, r, g, b, a);
+    self.mesh.get_buffer().resize(0);
 
-    line(x - w, y - h, z - d, x - w, y + h, z - d, r, g, b, a);
-    line(x + w, y - h, z - d, x + w, y + h, z - d, r, g, b, a);
-    line(x - w, y - h, z + d, x - w, y + h, z + d, r, g, b, a);
-    line(x + w, y - h, z + d, x + w, y + h, z + d, r, g, b, a);
+    self.line(x - w, y - h, z - d, x + w, y - h, z - d, r, g, b, a);
+    self.line(x - w, y + h, z - d, x + w, y + h, z - d, r, g, b, a);
+    self.line(x - w, y - h, z + d, x + w, y - h, z + d, r, g, b, a);
+    self.line(x - w, y + h, z + d, x + w, y + h, z + d, r, g, b, a);
 
-    line(x - w, y - h, z - d, x - w, y - h, z + d, r, g, b, a);
-    line(x + w, y - h, z - d, x + w, y - h, z + d, r, g, b, a);
-    line(x - w, y + h, z - d, x - w, y + h, z + d, r, g, b, a);
-    line(x + w, y + h, z - d, x + w, y + h, z + d, r, g, b, a);
+    self.line(x - w, y - h, z - d, x - w, y + h, z - d, r, g, b, a);
+    self.line(x + w, y - h, z - d, x + w, y + h, z - d, r, g, b, a);
+    self.line(x - w, y - h, z + d, x - w, y + h, z + d, r, g, b, a);
+    self.line(x + w, y - h, z + d, x + w, y + h, z + d, r, g, b, a);
+
+    self.line(x - w, y - h, z - d, x - w, y - h, z + d, r, g, b, a);
+    self.line(x + w, y - h, z - d, x + w, y - h, z + d, r, g, b, a);
+    self.line(x - w, y + h, z - d, x - w, y + h, z + d, r, g, b, a);
+    self.line(x + w, y + h, z - d, x + w, y + h, z + d, r, g, b, a);
 }

@@ -7,28 +7,21 @@
 
 using namespace tmine;
 
-Sprite::Sprite() {
-    int attrs[] = {2, 2, 4, 0};
-    buffer = new float[GUI_VERTEX_SIZE * 6];
-    mesh = new Mesh(buffer, 0, attrs);
-}
+Sprite::Sprite()
+: mesh{
+      std::vector(GUI_VERTEX_SIZE * 6, 0.0f), Sprite::VERTEX_ATTRIBUTE_SIZES,
+      Primitive::Triangles
+  } {}
 
 Sprite::Sprite(
     float posX, float posY, float width, float height, Texture texture
 )
-    : GUIObject(posX, posY, width, height) {
-    /* Mesh */
-    int attrs[] = {2, 2, 4, 0};
-    buffer = new float[GUI_VERTEX_SIZE * 6];
-    mesh = new Mesh(buffer, 0, attrs);
+: GUIObject(posX, posY, width, height)
+, mesh{std::vector(GUI_VERTEX_SIZE * 6, 0.0f), Sprite::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
+, texture{std::move(texture)} {
+    shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl").value();
 
-    /* Texture */
-    this->texture = std::move(texture);
-
-    /* Shader */
-    shader = ShaderProgram::from_source(load_shader("GUIVertex.glsl", "GUIFragment.glsl").value()).value();
-
-    /* Buffer */
+    auto buffer = this->mesh.get_buffer().data();
     int i = 0;
     GUI_RECT(i, posX, posY, width, height, 1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -53,11 +46,8 @@ void Sprite::render() {
     shader.uniform_mat4("modelProj", glm::mat4(1.0f));
 
     /* Draw */
-    mesh->reload(buffer, 6);
-    mesh->draw(GL_TRIANGLES);
+    mesh.reload_buffer();
+    mesh.draw();
 }
 
-void Sprite::cleanUp() {
-    delete mesh;
-    delete[] buffer;
-}
+void Sprite::cleanUp() {}

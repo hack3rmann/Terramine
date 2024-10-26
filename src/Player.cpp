@@ -210,8 +210,6 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
             cam->position, cam->frontCam, 10.0f, end, norm, iend
         );
         if (vox != nullptr) {
-            std::fprintf(stderr, "%s\n", vox->name->c_str());
-            std::fprintf(stderr, "                                 \r");
             lineBatch->box(
                 iend.x + 0.5f, iend.y + 0.5f, iend.z + 0.5f, 1.001f, 1.001f,
                 1.001f, 60.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 0.5f
@@ -226,8 +224,6 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
                     (int) iend.z + (int) norm.z, currentBlock
                 );
             }
-        } else {
-            std::fprintf(stderr, "                                     \r");
         }
     }
 }

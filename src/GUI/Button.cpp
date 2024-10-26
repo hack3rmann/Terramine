@@ -11,36 +11,26 @@
 
 using namespace tmine;
 
-Button::Button() {
-    int attrs[] = {2, 2, 4, 0};
-    state = Default;
-    buffer = new float[GUI_VERTEX_SIZE * 6];
-    mesh = new Mesh(buffer, 0, attrs);
-}
+Button::Button()
+: mesh{std::vector<f32>(GUI_VERTEX_SIZE * 6, 0.0f), Button::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
+, state{Default} {}
 
 Button::Button(
-    float posX, float posY, float width, float height,
-    Texture defTexture, Texture hoverTexture,
-    Texture clickedTexture, std::string text,
+    float posX, float posY, float width, float height, Texture defTexture,
+    Texture hoverTexture, Texture clickedTexture, std::string text,
     std::function<void()> function
 )
-    : GUIObject(posX, posY, width, height)
-    , function(function) {
-    /* Mesh */
-    int attrs[] = {2, 2, 4, 0};
-    buffer = new float[GUI_VERTEX_SIZE * 6];
-    mesh = new Mesh(buffer, 0, attrs);
-
-    /* Textures */
+: GUIObject(posX, posY, width, height)
+, function(function)
+, mesh{std::vector<f32>(GUI_VERTEX_SIZE * 6, 0.0f), Button::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
+, state{Default} {
     textures[Default] = new Texture(std::move(defTexture));
     textures[onHover] = new Texture(std::move(hoverTexture));
     textures[onClick] = new Texture(std::move(clickedTexture));
-    state = Default;
 
-    /* Sahder */
-    shader = ShaderProgram::from_source(load_shader("GUIVertex.glsl", "GUIFragment.glsl").value()).value();
+    shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl").value();
 
-    /* Buffer */
+    auto buffer = this->mesh.get_buffer().data();
     int i = 0;
     GUI_RECT(i, posX, posY, width, height, 1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -70,8 +60,8 @@ void Button::render() {
     shader.uniform_mat4("modelProj", glm::mat4(1.0f));
 
     /* Draw */
-    mesh->reload(buffer, 6);
-    mesh->draw(GL_TRIANGLES);
+    mesh.reload_buffer();
+    mesh.draw();
     text->render();
 }
 
@@ -111,6 +101,4 @@ void Button::cleanUp() {
     for (int i = 0; i < 3; i++) {
         delete textures[i];
     }
-    delete mesh;
-    delete[] buffer;
 }

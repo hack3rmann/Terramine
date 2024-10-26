@@ -5,7 +5,6 @@
 #include <string>
 
 #include "../graphics.hpp"
-#include "../Mesh.h"
 #include "GUIObject.h"
 #include "Text.h"
 
@@ -14,8 +13,9 @@ enum States { Default, onHover, onClick };
 class Button : public GUIObject {
     tmine::Texture* textures[3];
     std::function<void()> function;
-    Mesh* mesh;
-    float* buffer;
+    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
+        std::array<tmine::usize, 3>{2, 2, 4};
+    tmine::Mesh mesh;
     States state;
     tmine::ShaderProgram shader;
     float x, y, w, h;

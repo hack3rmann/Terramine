@@ -12,22 +12,21 @@
 #include "../loaders.hpp"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */
-#define TEXT_VERTEX(I, X, Y, T, S, R, G, B) \
-    buffer[I + 0] = X;                      \
-    buffer[I + 1] = Y;                      \
-    buffer[I + 2] = T;                      \
-    buffer[I + 3] = S;                      \
-    buffer[I + 4] = R;                      \
-    buffer[I + 5] = G;                      \
-    buffer[I + 6] = B;                      \
-    I += TEXT_VERTEX_SIZE;
-#define TEXT_QUAD(I, RX, RY, RW, RH, X, Y, W, H, R, G, B) \
-    TEXT_VERTEX(I, RX, RY + RH, X, Y, R, G, B);           \
-    TEXT_VERTEX(I, RX, RY, X, Y - H, R, G, B);            \
-    TEXT_VERTEX(I, RX + RW, RY, X + W, Y - H, R, G, B);   \
-    TEXT_VERTEX(I, RX, RY + RH, X, Y, R, G, B);           \
-    TEXT_VERTEX(I, RX + RW, RY + RH, X + W, Y, R, G, B);  \
-    TEXT_VERTEX(I, RX + RW, RY, X + W, Y - H, R, G, B);
+#define TEXT_VERTEX(I, X, Y, T, S, R, G, B)                              \
+    ({                                                                   \
+        auto const next_data =                                           \
+            std::array<f32, TEXT_VERTEX_SIZE>{X, Y, T, S, R, G, B};      \
+        buffer.insert(buffer.end(), next_data.begin(), next_data.end()); \
+    })
+#define TEXT_QUAD(I, RX, RY, RW, RH, X, Y, W, H, R, G, B)    \
+    ({                                                       \
+        TEXT_VERTEX(I, RX, RY + RH, X, Y, R, G, B);          \
+        TEXT_VERTEX(I, RX, RY, X, Y - H, R, G, B);           \
+        TEXT_VERTEX(I, RX + RW, RY, X + W, Y - H, R, G, B);  \
+        TEXT_VERTEX(I, RX, RY + RH, X, Y, R, G, B);          \
+        TEXT_VERTEX(I, RX + RW, RY + RH, X + W, Y, R, G, B); \
+        TEXT_VERTEX(I, RX + RW, RY, X + W, Y - H, R, G, B);  \
+    })
 
 using namespace tmine;
 
@@ -38,36 +37,37 @@ ShaderProgram Text::shader;
 
 void Text::init() {
     ParseFont(chars);
-    fontTex = Texture::from_image(load_png("assets/font.png").value(), TextureLoad::NO_MIPMAP_LINEAR);
-    shader = ShaderProgram::from_source(load_shader("textVertex.glsl", "textFragment.glsl").value()).value();
+    fontTex = Texture::from_image(
+        load_png("assets/font.png").value(), TextureLoad::NO_MIPMAP_LINEAR
+    );
+    shader = load_shader("textVertex.glsl", "textFragment.glsl").value();
 }
 
 Text::Text(std::string text, glm::vec2 position, float fontSize)
-    : text(text) {
+: text{std::move(text)}
+, mesh{{}, Text::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles} {
     /* init */
     float aspect = (float) Window::width / (float) Window::height;
     this->position = position;
     this->fontSize = fontSize;
-    int attrs[] = {2, 2, 3, 0};
-    buffer = new float[TEXT_VERTEX_SIZE * 6 * 256];
-    mesh = new Mesh(buffer, 0, attrs);
     proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
 
     /* Calculating length */
     float length = 0.0;
-    for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[(usize) text[i]];
+    for (unsigned int i = 0; i < this->text.size(); i++) {
+        auto& curr = chars.Chars[(usize) this->text[i]];
         float sizeW = chars.Width;
 
         length += (curr.XAdvance) / sizeW * fontSize;
     }
 
     cursorPointer = -length / 2.0f;
-    vertices = 0;
+
+    auto& buffer = this->mesh.get_buffer();
 
     /* Load all quads to array */
-    for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[(usize) text[i]];
+    for (unsigned int i = 0; i < this->text.size(); i++) {
+        auto& curr = chars.Chars[(usize) this->text[i]];
         float sizeW = chars.Width;
         float sizeH = chars.Height;
         float lh = chars.LineHeight;
@@ -79,7 +79,7 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
         float y = sizeH - curr.y;
 
         TEXT_QUAD(
-            vertices, cursorPointer,
+            n_vertices, cursorPointer,
             ((lh - curr.YOffset) - h - lh / 2.0f) / sizeH, rw / sizeW,
             rh / sizeH, x / sizeW, y / sizeH, w / sizeW, h / sizeH, 1.0f, 1.0f,
             1.0f
@@ -91,27 +91,23 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
 
 void Text::render() {
     if (Events::justPressed(GLFW_KEY_R)) {
-        shader = ShaderProgram::from_source(load_shader("textVertex.glsl", "textFragment.glsl").value()).value();
+        shader = load_shader("textVertex.glsl", "textFragment.glsl").value();
         reload();
     }
-    shader.bind();
 
-    /* Texture */
+    shader.bind();
     fontTex.bind();
 
-    /* Matrix init */
     float aspect = (float) Window::height / (float) Window::width;
     proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
     model = glm::translate(
         glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)
     );
 
-    /* Shader uniforms */
     shader.uniform_mat4("modelProj", model * proj);
 
-    /* Draw */
-    mesh->reload(buffer, vertices);
-    mesh->draw(GL_TRIANGLES);
+    mesh.reload_buffer();
+    mesh.draw();
 }
 
 void Text::reload() {
@@ -127,7 +123,7 @@ void Text::reload() {
     }
 
     cursorPointer = -length / 2.0f;
-    vertices = 0;
+    auto& buffer = this->mesh.get_buffer();
 
     for (unsigned int i = 0; i < text.size(); i++) {
         auto& curr = chars.Chars[(usize) text[i]];

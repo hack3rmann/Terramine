@@ -1,5 +1,6 @@
-#include "Skybox.h"
+#include <array>
 
+#include "Skybox.h"
 #include "../Window.h"
 #include "../loaders.hpp"
 
@@ -51,34 +52,26 @@
 
 using namespace tmine;
 
-Skybox::Skybox(char const* name) {
-    /* Init */
-    int attrs[] = {3, 2, 0};
-    texture = Texture::from_image(load_png(name).value(), TextureLoad::DEFAULT);
-    shader = ShaderProgram::from_source(load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl").value()).value();
-    buffer = new float[6 * 6 * SB_VERTEX_SIZE];
+Skybox::Skybox(char const* name)
+: shader{load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl").value()}
+, texture{Texture::from_image(load_png(name).value(), TextureLoad::DEFAULT)}
+, mesh{{}, Skybox::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles} {
+    auto& buffer = this->mesh.get_buffer();
+    buffer.resize(6 * 6 * SB_VERTEX_SIZE);
 
-    /* Load to buffer */
-    int I = 0;
-    SB_BOX(I);
-    index = I;
+    usize i = 0;
+    SB_BOX(i);
 
-    mesh = new Mesh(buffer, 36, attrs);
+    this->mesh.reload_buffer();
 }
 
 void Skybox::render(Camera const* cam) {
-    /* Texture */
     texture.bind();
-
-    /* Shader */
     shader.bind();
 
-    /* Shader uniforms */
     shader.uniform_mat4("projView", cam->getProjection() * cam->getView());
     shader.uniform_vec3("camPos", cam->position);
     shader.uniform_vec2("resolution", vec2(Window::width, Window::height));
 
-    /* Draw */
-    mesh->reload(buffer, 36);
-    mesh->draw(GL_TRIANGLES);
+    mesh.draw();
 }
