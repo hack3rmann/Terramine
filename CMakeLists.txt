@@ -31,7 +31,6 @@ add_executable(
   src/Player.cpp
   src/Window.cpp
   src/graphics/FrameBuffer.cpp
-  src/graphics/LineBatch.cpp
   src/graphics/MasterHandler.cpp
   src/graphics/SceneHandler.cpp
   src/graphics/shader.cpp
@@ -48,6 +47,7 @@ add_executable(
   src/loaders/shader.cpp
   src/loaders/string.cpp
   src/objects/skybox.cpp
+  src/objects/line_batch.cpp
   src/data/image.cpp
   src/Voxels/BlockStore.cpp
   src/Voxels/Chunk.cpp

@@ -6,8 +6,10 @@
 #include "EventHandler.h"
 #include "Window.h"
 
+using namespace tmine;
+
 Player::Player() {
-    lineBatch = new LineBatch(4096);
+    lineBatch = new LineBox();
     camX = camY = 0.0f;
     currentBlock = 1;
 }
@@ -27,7 +29,7 @@ void Player::updateTime() {
     lastTime = currTime;
 }
 
-void Player::update(Chunks* chunks, LineBatch* lineBatch) {
+void Player::update(Chunks* chunks, LineBox* lineBatch) {
     updateTime();
     if (Events::justPressed(GLFW_KEY_F)) {
         isSpeedUp = !isSpeedUp;
@@ -211,9 +213,7 @@ void Player::update(Chunks* chunks, LineBatch* lineBatch) {
         );
         if (vox != nullptr) {
             lineBatch->box(
-                iend.x + 0.5f, iend.y + 0.5f, iend.z + 0.5f, 1.001f, 1.001f,
-                1.001f, 60.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 0.5f
-            );
+                iend + 0.5f, glm::vec3(1.001f), glm::vec4(glm::vec3(60.0f / 255.0f), 0.5f));
 
             if (Events::justClicked(GLFW_MOUSE_BUTTON_1)) {
                 chunks->set((int) iend.x, (int) iend.y, (int) iend.z, 0);
