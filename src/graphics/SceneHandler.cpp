@@ -89,7 +89,7 @@ void SkyboxHandler::terminate() {
 }
 
 void SkyboxHandler::render(Camera const* cam) {
-    skyboxes[current]->render(cam);
+    skyboxes[current]->render(*cam);
 }
 
 /* Terrarian handler */
@@ -97,7 +97,9 @@ TerrarianHandler::TerrarianHandler() {
     terra = new Terrarian("assets/textureAtlas3.png");
 }
 
-void TerrarianHandler::reloadChunks([[maybe_unused]] Camera const* cam) { terra->reload(); }
+void TerrarianHandler::reloadChunks([[maybe_unused]] Camera const* cam) {
+    terra->reload();
+}
 
 void TerrarianHandler::terminate() { delete terra; }
 

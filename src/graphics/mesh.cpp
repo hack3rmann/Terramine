@@ -1,4 +1,5 @@
-#include <algorithm>
+#include <bits/stl_algo.h>
+#include <bits/ranges_algo.h>
 #include <ranges>
 
 #include "../graphics.hpp"

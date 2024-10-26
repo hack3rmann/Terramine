@@ -36,7 +36,6 @@ add_executable(
   src/graphics/SceneHandler.cpp
   src/graphics/shader.cpp
   src/graphics/mesh.cpp
-  src/graphics/Skybox.cpp
   src/graphics/texture.cpp
   src/graphics/VoxelRenderer.cpp
   src/GUI/Button.cpp
@@ -48,6 +47,7 @@ add_executable(
   src/loaders/png.cpp
   src/loaders/shader.cpp
   src/loaders/string.cpp
+  src/objects/skybox.cpp
   src/data/image.cpp
   src/Voxels/BlockStore.cpp
   src/Voxels/Chunk.cpp
