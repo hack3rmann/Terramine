@@ -36,7 +36,10 @@ int Window::init(int width, int height, char const* title) {
     glfwMakeContextCurrent(window);
 
     auto gl_version = gladLoadGL(glfwGetProcAddress);
-    std::printf("GL version %d.%d\n", GLAD_VERSION_MAJOR(gl_version), GLAD_VERSION_MINOR(gl_version));
+    std::printf(
+        "GL version %d.%d\n", GLAD_VERSION_MAJOR(gl_version),
+        GLAD_VERSION_MINOR(gl_version)
+    );
 
     glViewport(0, 0, width, height);
 

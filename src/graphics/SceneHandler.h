@@ -4,7 +4,7 @@
 #include "../Player.h"
 #include "../Voxels/Terrarian.h"
 #include "FrameBuffer.h"
-#include "Skybox.h"
+#include "../objects.hpp"
 
 class TerrarianHandler;
 class LineBatchHandler;
@@ -59,7 +59,7 @@ public:
 class SkyboxHandler {
     friend class SceneHandler;
 
-    Skybox* skyboxes[5];
+    tmine::Skybox* skyboxes[5];
     int current;
 
 public:
