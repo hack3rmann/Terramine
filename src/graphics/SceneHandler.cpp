@@ -11,7 +11,7 @@ using namespace tmine;
 SceneHandler::SceneHandler() {
     fb = new FrameBuffer("PPVertex.glsl", "PPFragment.glsl");
     plr = new Player(glfwGetTime(), -30.0f, vec3(0.0f));
-    lines = new LineBatchHandler();
+    lines = new LineBoxHandler();
     skybox = new SkyboxHandler();
     terrarian = new TerrarianHandler();
     shadowBuff = new FrameBuffer("PPVertex.glsl", "PPFragment.glsl");
@@ -127,12 +127,12 @@ void TerrarianHandler::refreshRes() {
 }
 
 /* LineBatch handler */
-LineBatchHandler::LineBatchHandler() { lineBatch = new LineBatch(4096); }
+LineBoxHandler::LineBoxHandler() { lineBatch = new LineBox(); }
 
-void LineBatchHandler::terminate() { delete lineBatch; }
+void LineBoxHandler::terminate() { delete lineBatch; }
 
-void LineBatchHandler::render(Camera const* cam) {
+void LineBoxHandler::render(Camera const* cam) {
     glEnable(GL_DEPTH_TEST);
-    lineBatch->render(cam);
+    lineBatch->render(*cam);
     glDisable(GL_DEPTH_TEST);
 }

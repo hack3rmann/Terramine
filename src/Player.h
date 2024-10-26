@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Camera.h"
-#include "graphics/LineBatch.h"
+#include "objects.hpp"
 #include "Voxels/Chunks.h"
 
 using namespace glm;
@@ -17,7 +17,7 @@ class Player {
     float camY;
 
 public:
-    LineBatch* lineBatch;
+    tmine::LineBox* lineBatch;
     Camera* cam;
     vec3 speed;
     int currentBlock;
@@ -25,6 +25,6 @@ public:
 
     Player();
     Player(float lastTime, float gravity, vec3 speed);
-    void update(Chunks* chunks, LineBatch* lineBatch);
+    void update(Chunks* chunks, tmine::LineBox* lineBatch);
     void updateTime();
 };

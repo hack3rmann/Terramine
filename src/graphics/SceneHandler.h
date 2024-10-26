@@ -7,7 +7,7 @@
 #include "../objects.hpp"
 
 class TerrarianHandler;
-class LineBatchHandler;
+class LineBoxHandler;
 class SkyboxHandler;
 
 class SceneHandler {
@@ -15,7 +15,7 @@ class SceneHandler {
 
     Player* plr;
     TerrarianHandler* terrarian;
-    LineBatchHandler* lines;
+    LineBoxHandler* lines;
     SkyboxHandler* skybox;
     FrameBuffer* fb;
     FrameBuffer* shadowBuff;
@@ -45,13 +45,13 @@ public:
     void renderShadows(Camera const* cam, FrameBuffer* shadowBuff);
 };
 
-class LineBatchHandler {
+class LineBoxHandler {
     friend class SceneHandler;
 
-    LineBatch* lineBatch;
+    tmine::LineBox* lineBatch;
 
 public:
-    LineBatchHandler();
+    LineBoxHandler();
     void terminate();
     void render(Camera const* cam);
 };
