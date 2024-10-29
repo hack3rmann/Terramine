@@ -49,7 +49,6 @@ add_executable(
   src/objects/skybox.cpp
   src/objects/line_batch.cpp
   src/terrain/chunk.cpp
-  src/data/image.cpp
   src/Voxels/BlockStore.cpp
   src/Voxels/Chunk.cpp
   src/Voxels/Chunks.cpp

@@ -99,8 +99,8 @@ auto Texture::from_image(Image const& image, TextureLoadFlags flags) noexcept
     auto const format = flags & TextureLoad::RGB ? GL_RGB : GL_RGBA;
 
     glTexImage2D(
-        GL_TEXTURE_2D, 0, format, image.get_width(), image.get_height(), 0,
-        format, GL_UNSIGNED_BYTE, image.get_data().data()
+        GL_TEXTURE_2D, 0, format, image.width, image.height, 0,
+        format, GL_UNSIGNED_BYTE, image.data.data()
     );
 
     if (flags & TextureLoad::NO_MIPMAP_LINEAR) {
@@ -121,5 +121,5 @@ auto Texture::from_image(Image const& image, TextureLoadFlags flags) noexcept
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    return Texture{id, image.get_width(), image.get_height()};
+    return Texture{id, image.width, image.height};
 }
