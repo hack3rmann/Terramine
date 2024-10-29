@@ -208,7 +208,7 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
         vec3 end;
         vec3 norm;
         vec3 iend;
-        voxel* vox = chunks->rayCast(
+        Voxel* vox = chunks->rayCast(
             cam->position, cam->frontCam, 10.0f, end, norm, iend
         );
         if (vox != nullptr) {

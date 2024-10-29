@@ -8,7 +8,7 @@
 using namespace glm;
 
 class Chunk;
-class voxel;
+class Voxel;
 
 class Chunks {
 public:
@@ -20,12 +20,12 @@ public:
     Chunks(int w, int h, int d);
     ~Chunks();
 
-    voxel* get(int x, int y, int z) const;
+    Voxel* get(int x, int y, int z) const;
     Chunk* getChunk(int x, int y, int z) const;
     void set(int x, int y, int z, int id);
-    voxel* rayCast(
+    Voxel* rayCast(
         vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend
     ) const;
-    voxel* rayCast(vec3 a, vec3 dir, float maxDist, vec3& norm) const;
-    voxel* rayCast(vec3 a, vec3 dir, float maxDist) const;
+    Voxel* rayCast(vec3 a, vec3 dir, float maxDist, vec3& norm) const;
+    Voxel* rayCast(vec3 a, vec3 dir, float maxDist) const;
 };

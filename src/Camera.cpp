@@ -3,13 +3,8 @@
 #include "Window.h"
 
 void Camera::updateVectors() {
-#ifdef COMFORT_CAM
     frontCam = vec3(rotation * vec4(0.0f, 0.0f, -1.0f, 1.0f));
     frontMove = normalize(vec3(frontCam.x, 0.0f, frontCam.z));
-#else
-    frontCam = vec3(rotation * vec4(0.0f, 0.0f, -1.0f, 1.0f));
-    frontMove = frontCam;
-#endif
     right = vec3(rotation * vec4(1.0f, 0.0f, 0.0f, 1.0f));
     up = vec3(0.0f, 1.0f, 0.0f);
 }

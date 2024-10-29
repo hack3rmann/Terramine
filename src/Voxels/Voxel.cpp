@@ -2,10 +2,10 @@
 
 #include "BlockStore.h"
 
-BlockStore voxel::blocks =
+BlockStore Voxel::blocks =
     BlockStore("assets/Blocks.json", "assets/BlockTextures.json");
 
-void voxel::setID(uint8_t id) {
+void Voxel::setID(uint8_t id) {
     if (id != 0) {
         *this = blocks[id - 1];
     } else {
@@ -13,22 +13,22 @@ void voxel::setID(uint8_t id) {
     }
 }
 
-voxel::voxel(
+Voxel::Voxel(
     bool isTransparent, uint8_t id, uint8_t TopTexId, uint8_t BottomTexId,
     uint8_t LeftTexId, uint8_t RightTexId, uint8_t FrontTexId, uint8_t BackTexId
 )
-    : isTransparent(isTransparent)
-    , id(id)
-    , TopTexId(TopTexId)
-    , BottomTexId(BottomTexId)
-    , LeftTexId(LeftTexId)
-    , RightTexId(RightTexId)
-    , FrontTexId(FrontTexId)
-    , BackTexId(BackTexId) {}
+: isTransparent(isTransparent)
+, id(id)
+, TopTexId(TopTexId)
+, BottomTexId(BottomTexId)
+, LeftTexId(LeftTexId)
+, RightTexId(RightTexId)
+, FrontTexId(FrontTexId)
+, BackTexId(BackTexId) {}
 
-voxel::voxel() {}
+Voxel::Voxel() {}
 
-voxel::voxel(Block const& block) {
+Voxel::Voxel(Block const& block) {
     isTransparent = block.isTransparent;
     BottomTexId = block.BottomTexId;
     RightTexId = block.RightTexId;

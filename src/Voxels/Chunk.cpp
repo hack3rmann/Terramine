@@ -11,7 +11,7 @@ Chunk::Chunk(int xpos, int ypos, int zpos)
     : x(xpos)
     , y(ypos)
     , z(zpos) {
-    voxels = new voxel[CHUNK_VOL];
+    voxels = new Voxel[CHUNK_VOL];
     for (int z = 0; z < CHUNK_D; z++) {
         for (int x = 0; x < CHUNK_W; x++) {
             int real_x = x + this->x * CHUNK_W;
