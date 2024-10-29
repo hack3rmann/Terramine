@@ -45,7 +45,7 @@ Mesh VoxelRenderer::render(
     for (int y = 0; y < CHUNK_H; y++) {
         for (int z = 0; z < CHUNK_D; z++) {
             for (int x = 0; x < CHUNK_W; x++) {
-                voxel vox = chunk->voxels[(y * CHUNK_D + z) * CHUNK_W + x];
+                Voxel vox = chunk->voxels[(y * CHUNK_D + z) * CHUNK_W + x];
                 bool tr = vox.isTransparent;
                 unsigned int id = vox.id;
                 unsigned int tid = vox.TopTexId;

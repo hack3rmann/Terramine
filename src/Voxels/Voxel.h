@@ -7,7 +7,7 @@
 struct Block;
 class BlockStore;
 
-class voxel {
+class Voxel {
 public:
     static BlockStore blocks;
     bool isTransparent;
@@ -20,11 +20,11 @@ public:
     uint8_t FrontTexId;
     uint8_t BackTexId;
     void setID(uint8_t id);
-    voxel();
-    voxel(
+    Voxel();
+    Voxel(
         bool isTransparent, uint8_t id, uint8_t TopTexId, uint8_t BottomTexId,
         uint8_t LeftTexId, uint8_t RightTexId, uint8_t FrontTexId,
         uint8_t BackTexId
     );
-    voxel(Block const& block);
+    Voxel(Block const& block);
 };

@@ -58,11 +58,7 @@ Terrarian::Terrarian(char const* textureAtlas) {
         fprintf(stderr, "Can not load texture in %s, %d\n", __FILE__, __LINE__);
         delete textureAtlas;
     }
-    shader = ShaderProgram::from_source(
-                 load_shader_source("vertexShader.glsl", "fragmentShader.glsl")
-                     .value()
-    )
-                 .value();
+    shader = load_shader("vertexShader.glsl", "fragmentShader.glsl").value();
 
     chunks = new Chunks(8, 8, 8);
 

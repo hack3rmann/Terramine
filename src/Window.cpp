@@ -47,7 +47,6 @@ int Window::init(int width, int height, char const* title) {
 }
 
 void Window::terminate() {
-    // delete window;
     glfwTerminate();
 }
 

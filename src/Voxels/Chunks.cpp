@@ -8,9 +8,9 @@
 using namespace tmine;
 
 Chunks::Chunks(int w, int h, int d)
-    : w(w)
-    , h(h)
-    , d(d) {
+: w(w)
+, h(h)
+, d(d) {
     volume = w * h * d;
     chunks = new Chunk*[volume];
 
@@ -32,7 +32,7 @@ Chunks::~Chunks() {
     delete[] chunks;
 }
 
-voxel* Chunks::get(int x, int y, int z) const {
+Voxel* Chunks::get(int x, int y, int z) const {
     int cx = x / CHUNK_W;
     int cy = y / CHUNK_H;
     int cz = z / CHUNK_D;
@@ -45,7 +45,9 @@ voxel* Chunks::get(int x, int y, int z) const {
     if (z < 0) {
         cz--;
     }
-    if (cx < 0 || cy < 0 || cz < 0 || cx >= (int) w || cy >= (int) h || cz >= (int) d) {
+    if (cx < 0 || cy < 0 || cz < 0 || cx >= (int) w || cy >= (int) h ||
+        cz >= (int) d)
+    {
         return nullptr;
     }
     // Chunk* chunk = ;
@@ -57,7 +59,8 @@ voxel* Chunks::get(int x, int y, int z) const {
 }
 
 Chunk* Chunks::getChunk(int x, int y, int z) const {
-    if (x < 0 || y < 0 || z < 0 || x >= (int) w || y >= (int) h || z >= (int) d) {
+    if (x < 0 || y < 0 || z < 0 || x >= (int) w || y >= (int) h || z >= (int) d)
+    {
         return nullptr;
     }
     return chunks[(y * d + z) * w + x];
@@ -76,7 +79,9 @@ void Chunks::set(int x, int y, int z, int id) {
     if (z < 0) {
         cz--;
     }
-    if (cx < 0 || cy < 0 || cz < 0 || cx >= (int) w || cy >= (int) h || cz >= (int) d) {
+    if (cx < 0 || cy < 0 || cz < 0 || cx >= (int) w || cy >= (int) h ||
+        cz >= (int) d)
+    {
         return;
     }
     Chunk* chunk = chunks[(cy * d + cz) * w + cx];
@@ -107,7 +112,7 @@ void Chunks::set(int x, int y, int z, int id) {
     }
 }
 
-voxel* Chunks::rayCast(
+Voxel* Chunks::rayCast(
     vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend
 ) const {
     float px = a.x;
@@ -144,7 +149,7 @@ voxel* Chunks::rayCast(
     int steppedIndex = -1;
 
     while (t <= maxDist) {
-        voxel* voxel = get(ix, iy, iz);
+        Voxel* voxel = get(ix, iy, iz);
         if (voxel == nullptr || voxel->id) {
             end.x = px + t * dx;
             end.y = py + t * dy;
@@ -203,7 +208,7 @@ voxel* Chunks::rayCast(
     return nullptr;
 }
 
-voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist) const {
+Voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist) const {
     float px = a.x;
     float py = a.y;
     float pz = a.z;
@@ -236,7 +241,7 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist) const {
     float tzMax = (tzDelta < infinity) ? tzDelta * zdist : infinity;
 
     while (t <= maxDist) {
-        voxel* voxel = get(ix, iy, iz);
+        Voxel* voxel = get(ix, iy, iz);
         if (voxel == nullptr || voxel->id) {
             // end.x = px + t * dx;
             // end.y = py + t * dy;
@@ -285,7 +290,7 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist) const {
     return nullptr;
 }
 
-voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& norm) const {
+Voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& norm) const {
     float px = a.x;
     float py = a.y;
     float pz = a.z;
@@ -320,7 +325,7 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& norm) const {
     int steppedIndex = -1;
 
     while (t <= maxDist) {
-        voxel* voxel = get(ix, iy, iz);
+        Voxel* voxel = get(ix, iy, iz);
         if (voxel == nullptr || voxel->id) {
             norm.x = norm.y = norm.z = 0.0f;
             if (steppedIndex == 0) {

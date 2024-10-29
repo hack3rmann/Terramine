@@ -5,12 +5,12 @@
 #define CHUNK_D 8
 #define CHUNK_VOL (CHUNK_W * CHUNK_H * CHUNK_D)
 
-class voxel;
+class Voxel;
 
 class Chunk {
 public:
     int x, y, z;
-    voxel* voxels;
+    Voxel* voxels;
     bool modified = true;
     Chunk(int x, int y, int z);
     ~Chunk();
