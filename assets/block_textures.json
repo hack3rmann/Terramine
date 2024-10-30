@@ -1,0 +1,46 @@
+[
+    {
+        "name": "grass_top",
+        "id": 1
+    },
+    {
+        "name": "grass_side",
+        "id": 2
+    },
+    {
+        "name": "dirt",
+        "id": 3
+    },
+    {
+        "name": "stone",
+        "id": 4
+    },
+    {
+        "name": "cobblestone",
+        "id": 5
+    },
+    {
+        "name": "oak_log_top",
+        "id": 6
+    },
+    {
+        "name": "oak_log_sides_verticall",
+        "id": 7
+    },
+    {
+        "name": "oak_log_sides_horizontall",
+        "id": 8
+    },
+    {
+        "name": "oak_planks",
+        "id": 9
+    },
+    {
+        "name": "oak_leaves",
+        "id": 10
+    },
+    {
+        "name": "translucent_white",
+        "id": 11
+    }
+]

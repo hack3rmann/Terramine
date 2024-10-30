@@ -45,6 +45,7 @@ add_executable(
   src/loaders/png.cpp
   src/loaders/shader.cpp
   src/loaders/string.cpp
+  src/loaders/game_objects.cpp
   src/objects/skybox.cpp
   src/objects/line_batch.cpp
   src/terrain/chunk.cpp

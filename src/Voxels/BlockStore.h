@@ -16,6 +16,8 @@ public:
     Block* blockTypes;
     BlockTexture* textures;
 
+    BlockStore() = default;
+
     BlockStore(
         std::string const& BlockFile, std::string const& BlockTextureFile
     );

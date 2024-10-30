@@ -5,10 +5,9 @@
 #include <glm/glm.hpp>
 
 #include "types.hpp"
+#include "data.hpp"
 
 namespace tmine {
-
-using VoxelId = u8;
 
 class Chunk {
 public:

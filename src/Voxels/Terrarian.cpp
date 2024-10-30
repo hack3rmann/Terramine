@@ -60,7 +60,7 @@ Terrarian::Terrarian(char const* textureAtlas) {
     }
     shader = load_shader("vertexShader.glsl", "fragmentShader.glsl").value();
 
-    chunks = new Chunks(8, 8, 8);
+    chunks = new Chunks(16, 4, 16);
 
     toLightVec = vec3(-0.2f, 0.5f, -1.0f);
 
