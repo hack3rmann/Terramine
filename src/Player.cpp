@@ -3,8 +3,8 @@
 #include <GLFW/glfw3.h>
 
 #include "Voxels/Voxel.h"
-#include "EventHandler.h"
 #include "Window.h"
+#include "events.hpp"
 
 using namespace tmine;
 
@@ -31,26 +31,28 @@ void Player::updateTime() {
 
 void Player::update(Chunks* chunks, LineBox* lineBatch) {
     updateTime();
-    if (Events::justPressed(GLFW_KEY_F)) {
+    if (io.just_pressed(Key::F)) {
         isSpeedUp = !isSpeedUp;
     }
 
-    for (unsigned int i = 0; i < 9; i++) {
-        if (Events::justPressed(GLFW_KEY_1 + i)) {
+    for (u32 i = 0; i < 9; i++) {
+        auto key = Key{(u32) Key::Key1 + i};
+
+        if (io.just_pressed(key)) {
             currentBlock = i + 1;
         }
     }
-    if (Events::justPressed(GLFW_KEY_0)) {
+    if (io.just_pressed(Key::Key0)) {
         currentBlock = 10;
     }
-    if (Events::justPressed(GLFW_KEY_MINUS)) {
+    if (io.just_pressed(Key::Minus)) {
         currentBlock = 11;
     }
 
     float speedFactor = 2.0f;
 
     /* Movement */
-    if (Events::isPressed(GLFW_KEY_W) &&
+    if (io.is_pressed(Key::W) &&
         chunks->rayCast(
             vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
             cam->frontMove, 0.3f
@@ -67,7 +69,7 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
     {
         speed.y = 8.5f;
     }
-    if (Events::isPressed(GLFW_KEY_W)) {
+    if (io.is_pressed(Key::W)) {
         vec3 norm;
         if (chunks->rayCast(cam->position, cam->frontMove, 0.3f, norm) ==
                 nullptr &&
@@ -96,7 +98,7 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
             }
         }
     }
-    if (Events::isPressed(GLFW_KEY_S)) {
+    if (io.is_pressed(Key::S)) {
         vec3 norm;
         if (chunks->rayCast(cam->position, -cam->frontMove, 0.3f, norm) ==
                 nullptr &&
@@ -116,7 +118,7 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
                      length(dir) * speedFactor;
         }
     }
-    if (Events::isPressed(GLFW_KEY_A)) {
+    if (io.is_pressed(Key::A)) {
         vec3 norm;
         if (chunks->rayCast(cam->position, -cam->right, 0.3f, norm) ==
                 nullptr &&
@@ -136,7 +138,7 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
                      speedFactor;
         }
     }
-    if (Events::isPressed(GLFW_KEY_D)) {
+    if (io.is_pressed(Key::D)) {
         vec3 norm;
         if (chunks->rayCast(cam->position, cam->right, 0.3f, norm) == nullptr &&
             chunks->rayCast(
@@ -155,11 +157,11 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
                      speedFactor;
         }
     }
-    if (Events::isPressed(GLFW_KEY_LEFT_SHIFT)) {
+    if (io.is_pressed(Key::LeftShift)) {
         if (chunks->rayCast(cam->position, -cam->up, 2.6f) == nullptr)
             ;
     }
-    if (Events::isPressed(GLFW_KEY_SPACE)) {
+    if (io.is_pressed(Key::Space)) {
         if (chunks->rayCast(cam->position, -cam->up, 2.6f) != nullptr) {
             speed.y = 20.0f;
         }
@@ -184,7 +186,7 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
         speed.y = -speed.y * 0.5;
     }
 
-    if (Events::isPressed(GLFW_KEY_P)) {
+    if (io.is_pressed(Key::P)) {
         cam->position = vec3(2.0f, 70.0f, 2.0f);
         speed = vec3(0.0f);
     }
@@ -193,8 +195,8 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
     speed.x = 0.0f;
     speed.z = 0.0f;
 
-    camX -= Events::dy / Window::height * 2.f;
-    camY -= Events::dx / Window::width * 2.f;
+    camX -= io.get_mouse_delta().y / Window::height * 2.f;
+    camY -= io.get_mouse_delta().x / Window::width * 2.f;
     cam->rotation = mat4(1.0f);
     if (camX > radians(89.9f)) {
         camX = radians(89.9f);
@@ -215,10 +217,11 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
             lineBatch->box(
                 iend + 0.5f, glm::vec3(1.001f), glm::vec4(glm::vec3(60.0f / 255.0f), 0.5f));
 
-            if (Events::justClicked(GLFW_MOUSE_BUTTON_1)) {
+            if (io.just_clicked(MouseButton::Left)) {
                 chunks->set((int) iend.x, (int) iend.y, (int) iend.z, 0);
             }
-            if (Events::justClicked(GLFW_MOUSE_BUTTON_2)) {
+
+            if (io.just_clicked(MouseButton::Right)) {
                 chunks->set(
                     (int) iend.x + (int) norm.x, (int) iend.y + (int) norm.y,
                     (int) iend.z + (int) norm.z, currentBlock

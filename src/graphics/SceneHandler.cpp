@@ -2,8 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
-#include "../EventHandler.h"
 #include "../Window.h"
+#include "../events.hpp"
 
 using namespace tmine;
 
@@ -48,7 +48,7 @@ void SceneHandler::render() {
         Window::viewPortChange = !Window::viewPortChange;
     }
 
-    if (Events::justPressed(GLFW_KEY_R)) {
+    if (io.just_pressed(Key::R)) {
         terrarian->refreshRes();
         fb->refreshShader();
     }

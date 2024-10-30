@@ -3,10 +3,10 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 
-#include "../EventHandler.h"
 #include "../Window.h"
 #include "GUI.h"
 #include "Text.h"
+#include "../events.hpp"
 #include "../loaders.hpp"
 
 using namespace tmine;
@@ -69,14 +69,14 @@ void Button::refreshState() {
     float mouseX, mouseY;
 
     /* Window coords to OpenGL coords */
-    mouseX = (Events::x / Window::width - 0.5f) * 2.0f;
-    mouseY = -(Events::y / Window::height - 0.5f) * 2.0f;
+    mouseX = (io.get_mouse_pos().x / Window::width - 0.5f) * 2.0f;
+    mouseY = -(io.get_mouse_pos().y / Window::height - 0.5f) * 2.0f;
 
     /* If mouse inside AABB */
     if (mouseX >= x - w / 2 && mouseX <= x + w / 2 && mouseY >= y - h / 2 &&
         mouseY <= y + h / 2)
     {
-        if (Events::isClicked(GLFW_MOUSE_BUTTON_1)) {
+        if (io.is_clicked(MouseButton::Left)) {
             state = onClick;
         } else {
             if (state == onClick) {

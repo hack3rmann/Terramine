@@ -3,9 +3,8 @@
 struct GLFWwindow;
 
 class Window {
-    static GLFWwindow* window;
-
 public:
+    static GLFWwindow* glfw_window;
     static int width;
     static int height;
     static bool viewPortChange;
@@ -16,6 +15,5 @@ public:
     static void setShouldClose(bool flag);
     static void swapBuffers();
     static void setCursorMode(int mode);
-
-    friend class Events;
+    static void pollEvents();
 };
