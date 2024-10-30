@@ -2,9 +2,9 @@
 
 #include "../graphics.hpp"
 #include "../Window.h"
-#include "../EventHandler.h"
 
 #include "../loaders.hpp"
+#include "../events.hpp"
 
 using namespace tmine;
 
@@ -57,7 +57,7 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
         0.0f, 0.2f, 1.0f, 0.3f, bDef, bHover, bClicked, "Return",
         [&]() {
             this->current = nothing;
-            Events::toggleCursor();
+            io.toggle_cursor_visibility();
         }
     );
     GUIs[pauseMenu]->addButton(

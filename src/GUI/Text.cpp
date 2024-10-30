@@ -6,10 +6,10 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 
-#include "../EventHandler.h"
 #include "../Window.h"
 #include "../types.hpp"
 #include "../loaders.hpp"
+#include "../events.hpp"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */
 #define TEXT_VERTEX(I, X, Y, T, S, R, G, B)                              \
@@ -90,7 +90,7 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
 }
 
 void Text::render() {
-    if (Events::justPressed(GLFW_KEY_R)) {
+    if (io.just_pressed(Key::R)) {
         shader = load_shader("textVertex.glsl", "textFragment.glsl").value();
         reload();
     }

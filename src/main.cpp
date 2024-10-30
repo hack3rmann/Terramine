@@ -5,11 +5,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "EventHandler.h"
 #include "GUI/Text.h"
 #include "graphics/MasterHandler.h"
 #include "Window.h"
 
+#include "events.hpp"
 #include "types.hpp"
 
 using namespace tmine;
@@ -26,7 +26,7 @@ auto main() -> int {
         return -1;
     }
 
-    Events::init();
+    Input::set_io_callbacks(Window::glfw_window);
     Text::init();
     MasterHandler::init();
 
@@ -37,24 +37,24 @@ auto main() -> int {
     glLineWidth(2.0f);
 
     while (!Window::isClosed()) {
-        if (Events::justPressed(GLFW_KEY_T)) {
-            Events::toggleCursor();
+        if (io.just_pressed(Key::T)) {
+            io.toggle_cursor_visibility();
         }
 
-        if (Events::justPressed(GLFW_KEY_ESCAPE)) {
+        if (io.just_pressed(Key::Escape)) {
             MasterHandler::gui->current = pauseMenu;
-            Events::toggleCursor();
+            io.toggle_cursor_visibility();
         }
 
         MasterHandler::updateAll();
         MasterHandler::render();
 
+        io.update();
         Window::swapBuffers();
-        Events::pullEvents();
+        Window::pollEvents();
     }
 
     MasterHandler::terminate();
-    Events::terminate();
     Window::terminate();
 
     return 0;

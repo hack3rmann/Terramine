@@ -27,7 +27,6 @@ add_executable(
   ${DEPS_DIR}/glad/src/gl.c
   src/main.cpp
   src/Camera.cpp
-  src/EventHandler.cpp
   src/Player.cpp
   src/Window.cpp
   src/graphics/FrameBuffer.cpp
@@ -53,7 +52,8 @@ add_executable(
   src/Voxels/Chunk.cpp
   src/Voxels/Chunks.cpp
   src/Voxels/Terrarian.cpp
-  src/Voxels/Voxel.cpp)
+  src/Voxels/Voxel.cpp
+  src/events/io.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/include)
 

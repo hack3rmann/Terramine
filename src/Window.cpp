@@ -6,11 +6,24 @@
 #include <iostream>
 #include <cstdio>
 
-GLFWwindow* Window::window;
+#include "types.hpp"
+
+using namespace tmine;
+
+GLFWwindow* Window::glfw_window;
 int Window::width = 0;
 int Window::height = 0;
 bool Window::viewPortChange = true;
 bool Window::isHidden = false;
+
+static void window_size_callback(
+    [[maybe_unused]] GLFWwindow* window, i32 width, i32 height
+) {
+    glViewport(0, 0, width, height);
+    Window::width = width;
+    Window::height = height;
+    Window::viewPortChange = true;
+}
 
 int Window::init(int width, int height, char const* title) {
     if (!glfwInit()) {
@@ -25,15 +38,15 @@ int Window::init(int width, int height, char const* title) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-    window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    glfw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
-    if (!window) {
+    if (!glfw_window) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(glfw_window);
 
     auto gl_version = gladLoadGL(glfwGetProcAddress);
     std::printf(
@@ -42,6 +55,7 @@ int Window::init(int width, int height, char const* title) {
     );
 
     glViewport(0, 0, width, height);
+    glfwSetWindowSizeCallback(glfw_window, window_size_callback);
 
     return 0;
 }
@@ -50,14 +64,18 @@ void Window::terminate() {
     glfwTerminate();
 }
 
-bool Window::isClosed() { return glfwWindowShouldClose(window); }
+bool Window::isClosed() { return glfwWindowShouldClose(glfw_window); }
 
 void Window::setShouldClose(bool flag) {
-    glfwSetWindowShouldClose(window, flag);
+    glfwSetWindowShouldClose(glfw_window, flag);
 }
 
-void Window::swapBuffers() { glfwSwapBuffers(window); }
+void Window::swapBuffers() { glfwSwapBuffers(glfw_window); }
+
+void Window::pollEvents() {
+    glfwPollEvents();
+}
 
 void Window::setCursorMode(int mode) {
-    glfwSetInputMode(window, GLFW_CURSOR, mode);
+    glfwSetInputMode(glfw_window, GLFW_CURSOR, mode);
 }
