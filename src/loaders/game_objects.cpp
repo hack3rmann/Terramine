@@ -1,11 +1,13 @@
 #include <print>
 #include <cstring>
+#include <ranges>
 #include <rapidjson/document.h>
 #include "../loaders.hpp"
 
 namespace tmine {
 
 namespace rj = rapidjson;
+namespace vs = std::ranges::views;
 
 auto load_game_blocks(
     char const* path,
@@ -34,9 +36,10 @@ auto load_game_blocks(
     }
 
     auto result = std::vector<GameBlock>{};
-    result.reserve(document.Size());
+    result.reserve(document.Size() + 1);
+    result.emplace_back("air");
 
-    for (auto const& entry : document.GetArray()) {
+    for (auto [i, entry] : document.GetArray() | vs::enumerate) {
         if (!entry.IsObject()) {
             std::println(
                 stderr,
@@ -226,6 +229,16 @@ auto load_game_blocks(
             return std::nullopt;
         }
 
+        if (voxel_id.value() != i + 1) {
+            std::println(
+                stderr,
+                "voxel ids should be the same as their order in the list in "
+                "'{}'",
+                path
+            );
+            return std::nullopt;
+        }
+
         if (!top_texture_id.has_value() || !bottom_texture_id.has_value() ||
             !left_texture_id.has_value() || !right_texture_id.has_value() ||
             !front_texture_id.has_value() || !back_texture_id.has_value())
@@ -269,8 +282,10 @@ auto load_game_block_textures(char const* path) -> std::optional<
     }
 
     auto result = std::unordered_map<std::string, GameBlockTextureIdentifier>{};
+    result.reserve(document.Size() + 1);
+    result.insert({"air", {.name = "air", .id = 0}});
 
-    for (auto const& entry : document.GetArray()) {
+    for (auto [i, entry] : document.GetArray() | vs::enumerate) {
         if (!entry.IsObject()) {
             std::println(
                 stderr, "array elements should be objects in '{}'", path
@@ -337,6 +352,15 @@ auto load_game_block_textures(char const* path) -> std::optional<
             return std::nullopt;
         }
 
+        if (id.value() != i + 1) {
+            std::println(
+                "texture ids should be the same as their order in the list in "
+                "'{}'",
+                path
+            );
+            return std::nullopt;
+        }
+
         auto key = std::string{name.value()};
 
         result.insert(
@@ -350,5 +374,35 @@ auto load_game_block_textures(char const* path) -> std::optional<
     return result;
 }
 
+auto load_game_blocks_data(
+    char const* game_blocks_path, char const* game_block_textures_path
+) -> std::optional<GameBlocksData> {
+    auto maybe_textures = load_game_block_textures(game_block_textures_path);
+
+    if (!maybe_textures.has_value()) {
+        return std::nullopt;
+    }
+
+    auto textures = std::move(maybe_textures).value();
+
+    auto maybe_blocks = load_game_blocks(game_blocks_path, textures);
+
+    if (!maybe_blocks.has_value()) {
+        return std::nullopt;
+    }
+
+    auto blocks = std::move(maybe_blocks).value();
+
+    auto textures_inline =
+        std::vector<GameBlockTextureIdentifier>(textures.size());
+
+    for (auto&& [name, data] : std::move(textures)) {
+        textures_inline[data.id] = std::move(data);
+    }
+
+    return GameBlocksData{
+        .blocks = std::move(blocks), .textures = std::move(textures_inline)
+    };
+}
 
 }  // namespace tmine

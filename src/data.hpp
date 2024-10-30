@@ -26,18 +26,26 @@ using TextureId = u8;
 using BlockMeta = u8;
 
 struct GameBlock {
-    static auto constexpr TOP_TEXUTE_ID = usize{0};
-    static auto constexpr BOTTOM_TEXURE_ID = usize{1};
-    static auto constexpr LEFT_TEXTURE_ID = usize{2};
-    static auto constexpr RIGHT_TEXURE_ID = usize{3};
-    static auto constexpr FRONT_TEXTUE_ID = usize{4};
-    static auto constexpr BACK_TEXTURE_ID = usize{5};
+    static auto constexpr TOP_TEXTURE_INDEX = usize{0};
+    static auto constexpr BOTTOM_TEXTURE_INDEX = usize{1};
+    static auto constexpr LEFT_TEXTURE_INDEX = usize{2};
+    static auto constexpr RIGHT_TEXTURE_INDEX = usize{3};
+    static auto constexpr FRONT_TEXTURE_INDEX = usize{4};
+    static auto constexpr BACK_TEXTURE_INDEX = usize{5};
     static auto constexpr N_TEXTURES = usize{6};
     static auto constexpr META_TRANSLUCENT = BlockMeta{0b10000000};
-    static auto constexpr META_VERIATION = BlockMeta{0b01111111};
+    static auto constexpr META_VARIATION = BlockMeta{0b01111111};
 
     inline static auto meta_of(bool is_translucent, u8 variation) noexcept -> BlockMeta {
         return variation | ((BlockMeta) is_translucent << 7);
+    }
+
+    inline auto get_variation(this GameBlock const& self) noexcept -> u8 {
+        return self.meta & GameBlock::META_VARIATION;
+    }
+
+    inline auto is_translucent(this GameBlock const& self) noexcept -> bool {
+        return 0 != (self.meta & GameBlock::META_TRANSLUCENT);
     }
 
     std::string name;
@@ -49,6 +57,11 @@ struct GameBlock {
 struct GameBlockTextureIdentifier {
     std::string name;
     TextureId id;
+};
+
+struct GameBlocksData {
+    std::vector<GameBlock> blocks;
+    std::vector<GameBlockTextureIdentifier> textures;
 };
 
 }  // namespace tmine

@@ -34,4 +34,9 @@ auto load_game_blocks(
 auto load_game_block_textures(char const* path
 ) -> std::optional<std::unordered_map<std::string, GameBlockTextureIdentifier>>;
 
+auto load_game_blocks_data(
+    char const* game_blocks_path,
+    char const* game_block_textures_path
+) -> std::optional<GameBlocksData>;
+
 }  // namespace tmine
