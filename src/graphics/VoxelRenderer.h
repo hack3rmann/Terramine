@@ -15,5 +15,4 @@ public:
     tmine::Mesh render(
         Chunk* chunk, Chunk const** chunks, bool AmbientOcclusion
     );
-    void loadToCache();
 };

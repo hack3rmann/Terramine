@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "types.hpp"
+#include "graphics.hpp"
 #include "data.hpp"
 
 namespace tmine {
@@ -75,5 +76,21 @@ private:
 };
 
 auto height_map_at(glm::uvec2 pos) -> f32;
+
+class TerrainRenderer {
+public:
+    explicit TerrainRenderer(GameBlocksData data) noexcept;
+
+    auto render(
+        this TerrainRenderer const& self, ChunkArray const& chunks,
+        glm::uvec3 pos, Mesh* result_mesh
+    ) -> void;
+
+public:
+    static auto constexpr DO_AMBIENT_OCCLUSION = true;
+
+private:
+    GameBlocksData data;
+};
 
 }  // namespace tmine
