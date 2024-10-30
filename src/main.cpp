@@ -4,6 +4,7 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <print>
 
 #include "GUI/Text.h"
 #include "graphics/MasterHandler.h"
@@ -11,6 +12,7 @@
 
 #include "events.hpp"
 #include "types.hpp"
+#include "loaders.hpp"
 
 using namespace tmine;
 
@@ -18,6 +20,22 @@ static usize constexpr INITIAL_WINDOW_WIDTH = 640;
 static usize constexpr INITIAL_WINDOW_HEIGHT = 480;
 
 auto main() -> int {
+    auto const textures =
+        load_game_block_textures("assets/block_textures.json").value();
+    auto const blocks =
+        load_game_blocks("assets/blocks.json", textures).value();
+
+    for (auto const& block : blocks) {
+        std::println(
+            "NAME={}, ID={}, META={}, [{}, {}, {}, {}, {}, {}]", block.name,
+            block.voxel_id, block.meta, block.texture_ids[0],
+            block.texture_ids[1], block.texture_ids[2], block.texture_ids[3],
+            block.texture_ids[4], block.texture_ids[5]
+        );
+    }
+
+    return 0;
+
     if (Window::init(
             INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "Terramine"
         ) != 0)
@@ -56,6 +74,4 @@ auto main() -> int {
 
     MasterHandler::terminate();
     Window::terminate();
-
-    return 0;
 }

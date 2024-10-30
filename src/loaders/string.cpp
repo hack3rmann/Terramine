@@ -8,12 +8,12 @@ namespace tmine {
 
 int constexpr FSEEK_FAILURE = -1;
 
-auto read_to_string(std::filesystem::path path) -> std::optional<std::string> {
-    auto const file = std::fopen(path.c_str(), "r");
+auto read_to_string(char const* path) -> std::optional<std::string> {
+    auto const file = std::fopen(path, "r");
 
     if (nullptr == file) {
         std::fprintf(
-            stderr, "failed to open file '%s': %s\n", path.c_str(),
+            stderr, "failed to open file '%s': %s\n", path,
             std::strerror(errno)
         );
 
@@ -22,7 +22,7 @@ auto read_to_string(std::filesystem::path path) -> std::optional<std::string> {
 
     if (FSEEK_FAILURE == std::fseek(file, 0, SEEK_END)) {
         std::fprintf(
-            stderr, "failed to seek in file '%s': %s\n", path.c_str(),
+            stderr, "failed to seek in file '%s': %s\n", path,
             std::strerror(errno)
         );
 
@@ -36,7 +36,7 @@ auto read_to_string(std::filesystem::path path) -> std::optional<std::string> {
     if (file_size < 0) {
         std::fprintf(
             stderr, "failed to find out the size of file '%s': %s\n",
-            path.c_str(), std::strerror(errno)
+            path, std::strerror(errno)
         );
 
         std::fclose(file);
@@ -46,7 +46,7 @@ auto read_to_string(std::filesystem::path path) -> std::optional<std::string> {
 
     if (FSEEK_FAILURE == std::fseek(file, 0, SEEK_SET)) {
         std::fprintf(
-            stderr, "failed to seek in file '%s': %s\n", path.c_str(),
+            stderr, "failed to seek in file '%s': %s\n", path,
             std::strerror(errno)
         );
 
@@ -60,7 +60,7 @@ auto read_to_string(std::filesystem::path path) -> std::optional<std::string> {
     if (result.size() !=
         std::fread(result.data(), sizeof(result[0]), result.size(), file))
     {
-        std::fprintf(stderr, "failed to read from file '%s'\n", path.c_str());
+        std::fprintf(stderr, "failed to read from file '%s'\n", path);
 
         std::fclose(file);
 

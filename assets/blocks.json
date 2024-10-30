@@ -1,0 +1,75 @@
+[
+    {
+        "name": "grass",
+        "id": 1,
+        "texture": {
+            "top": "grass_top",
+            "sides": "grass_side",
+            "bottom": "dirt"
+        }
+    },
+    {
+        "name": "dirt",
+        "id": 2,
+        "texture": "dirt"
+    },
+    {
+        "name": "stone",
+        "id": 3,
+        "texture": "stone"
+    },
+    {
+        "name": "cobblestone",
+        "id": 4,
+        "texture": "cobblestone"
+    },
+    {
+        "name": "oak_log",
+        "id": 5,
+        "texture": {
+            "top": "oak_log_top",
+            "sides": "oak_log_sides_verticall",
+            "bottom": "oak_log_top"
+        }
+    },
+    {
+        "name": "oak_log_east",
+        "id": 6,
+        "texture": {
+            "top": "oak_log_sides_horizontall",
+            "bottom": "oak_log_sides_horizontall",
+            "front": "oak_log_sides_horizontall",
+            "back": "oak_log_sides_horizontall",
+            "left": "oak_log_top",
+            "right": "oak_log_top"
+        }
+    },
+    {
+        "name": "oak_log_north",
+        "id": 7,
+        "texture": {
+            "top": "oak_log_sides_verticall",
+            "bottom": "oak_log_sides_verticall",
+            "front": "oak_log_top",
+            "back": "oak_log_top",
+            "left": "oak_log_sides_horizontall",
+            "right": "oak_log_sides_horizontall"
+        }
+    },
+    {
+        "name": "oak_planks",
+        "id": 8,
+        "texture": "oak_planks"
+    },
+    {
+        "name": "oak_leaves",
+        "id": 9,
+        "texture": "oak_leaves"
+    },
+    {
+        "name": "white_glass",
+        "id": 10,
+        "translucent": true,
+        "texture": "translucent_white"
+    }
+]
