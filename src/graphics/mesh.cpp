@@ -9,12 +9,6 @@ namespace vs = rg::views;
 
 namespace tmine {
 
-float screen[] = {
-    //    X      Y       T     S
-    -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f,  0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-    -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
-};
-
 Mesh::Mesh(
     std::vector<f32> vertices, std::span<usize const> attribute_sizes,
     Primitive primitive
