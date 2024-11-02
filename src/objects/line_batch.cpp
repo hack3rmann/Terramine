@@ -5,7 +5,7 @@
 namespace tmine {
 
 LineBox::LineBox()
-: shader{load_shader("linesVertex.glsl", "linesFragment.glsl").value()}
+: shader{load_shader("linesVertex.glsl", "linesFragment.glsl")}
 , mesh{{}, LineBox::VERTEX_ATTRIBUTE_SIZES, Primitive::Lines} {}
 
 auto LineBox::line(

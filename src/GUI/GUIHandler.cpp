@@ -11,7 +11,9 @@ using namespace tmine;
 GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
     /* Init */
     GUIs = new GUI*[8];
-    shader = ShaderProgram::from_source(load_shader_source("GUIVertex.glsl", "GUIFragment.glsl").value()).value();
+    shader = ShaderProgram::from_source(
+        load_shader_source("GUIVertex.glsl", "GUIFragment.glsl")
+    );
     this->current = startMenu;
     for (int i = 0; i < 8; i++) {
         GUIs[i] = nullptr;
@@ -19,20 +21,19 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
 
     /* Loading basic textures */
     bg = Texture::from_image(
-        load_png("assets/startScreenBackground.png").value(),
-        TextureLoad::DEFAULT
+        load_png("assets/startScreenBackground.png"), TextureLoad::DEFAULT
     );
     bDef = Texture::from_image(
-        load_png("assets/testButtonDef.png").value(), TextureLoad::DEFAULT
+        load_png("assets/testButtonDef.png"), TextureLoad::DEFAULT
     );
     bHover = Texture::from_image(
-        load_png("assets/testButtonHover.png").value(), TextureLoad::DEFAULT
+        load_png("assets/testButtonHover.png"), TextureLoad::DEFAULT
     );
     bClicked = Texture::from_image(
-        load_png("assets/testButtonClicked.png").value(), TextureLoad::DEFAULT
+        load_png("assets/testButtonClicked.png"), TextureLoad::DEFAULT
     );
     darker = Texture::from_image(
-        load_png("assets/darker.png").value(), TextureLoad::DEFAULT
+        load_png("assets/darker.png"), TextureLoad::DEFAULT
     );
 
     /* Empty menu init */

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <optional>
-
 #include <glad/gl.h>
 #include <glm/glm.hpp>
 
@@ -59,8 +57,7 @@ public:
     auto operator=(this ShaderProgram& self, ShaderProgram&&) noexcept
         -> ShaderProgram&;
 
-    static auto from_source(ShaderSource const& source
-    ) -> std::optional<ShaderProgram>;
+    static auto from_source(ShaderSource const& source) -> ShaderProgram;
 
     auto bind(this ShaderProgram const& self) -> void;
 

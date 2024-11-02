@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
+#include <stdexcept>
+#include <fmt/format.h>
 
 #include "../loaders.hpp"
 
@@ -8,51 +10,40 @@ namespace tmine {
 
 int constexpr FSEEK_FAILURE = -1;
 
-auto read_to_string(char const* path) -> std::optional<std::string> {
+auto read_to_string(char const* path) -> std::string {
     auto const file = std::fopen(path, "r");
 
     if (nullptr == file) {
-        std::fprintf(
-            stderr, "failed to open file '%s': %s\n", path,
-            std::strerror(errno)
-        );
-
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to open file '{}': {}", path, std::strerror(errno)
+        ));
     }
 
     if (FSEEK_FAILURE == std::fseek(file, 0, SEEK_END)) {
-        std::fprintf(
-            stderr, "failed to seek in file '%s': %s\n", path,
-            std::strerror(errno)
-        );
-
         std::fclose(file);
 
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to seek in file '{}': {}", path, std::strerror(errno)
+        ));
     }
 
     auto const file_size = (isize) std::ftell(file);
 
     if (file_size < 0) {
-        std::fprintf(
-            stderr, "failed to find out the size of file '%s': %s\n",
-            path, std::strerror(errno)
-        );
-
         std::fclose(file);
 
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to find out the size of file '{}': {}", path,
+            std::strerror(errno)
+        ));
     }
 
     if (FSEEK_FAILURE == std::fseek(file, 0, SEEK_SET)) {
-        std::fprintf(
-            stderr, "failed to seek in file '%s': %s\n", path,
-            std::strerror(errno)
-        );
-
         std::fclose(file);
 
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to seek in file '{}': {}", path, std::strerror(errno)
+        ));
     }
 
     auto result = std::string((usize) file_size, '\0');
@@ -60,11 +51,11 @@ auto read_to_string(char const* path) -> std::optional<std::string> {
     if (result.size() !=
         std::fread(result.data(), sizeof(result[0]), result.size(), file))
     {
-        std::fprintf(stderr, "failed to read from file '%s'\n", path);
-
         std::fclose(file);
 
-        return std::nullopt;
+        throw std::runtime_error(
+            fmt::format("failed to read from file '{}'", path)
+        );
     }
 
     std::fclose(file);
