@@ -18,16 +18,17 @@ class SceneHandler {
     SkyboxHandler* skybox;
     FrameBuffer* fb;
     FrameBuffer* shadowBuff;
+    glm::uvec2 window_size;
 
 public:
-    SceneHandler();
+    SceneHandler(glm::uvec2 window_size);
 
     void terminate();
-    void updateAll();
-    void updatePlayer();
+    void updateAll(glm::uvec2 window_size);
+    void updatePlayer(glm::uvec2 window_size);
     void updateChunks();
 
-    void render();
+    void render(glm::uvec2 window_size);
 };
 
 class TerrarianHandler {
@@ -40,8 +41,10 @@ public:
     void reloadChunks(Camera const* cam);
     void refreshRes();
     void terminate();
-    void render(Camera const* cam);
-    void renderShadows(Camera const* cam, FrameBuffer* shadowBuff);
+    void render(Camera const* cam, glm::uvec2 window_size);
+    void renderShadows(
+        Camera const* cam, FrameBuffer* shadowBuff, glm::uvec2 window_size
+    );
 };
 
 class LineBoxHandler {
@@ -52,7 +55,7 @@ class LineBoxHandler {
 public:
     LineBoxHandler();
     void terminate();
-    void render(Camera const* cam);
+    void render(Camera const* cam, tmine::f32 aspect_ratio);
 };
 
 class SkyboxHandler {
@@ -64,5 +67,5 @@ class SkyboxHandler {
 public:
     SkyboxHandler();
     void terminate();
-    void render(Camera const* cam);
+    void render(Camera const* cam, glm::uvec2 window_size);
 };

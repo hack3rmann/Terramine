@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "../graphics.hpp"
+#include "../types.hpp"
 #include "../cmp_bmfont.hpp"
 
 struct Charset;
@@ -18,7 +19,6 @@ class Text {
 
     tmine::Mesh mesh;
     glm::vec2 position;
-    glm::mat4 proj;
     glm::mat4 model;
 
     float cursorPointer;
@@ -26,8 +26,9 @@ class Text {
 
 public:
     static void init();
-    void render();
+    void render(tmine::f32 aspect_ratio);
     void reload();
+    static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
     Text(std::string text, glm::vec2 position, float fontSize);
 };
 

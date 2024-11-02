@@ -1,14 +1,12 @@
 #include "GUIHandler.h"
 
 #include "../graphics.hpp"
-#include "../Window.h"
-
+#include "../window.hpp"
 #include "../loaders.hpp"
-#include "../events.hpp"
 
 using namespace tmine;
 
-GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
+GUIHandler::GUIHandler([[maybe_unused]] GUIstate current, Window* window) {
     /* Init */
     GUIs = new GUI*[8];
     shader = ShaderProgram::from_source(
@@ -48,17 +46,19 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
     );
     GUIs[startMenu]->addButton(
         0.0f, -0.4f, 1.0f, 0.3f, bDef, bHover, bClicked, "Exit",
-        [&]() { Window::setShouldClose(true); }
+        window->get_window_close_function()
     );
+
+    auto toggle = window->get_window_toggle_cursor_function();
 
     /* Pause manu init */
     GUIs[pauseMenu] = new GUI();
     GUIs[pauseMenu]->addSprite(0.0f, 0.0f, 2.0f, 2.0f, darker);
     GUIs[pauseMenu]->addButton(
         0.0f, 0.2f, 1.0f, 0.3f, bDef, bHover, bClicked, "Return",
-        [&]() {
+        [this, toggle]() {
             this->current = nothing;
-            io.toggle_cursor_visibility();
+            toggle();
         }
     );
     GUIs[pauseMenu]->addButton(
@@ -67,9 +67,9 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current) {
     );
 }
 
-void GUIHandler::render() {
+void GUIHandler::render(glm::uvec2 window_size) {
     shader.bind();
-    GUIs[current]->render();
+    GUIs[current]->render(window_size);
 }
 
 GUIHandler::~GUIHandler() {

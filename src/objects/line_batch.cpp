@@ -21,9 +21,13 @@ auto LineBox::line(
     buffer.insert(buffer.end(), next_vertices.begin(), next_vertices.end());
 }
 
-auto LineBox::render(this LineBox const& self, Camera const& cam) -> void {
+auto LineBox::render(
+    this LineBox const& self, Camera const& cam, f32 aspect_ratio
+) -> void {
     self.shader.bind();
-    self.shader.uniform_mat4("projView", cam.getProjection() * cam.getView());
+    self.shader.uniform_mat4(
+        "projView", cam.getProjection(aspect_ratio) * cam.getView()
+    );
     self.mesh.draw();
 }
 

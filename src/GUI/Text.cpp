@@ -6,7 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 
-#include "../Window.h"
 #include "../types.hpp"
 #include "../loaders.hpp"
 #include "../events.hpp"
@@ -43,14 +42,18 @@ void Text::init() {
     shader = load_shader("textVertex.glsl", "textFragment.glsl");
 }
 
-Text::Text(std::string text, glm::vec2 position, float fontSize)
+auto Text::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
+    return glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 0.0f, 100.0f);
+}
+
+Text::Text(
+    std::string text, glm::vec2 position, float fontSize
+)
 : text{std::move(text)}
 , mesh{{}, Text::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles} {
     /* init */
-    float aspect = (float) Window::width / (float) Window::height;
     this->position = position;
     this->fontSize = fontSize;
-    proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
 
     /* Calculating length */
     float length = 0.0;
@@ -89,7 +92,7 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
     }
 }
 
-void Text::render() {
+void Text::render(f32 aspect_ratio) {
     if (io.just_pressed(Key::R)) {
         shader = load_shader("textVertex.glsl", "textFragment.glsl");
         reload();
@@ -98,22 +101,18 @@ void Text::render() {
     shader.bind();
     fontTex.bind(0);
 
-    float aspect = (float) Window::height / (float) Window::width;
-    proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
+    auto const proj = Text::get_proj(aspect_ratio);
     model = glm::translate(
         glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.0f)
     );
 
-    shader.uniform_mat4("modelProj", model * proj);
+    shader.uniform_mat4("modelProj", proj * model);
 
     mesh.reload_buffer();
     mesh.draw();
 }
 
 void Text::reload() {
-    float aspect = (float) Window::width / (float) Window::height;
-    proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
-
     float length = 0.0;
     for (unsigned int i = 0; i < text.size(); i++) {
         auto& curr = chars.Chars[(usize) text[i]];

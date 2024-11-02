@@ -13,7 +13,9 @@ class Skybox {
 
 public:
     explicit Skybox(char const* texture_path);
-    auto render(this Skybox const& self, Camera const& cam) -> void;
+    auto render(
+        this Skybox const& self, Camera const& cam, glm::uvec2 window_size
+    ) -> void;
 
 public:
     static auto constexpr VERTEX_ATTRIBUTE_SIZES =
@@ -35,7 +37,7 @@ public:
         this LineBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
     ) -> void;
 
-    auto render(this LineBox const& self, Camera const& cam) -> void;
+    auto render(this LineBox const& self, Camera const& cam, f32 aspect_ratio) -> void;
 
 private:
     auto line(this LineBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color)
@@ -56,10 +58,12 @@ public:
     explicit Terrain(glm::uvec3 sizes);
 
     auto render(
-        this Terrain const& self, Camera const& cam, glm::uvec3 light_direction
+        this Terrain const& self, Camera const& cam, glm::uvec3 light_direction,
+        glm::uvec2 window_size
     ) -> void;
 
-    inline auto get_array(this Terrain const& self) noexcept -> ChunkArray const& {
+    inline auto get_array(this Terrain const& self) noexcept
+        -> ChunkArray const& {
         return self.chunks;
     }
 
@@ -76,7 +80,8 @@ public:
     static char constexpr VERTEX_SHADER_NAME[] = "vertexShader.glsl";
     static char constexpr FRAGMENT_SHADER_NAME[] = "fragmentShader.glsl";
     static char constexpr BLOCK_DATA_PATH[] = "assets/blocks.json";
-    static char constexpr BLOCK_TEXTURE_DATA_PATH[] = "assets/block_textures.json";
+    static char constexpr BLOCK_TEXTURE_DATA_PATH[] =
+        "assets/block_textures.json";
 
 private:
     ChunkArray chunks;

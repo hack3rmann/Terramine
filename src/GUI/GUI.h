@@ -46,6 +46,6 @@ public:
         tmine::Texture texture
     );
     int getObjects();
-    void render();
+    void render(glm::uvec2 window_size);
     void cleanUp();
 };

@@ -3,11 +3,11 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 
-#include "../Window.h"
 #include "GUI.h"
 #include "Text.h"
 #include "../events.hpp"
 #include "../loaders.hpp"
+#include "../window.hpp"
 
 using namespace tmine;
 
@@ -44,7 +44,11 @@ Button::Button(
     this->text = new Text(text, glm::vec2(posX, posY), 1.0f);
 }
 
-void Button::render() {
+auto Button::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
+    return glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 0.0f, 100.0f);
+}
+
+void Button::render(f32 aspect_ratio) {
     /* Bind texture */
     textures[state]->bind(0);
 
@@ -52,25 +56,29 @@ void Button::render() {
     shader.bind();
 
     /* Matrix init */
-    float aspect = (float) Window::height / (float) Window::width;
-    proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
+    auto const proj = Button::get_proj(aspect_ratio);
     model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
 
     /* Uniforms */
-    shader.uniform_mat4("modelProj", glm::mat4(1.0f));
+    shader.uniform_mat4("modelProj", proj * glm::mat4(1.0f));
 
     /* Draw */
     mesh.reload_buffer();
     mesh.draw();
-    text->render();
+    text->render(aspect_ratio);
 }
 
-void Button::refreshState() {
-    float mouseX, mouseY;
+void Button::refreshState(glm::uvec2 window_size) {
+    auto const proj = Button::get_proj(Window::aspect_ratio_of(window_size));
 
     /* Window coords to OpenGL coords */
-    mouseX = (io.get_mouse_pos().x / Window::width - 0.5f) * 2.0f;
-    mouseY = -(io.get_mouse_pos().y / Window::height - 0.5f) * 2.0f;
+
+    auto mouseX = (io.get_mouse_pos().x / window_size.x - 0.5f) * 2.0f;
+    auto mouseY = -(io.get_mouse_pos().y / window_size.y - 0.5f) * 2.0f;
+
+    auto pos = glm::inverse(proj) * glm::vec4{mouseX, mouseY, 0.0f, 1.0f};
+    mouseX = pos.x;
+    mouseY = pos.y;
 
     /* If mouse inside AABB */
     if (mouseX >= x - w / 2 && mouseX <= x + w / 2 && mouseY >= y - h / 2 &&

@@ -1,4 +1,4 @@
-#include "../Window.h"
+#include "../window.hpp"
 #include "../events.hpp"
 
 namespace tmine {
@@ -13,7 +13,9 @@ auto Input::update(this Input& self) noexcept -> void {
 auto Input::cursor_position_callback(
     [[maybe_unused]] GLFWwindow* window, f64 x, f64 y
 ) -> void {
-    if (io.is_cursor_locked) {
+    auto data = reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
+
+    if (data->is_cursor_locked) {
         io.mouse_delta += glm::vec2{x, y} - io.mouse_pos;
     } else {
         io.is_cursor_started = true;
@@ -71,14 +73,6 @@ auto Input::set_io_callbacks(GLFWwindow* window) -> void {
     glfwSetKeyCallback(window, Input::key_callback);
     glfwSetMouseButtonCallback(window, Input::mouse_button_callback);
     glfwSetCursorPosCallback(window, Input::cursor_position_callback);
-}
-
-auto Input::toggle_cursor_visibility(this Input& self) -> void {
-    self.is_cursor_locked = !self.is_cursor_locked;
-
-    Window::setCursorMode(
-        self.is_cursor_locked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL
-    );
 }
 
 }  // namespace tmine

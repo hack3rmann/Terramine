@@ -2,6 +2,7 @@
 
 #include "GUI.h"
 #include "../graphics.hpp"
+#include "../window.hpp"
 
 enum GUIstate { nothing, startMenu, pauseMenu, settings };
 
@@ -17,7 +18,7 @@ class GUIHandler {
 
 public:
     GUIstate current;
-    GUIHandler(GUIstate current);
+    GUIHandler(GUIstate current, tmine::Window* window);
     ~GUIHandler();
-    void render();
+    void render(glm::uvec2 window_size);
 };

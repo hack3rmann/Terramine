@@ -2,8 +2,8 @@
 #include <bits/ranges_algo.h>
 
 #include "../objects.hpp"
-#include "../Window.h"
 #include "../loaders.hpp"
+#include "../window.hpp"
 
 using namespace tmine;
 
@@ -59,7 +59,9 @@ static auto add_skybox_cube(std::vector<f32>* buffer_ptr) -> void {
 Skybox::Skybox(char const* texture_path)
 : mesh{{}, Skybox::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
 , shader{load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl")}
-, texture{Texture::from_image(load_png(std::move(texture_path)), TextureLoad::DEFAULT)} {
+, texture{Texture::from_image(
+      load_png(std::move(texture_path)), TextureLoad::DEFAULT
+  )} {
     auto& buffer = this->mesh.get_buffer();
 
     buffer.reserve(VERTEX_SIZE * N_VERTICES);
@@ -68,13 +70,18 @@ Skybox::Skybox(char const* texture_path)
     this->mesh.reload_buffer();
 }
 
-void Skybox::render(this Skybox const& self, Camera const& cam) {
+void Skybox::render(
+    this Skybox const& self, Camera const& cam, glm::uvec2 window_size
+) {
     self.texture.bind(0);
     self.shader.bind();
 
-    self.shader.uniform_mat4("projView", cam.getProjection() * cam.getView());
+    self.shader.uniform_mat4(
+        "projView",
+        cam.getProjection(Window::aspect_ratio_of(window_size)) * cam.getView()
+    );
     self.shader.uniform_vec3("camPos", cam.position);
-    self.shader.uniform_vec2("resolution", vec2(Window::width, Window::height));
+    self.shader.uniform_vec2("resolution", glm::vec2{window_size});
 
     self.mesh.draw();
 }
