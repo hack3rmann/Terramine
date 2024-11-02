@@ -5,17 +5,17 @@
 
 namespace tmine {
 
-Chunk::Chunk(glm::uvec3 pos)
-: pos{pos}
+Chunk::Chunk(glm::uvec3 chunk_pos)
+: pos{chunk_pos}
 , voxel_ids{} {
     for (usize local_z = 0; local_z < Chunk::DEPTH; local_z++) {
         for (usize local_x = 0; local_x < Chunk::WIDTH; local_x++) {
-            auto const world_x = local_x + pos.x * Chunk::WIDTH;
-            auto const world_z = local_z + pos.z * Chunk::DEPTH;
+            auto const world_x = local_x + chunk_pos.x * Chunk::WIDTH;
+            auto const world_z = local_z + chunk_pos.z * Chunk::DEPTH;
             auto const height = height_map_at({world_x, world_z});
 
             for (usize local_y = 0; local_y < Chunk::HEIGHT; local_y++) {
-                auto const world_y = local_y + pos.y * Chunk::HEIGHT;
+                auto const world_y = local_y + chunk_pos.y * Chunk::HEIGHT;
                 auto const sample_height = (usize) (30 * height);
 
                 auto id = VoxelId{0};
