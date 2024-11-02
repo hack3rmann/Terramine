@@ -28,7 +28,6 @@ add_executable(
     src/main.cpp
     src/Camera.cpp
     src/Player.cpp
-    src/Window.cpp
     src/graphics/FrameBuffer.cpp
     src/graphics/MasterHandler.cpp
     src/graphics/SceneHandler.cpp
