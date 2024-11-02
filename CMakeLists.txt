@@ -9,56 +9,81 @@ set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 execute_process(COMMAND ln -sfT ${BUILD_DIR}/compile_commands.json
-                        ${CMAKE_SOURCE_DIR}/compile_commands.json)
+    ${CMAKE_SOURCE_DIR}/compile_commands.json)
 
 option(SANITIZE "Enable sanitizers" OFF)
 
 if(${SANITIZE})
     message(STATUS "Build with sanitizers")
-  set(CMAKE_CXX_FLAGS
-      "${CMAKE_CXX_FLAGS} -g -fsanitize=address -fsanitize=undefined -fsanitize=leak"
-  )
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -g -fsanitize=address -fsanitize=undefined -fsanitize=leak"
+    )
 endif()
 
 project(terramine)
 
 add_executable(
-  terramine
-  ${DEPS_DIR}/glad/src/gl.c
-  src/main.cpp
-  src/Camera.cpp
-  src/Player.cpp
-  src/Window.cpp
-  src/graphics/FrameBuffer.cpp
-  src/graphics/MasterHandler.cpp
-  src/graphics/SceneHandler.cpp
-  src/graphics/shader.cpp
-  src/graphics/mesh.cpp
-  src/graphics/texture.cpp
-  src/GUI/Button.cpp
-  src/GUI/GUI.cpp
-  src/GUI/GUIHandler.cpp
-  src/GUI/GUIObject.cpp
-  src/GUI/Sprite.cpp
-  src/GUI/Text.cpp
-  src/loaders/png.cpp
-  src/loaders/shader.cpp
-  src/loaders/string.cpp
-  src/loaders/game_objects.cpp
-  src/objects/skybox.cpp
-  src/objects/line_batch.cpp
-  src/objects/terrain.cpp
-  src/terrain/chunk.cpp
-  src/terrain/chunk_array.cpp
-  src/terrain/renderer.cpp
-  src/events/io.cpp)
+    terramine
+    ${DEPS_DIR}/glad/src/gl.c
+    src/main.cpp
+    src/Camera.cpp
+    src/Player.cpp
+    src/Window.cpp
+    src/graphics/FrameBuffer.cpp
+    src/graphics/MasterHandler.cpp
+    src/graphics/SceneHandler.cpp
+    src/graphics/shader.cpp
+    src/graphics/mesh.cpp
+    src/graphics/texture.cpp
+    src/GUI/Button.cpp
+    src/GUI/GUI.cpp
+    src/GUI/GUIHandler.cpp
+    src/GUI/GUIObject.cpp
+    src/GUI/Sprite.cpp
+    src/GUI/Text.cpp
+    src/loaders/png.cpp
+    src/loaders/shader.cpp
+    src/loaders/string.cpp
+    src/loaders/game_objects.cpp
+    src/objects/skybox.cpp
+    src/objects/line_batch.cpp
+    src/objects/terrain.cpp
+    src/terrain/chunk.cpp
+    src/terrain/chunk_array.cpp
+    src/terrain/renderer.cpp
+    src/events/io.cpp)
+
+
+option(BUILD_EXAMPLES "" OFF)
+
+
+include(FetchContent)
+set(FETCHCONTENT_QUIET NO)
+
+
+set(FMT_VERSION 11.0.2)
+find_package(fmt ${FMT_VERSION} QUIET)
+
+if (NOT fmt_FOUND)
+    FetchContent_Declare(
+        fmt
+        DOWNLOAD_EXTRACT_TIMESTAMP OFF
+        URL https://github.com/fmtlib/fmt/archive/refs/tags/${FMT_VERSION}.tar.gz)
+
+    FetchContent_MakeAvailable(fmt)
+
+    target_link_libraries(terramine fmt)
+endif()
+
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/include)
+
 
 add_subdirectory(${DEPS_DIR}/glfw ${BUILD_DIR}/deps/glfw)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glfw/include)
 target_link_directories(terramine PRIVATE ${BUILD_DIR}/deps/glfw/src)
 target_link_libraries(terramine glfw3)
+
 
 add_subdirectory(${DEPS_DIR}/glm ${BUILD_DIR}/deps/glm)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glm)

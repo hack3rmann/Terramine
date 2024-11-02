@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <print>
+#include <fmt/format.h>
+#include <fmt/color.h>
 
 #include "GUI/Text.h"
 #include "graphics/MasterHandler.h"
@@ -23,7 +25,7 @@ auto main() -> int {
             INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "Terramine"
         ) != 0)
     {
-        std::fprintf(stderr, "failed to initialize a window\n");
+        fmt::println(stderr, "failed to initialize a window\n");
         return -1;
     }
 
