@@ -14,7 +14,6 @@ public:
 
     tmine::ShaderProgram shader;
 
-    glm::mat4 proj;
     glm::mat4 model;
 
     float x, y;
@@ -24,6 +23,7 @@ public:
         float posX, float posY, float width, float height,
         tmine::Texture texture
     );
-    void render();
+    static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
+    void render(tmine::f32 aspect_ratio);
     void cleanUp();
 };

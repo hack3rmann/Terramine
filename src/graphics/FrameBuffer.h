@@ -24,8 +24,11 @@ class FrameBuffer {
     int width, height;
 
 public:
-    FrameBuffer(std::string const& vName, std::string const& fName);
-    FrameBuffer();
+    FrameBuffer(
+        std::string const& vName, std::string const& fName,
+        glm::uvec2 window_size
+    );
+    FrameBuffer(glm::uvec2 window_size);
     void terminate();
     void bind();
     void drawColor();
@@ -33,8 +36,11 @@ public:
     void drawBoth();
     void bindColorTex();
     void bindDepthTex();
-    void reload();
-    void reload(std::string const& vName, std::string const& fName);
+    void reload(glm::uvec2 window_size);
+    void reload(
+        std::string const& vName, std::string const& fName,
+        glm::uvec2 window_size
+    );
     void refreshShader();
     int check();
     static void unbind();

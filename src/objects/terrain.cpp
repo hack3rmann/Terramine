@@ -3,7 +3,7 @@
 
 #include "../objects.hpp"
 #include "../loaders.hpp"
-#include "../Window.h"
+#include "../window.hpp"
 
 namespace tmine {
 
@@ -61,12 +61,12 @@ auto Terrain::generate_meshes(this Terrain& self) -> void {
 auto Terrain::update(this Terrain& self) -> void { self.generate_meshes(); }
 
 auto Terrain::render(
-    this Terrain const& self, Camera const& cam, glm::uvec3 light_direction
+    this Terrain const& self, Camera const& cam, glm::uvec3 light_direction, glm::uvec2 window_size
 ) -> void {
     self.shader.bind();
-    self.shader.uniform_mat4("proj", cam.getProjection());
+    self.shader.uniform_mat4("proj", cam.getProjection(Window::aspect_ratio_of(window_size)));
     self.shader.uniform_mat4("view", cam.getView());
-    self.shader.uniform_vec2("resolution", vec2(Window::width, Window::height));
+    self.shader.uniform_vec2("resolution", glm::vec2{window_size});
     self.shader.uniform_vec3("toLightVec", -light_direction);
     self.shader.uniform_vec3("lightColor", vec3(0.96f, 0.24f, 0.0f));
     self.shader.uniform_int("u_Texture0", 0);

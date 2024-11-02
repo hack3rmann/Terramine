@@ -1,7 +1,6 @@
 #include <glm/ext.hpp>
 
 #include "Sprite.h"
-#include "../Window.h"
 #include "GUI.h"
 #include "../loaders.hpp"
 
@@ -30,7 +29,11 @@ Sprite::Sprite(
     y = posY;
 }
 
-void Sprite::render() {
+auto Sprite::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
+    return glm::ortho(-1.0f, 1.0f, -aspect_ratio, aspect_ratio, 0.0f, 100.0f);
+}
+
+void Sprite::render(f32 aspect_ratio) {
     /* Texture */
     texture.bind(0);
 
@@ -38,12 +41,11 @@ void Sprite::render() {
     shader.bind();
 
     /* Matrix init */
-    float aspect = (float) Window::height / (float) Window::width;
-    proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);
+    auto const proj = Sprite::get_proj(aspect_ratio);
     model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
 
     /* Shader uniforms */
-    shader.uniform_mat4("modelProj", glm::mat4(1.0f));
+    shader.uniform_mat4("modelProj", proj * glm::mat4(1.0f));
 
     /* Draw */
     mesh.reload_buffer();

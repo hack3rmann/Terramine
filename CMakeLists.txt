@@ -41,6 +41,7 @@ add_executable(
     src/GUI/GUIObject.cpp
     src/GUI/Sprite.cpp
     src/GUI/Text.cpp
+    src/events/io.cpp
     src/loaders/png.cpp
     src/loaders/shader.cpp
     src/loaders/string.cpp
@@ -51,7 +52,7 @@ add_executable(
     src/terrain/chunk.cpp
     src/terrain/chunk_array.cpp
     src/terrain/renderer.cpp
-    src/events/io.cpp)
+    src/window/window.cpp)
 
 
 option(BUILD_EXAMPLES "" OFF)

@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include "Window.h"
-
 void Camera::updateVectors() {
     frontCam = vec3(rotation * vec4(0.0f, 0.0f, -1.0f, 1.0f));
     frontMove = normalize(vec3(frontCam.x, 0.0f, frontCam.z));
@@ -16,9 +14,8 @@ Camera::Camera(vec3 position, float fov)
     updateVectors();
 }
 
-mat4 Camera::getProjection() const {
-    float aspect = (float) Window::width / (float) Window::height;
-    return glm::perspective(fov, aspect, 0.15f, 1000.0f);
+mat4 Camera::getProjection(f32 aspect_ratio) const {
+    return glm::perspective(fov, aspect_ratio, 0.15f, 1000.0f);
 }
 
 mat4 Camera::getOrtho() const {

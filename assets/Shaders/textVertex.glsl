@@ -11,7 +11,7 @@ uniform mat4 modelProj;
 
 void main() {
 	gl_Position = modelProj * vec4(position, 0.0f, 1.0f);
-	a_TexCoord = vec2(texCoords.x, 1 - texCoords.y);;
+	a_TexCoord = vec2(texCoords.x, 1 - texCoords.y);
 	//a_TexCoord = texCoords;
 	a_Color = vColor;
 }

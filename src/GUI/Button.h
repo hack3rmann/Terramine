@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../graphics.hpp"
+#include "../types.hpp"
 #include "GUIObject.h"
 #include "Text.h"
 
@@ -21,7 +22,6 @@ class Button : public GUIObject {
     float x, y, w, h;
     Text* text;
 
-    glm::mat4 proj;
     glm::mat4 model;
 
 public:
@@ -32,7 +32,8 @@ public:
         tmine::Texture clickedTexture, std::string text,
         std::function<void()> function
     );
-    void render();
-    void refreshState();
+    static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
+    void render(tmine::f32 aspect_ratio);
+    void refreshState(glm::uvec2 window_size);
     void cleanUp();
 };

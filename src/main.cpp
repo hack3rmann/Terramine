@@ -2,36 +2,21 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/ext.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <print>
-#include <fmt/format.h>
-#include <fmt/color.h>
+#include <fmt/printf.h>
 
-#include "GUI/Text.h"
 #include "graphics/MasterHandler.h"
-#include "Window.h"
+#include "window.hpp"
 
 #include "events.hpp"
-#include "types.hpp"
 
 using namespace tmine;
 
-static usize constexpr INITIAL_WINDOW_WIDTH = 640;
-static usize constexpr INITIAL_WINDOW_HEIGHT = 480;
-
 auto main() -> int {
-    if (Window::init(
-            INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "Terramine"
-        ) != 0)
-    {
-        fmt::println(stderr, "failed to initialize a window\n");
-        return -1;
-    }
+    auto window = Window{"Terramine"};
 
-    Input::set_io_callbacks(Window::glfw_window);
+    Input::set_io_callbacks(window.get_glfw_window());
     Text::init();
-    MasterHandler::init();
+    MasterHandler::init(&window);
 
     glClearColor(27.0 / 255.0, 26.0 / 255.0, 33.0 / 255.0, 1.0f);
     glEnable(GL_MULTISAMPLE);
@@ -39,24 +24,23 @@ auto main() -> int {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glLineWidth(2.0f);
 
-    while (!Window::isClosed()) {
+    while (window.is_open()) {
         if (io.just_pressed(Key::T)) {
-            io.toggle_cursor_visibility();
+            window.toggle_cursor_visibility();
         }
 
         if (io.just_pressed(Key::Escape)) {
             MasterHandler::gui->current = pauseMenu;
-            io.toggle_cursor_visibility();
+            window.toggle_cursor_visibility();
         }
 
-        MasterHandler::updateAll();
-        MasterHandler::render();
+        MasterHandler::updateAll(window.get_size());
+        MasterHandler::render(window.get_size());
 
         io.update();
-        Window::swapBuffers();
-        Window::pollEvents();
+        window.swap_buffers();
+        window.poll_events();
     }
 
     MasterHandler::terminate();
-    Window::terminate();
 }

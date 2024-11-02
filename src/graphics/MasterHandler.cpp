@@ -1,27 +1,29 @@
 #include "MasterHandler.h"
 
-#include "../Window.h"
+#include "../window.hpp"
+
+using namespace tmine;
 
 /* Static fields init */
 SceneHandler* MasterHandler::sceneHandler;
 GUIHandler* MasterHandler::gui;
 
-void MasterHandler::init() {
-    sceneHandler = new SceneHandler();
-    gui = new GUIHandler(startMenu);
+void MasterHandler::init(Window* window) {
+    sceneHandler = new SceneHandler(window->get_size());
+    gui = new GUIHandler(startMenu, window);
 }
 
-void MasterHandler::render() {
+void MasterHandler::render(glm::uvec2 window_size) {
     /* Normal rendering (if window not hidden) */
-    if (Window::width + Window::height) {
+    if (0 != window_size.x + window_size.y) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (gui->current == startMenu) {
-            gui->render();
+            gui->render(window_size);
         } else if (gui->current == pauseMenu) {
-            sceneHandler->render();
-            gui->render();
+            sceneHandler->render(window_size);
+            gui->render(window_size);
         } else {
-            sceneHandler->render();
+            sceneHandler->render(window_size);
         }
     }
     /* Hidden window */
@@ -35,12 +37,10 @@ void MasterHandler::render() {
     }
 }
 
-void MasterHandler::updateAll() {
+void MasterHandler::updateAll(glm::uvec2 window_size) {
     /* Update will only if window not hidden */
-    if (Window::width + Window::height) {
-        if (!gui->current) {
-            sceneHandler->updateAll();
-        }
+    if (0 != window_size.x + window_size.y && !gui->current) {
+        sceneHandler->updateAll(window_size);
     }
 }
 

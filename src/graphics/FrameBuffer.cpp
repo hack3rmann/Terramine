@@ -1,6 +1,5 @@
 #include "FrameBuffer.h"
 
-#include "../Window.h"
 #include "../loaders.hpp"
 
 using namespace tmine;
@@ -17,11 +16,11 @@ float FrameBuffer::screenQuad[24] = {
     -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
 };
 
-FrameBuffer::FrameBuffer(std::string const& vName, std::string const& fName) {
-    reload(vName, fName);
+FrameBuffer::FrameBuffer(std::string const& vName, std::string const& fName, glm::uvec2 window_size) {
+    reload(vName, fName, window_size);
 }
 
-FrameBuffer::FrameBuffer() { reload(); }
+FrameBuffer::FrameBuffer(glm::uvec2 window_size) { reload(window_size); }
 
 void FrameBuffer::bind() {
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -34,15 +33,15 @@ void FrameBuffer::bind() {
     );
 }
 
-void FrameBuffer::reload(std::string const& vName, std::string const& fName) {
+void FrameBuffer::reload(std::string const& vName, std::string const& fName, glm::uvec2 window_size) {
     this->vName = vName;
     this->fName = fName;
     msaa = 4;
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    width = Window::width;
-    height = Window::height;
+    width = window_size.x;
+    height = window_size.y;
 
     /* Color attachment */
     glGenTextures(1, &colorAtt);
@@ -135,13 +134,13 @@ void FrameBuffer::reload(std::string const& vName, std::string const& fName) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::reload() {
+void FrameBuffer::reload(glm::uvec2 window_size) {
     msaa = 4;
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    width = Window::width;
-    height = Window::height;
+    width = window_size.x;
+    height = window_size.y;
 
     /* Color attachment */
     glGenTextures(1, &colorAtt);

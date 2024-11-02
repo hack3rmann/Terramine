@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array>
-#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 #include "types.hpp"
 
@@ -158,7 +158,6 @@ public:
     auto just_pressed(this Input& self, Key key) -> bool;
     auto is_clicked(this Input const& self, MouseButton button) -> bool;
     auto just_clicked(this Input& self, MouseButton button) -> bool;
-    auto toggle_cursor_visibility(this Input& self) -> void;
 
     inline auto get_mouse_pos(this Input const& self) noexcept -> glm::vec2 {
         return self.mouse_pos;
@@ -188,7 +187,6 @@ private:
 
     glm::vec2 mouse_delta{};
     glm::vec2 mouse_pos{};
-    bool is_cursor_locked{};
     bool is_cursor_started{};
 };
 

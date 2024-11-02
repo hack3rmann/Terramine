@@ -1,4 +1,5 @@
 #include "GUI.h"
+#include "../window.hpp"
 
 using namespace tmine;
 
@@ -32,16 +33,16 @@ void GUI::addSprite(
     size++;
 }
 
-void GUI::render() {
+void GUI::render(glm::uvec2 window_size) {
     /* Render all sorites */
     for (int i = 0; i < objectsSprites; i++) {
-        sprites[i]->render();
+        sprites[i]->render((f32) window_size.y / (f32) window_size.x);
     }
 
     /* Render all buttons */
     for (int i = 0; i < objectsButtons; i++) {
-        buttons[i]->refreshState();
-        buttons[i]->render();
+        buttons[i]->refreshState(window_size);
+        buttons[i]->render(Window::aspect_ratio_of(window_size));
     }
 }
 

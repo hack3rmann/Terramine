@@ -2,7 +2,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Window.h"
 #include "events.hpp"
 
 using namespace tmine;
@@ -28,7 +27,7 @@ void Player::updateTime() {
     lastTime = currTime;
 }
 
-void Player::update(Terrain* terrain, LineBox* lineBatch) {
+void Player::update(Terrain* terrain, LineBox* lineBatch, glm::uvec2 window_size) {
     updateTime();
     if (io.just_pressed(Key::F)) {
         isSpeedUp = !isSpeedUp;
@@ -220,8 +219,8 @@ void Player::update(Terrain* terrain, LineBox* lineBatch) {
     speed.x = 0.0f;
     speed.z = 0.0f;
 
-    camX -= io.get_mouse_delta().y / Window::height * 2.f;
-    camY -= io.get_mouse_delta().x / Window::width * 2.f;
+    camX -= io.get_mouse_delta().y / window_size.y * 2.f;
+    camY -= io.get_mouse_delta().x / window_size.x * 2.f;
     cam->rotation = mat4(1.0f);
     if (camX > radians(89.9f)) {
         camX = radians(89.9f);
