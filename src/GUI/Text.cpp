@@ -38,9 +38,9 @@ ShaderProgram Text::shader;
 void Text::init() {
     ParseFont(chars);
     fontTex = Texture::from_image(
-        load_png("assets/font.png").value(), TextureLoad::NO_MIPMAP_LINEAR
+        load_png("assets/font.png"), TextureLoad::NO_MIPMAP_LINEAR
     );
-    shader = load_shader("textVertex.glsl", "textFragment.glsl").value();
+    shader = load_shader("textVertex.glsl", "textFragment.glsl");
 }
 
 Text::Text(std::string text, glm::vec2 position, float fontSize)
@@ -91,7 +91,7 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
 
 void Text::render() {
     if (io.just_pressed(Key::R)) {
-        shader = load_shader("textVertex.glsl", "textFragment.glsl").value();
+        shader = load_shader("textVertex.glsl", "textFragment.glsl");
         reload();
     }
 

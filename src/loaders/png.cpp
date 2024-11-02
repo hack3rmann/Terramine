@@ -4,13 +4,14 @@
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
-#include <iostream>
+#include <stdexcept>
+#include <fmt/format.h>
 
 #include "../loaders.hpp"
 
 namespace tmine {
 
-auto load_png(char const* path) -> std::optional<Image> {
+auto load_png(char const* path) -> Image {
     FILE* image_file;
     int result = 0;
     spng_ctx* ctx = NULL;
@@ -18,17 +19,15 @@ auto load_png(char const* path) -> std::optional<Image> {
     image_file = std::fopen(path, "rb");
 
     if (image_file == nullptr) {
-        fprintf(
-            stderr, "failed to open files '%s': %s\n", path,
-            std::strerror(errno)
-        );
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to open file '{}': {}", path, std::strerror(errno)
+        ));
     }
 
     ctx = spng_ctx_new(0);
 
     if (ctx == nullptr) {
-        return std::nullopt;
+        throw std::runtime_error("failed to create spng context");
     }
 
     /* Ignore and don't calculate chunk CRC's */
@@ -42,16 +41,16 @@ auto load_png(char const* path) -> std::optional<Image> {
     /* Set source PNG */
     spng_set_png_file(ctx, image_file); /* or _buffer(), _stream() */
 
-    auto ihdr = (struct spng_ihdr){};
+    auto ihdr = (struct spng_ihdr) {};
     if (spng_get_ihdr(ctx, &ihdr)) {
-        return std::nullopt;
+        throw std::runtime_error("failed to get ihdr");
     }
 
-    auto plte = (struct spng_plte){};
+    auto plte = (struct spng_plte) {};
 
     result = spng_get_plte(ctx, &plte);
     if (result && result != SPNG_ECHUNKAVAIL) {
-        return std::nullopt;
+        throw std::runtime_error("failed to get plte");
     }
 
     size_t image_size, image_width;
@@ -69,7 +68,7 @@ auto load_png(char const* path) -> std::optional<Image> {
     }
 
     if (spng_decoded_image_size(ctx, fmt, &image_size)) {
-        return std::nullopt;
+        throw std::runtime_error("failed to decode image size");
     }
 
     auto image_bytes = std::vector<u8>(image_size, 0);
@@ -86,13 +85,13 @@ auto load_png(char const* path) -> std::optional<Image> {
        this requires an initialization step. */
     // char* out = new char[image_size];
     if (spng_decode_image(ctx, nullptr, 0, fmt, SPNG_DECODE_PROGRESSIVE)) {
-        return std::nullopt;
+        throw std::runtime_error("failed to decode image");
     }
 
     /* ihdr.height will always be non-zero if spng_get_ihdr() succeeds */
     image_width = image_size / ihdr.height;
 
-    auto row_info = (struct spng_row_info){};
+    auto row_info = (struct spng_row_info) {};
 
     do {
         result = spng_get_row_info(ctx, &row_info);
@@ -107,12 +106,13 @@ auto load_png(char const* path) -> std::optional<Image> {
     } while (!result);
 
     if (result != SPNG_EOI) {
-        std::cerr << "PNG error: " << spng_strerror(result) << std::endl;
-        return std::nullopt;
+        throw std::runtime_error(
+            fmt::format("spng failed: {}", spng_strerror(result))
+        );
     }
 
     if (result == SPNG_ECHUNKAVAIL) {
-        return std::nullopt;
+        throw std::runtime_error("no chunk available");
     }
 
     auto const width = image_width / 4;

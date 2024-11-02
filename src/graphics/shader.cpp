@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <fmt/format.h>
+
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -93,8 +96,7 @@ auto ShaderProgram::uniform_int(
     glUniform1i(location, num);
 }
 
-auto ShaderProgram::from_source(ShaderSource const& source
-) -> std::optional<ShaderProgram> {
+auto ShaderProgram::from_source(ShaderSource const& source) -> ShaderProgram {
     auto success = (int) true;
     char error_message[512];
 
@@ -111,14 +113,12 @@ auto ShaderProgram::from_source(ShaderSource const& source
             vertex_id, sizeof(error_message), nullptr, error_message
         );
 
-        std::fprintf(
-            stderr, "failed to compile vertex shader '%s': %s\n",
-            source.vertex_path.c_str(), error_message
-        );
-
         glDeleteShader(vertex_id);
 
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to compile vertex shader '{}': {}",
+            source.vertex_path.c_str(), error_message
+        ));
     }
 
     auto const fragment_id = glCreateShader(GL_FRAGMENT_SHADER);
@@ -134,15 +134,13 @@ auto ShaderProgram::from_source(ShaderSource const& source
             fragment_id, sizeof(error_message), nullptr, error_message
         );
 
-        std::fprintf(
-            stderr, "failed to compile fragment shader '%s': %s\n",
-            source.fragment_path.c_str(), error_message
-        );
-
         glDeleteShader(vertex_id);
         glDeleteShader(fragment_id);
 
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to compile fragment shader '{}': {}",
+            source.fragment_path.c_str(), error_message
+        ));
     }
 
     auto const program_id = glCreateProgram();
@@ -157,19 +155,16 @@ auto ShaderProgram::from_source(ShaderSource const& source
             program_id, sizeof(error_message), nullptr, error_message
         );
 
-        std::fprintf(
-            stderr,
-            "failed to create shader program from vertex shader '%s' and "
-            "fragment shader '%s': %s\n",
-            source.vertex_path.c_str(), source.fragment_path.c_str(),
-            error_message
-        );
-
         glDeleteShader(vertex_id);
         glDeleteShader(fragment_id);
         glDeleteProgram(program_id);
 
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "failed to create shader program from vertex shader '{}' and "
+            "fragment shader '{}': {}\n",
+            source.vertex_path.c_str(), source.fragment_path.c_str(),
+            error_message
+        ));
     }
 
     glDeleteShader(vertex_id);

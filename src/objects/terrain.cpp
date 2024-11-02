@@ -17,16 +17,15 @@ Terrain::Terrain(glm::uvec3 sizes)
   )}
 , is_modified{new bool[sizes.x * sizes.y * sizes.z]}
 , renderer{load_game_blocks_data(
-               Terrain::BLOCK_DATA_PATH, Terrain::BLOCK_TEXTURE_DATA_PATH
-  )
-               .value()}
+      Terrain::BLOCK_DATA_PATH, Terrain::BLOCK_TEXTURE_DATA_PATH
+  )}
 , shader{load_shader(Terrain::VERTEX_SHADER_NAME, Terrain::FRAGMENT_SHADER_NAME)
-             .value()}
+  }
 , texture_atlas{Texture::from_image(
-      load_png(Terrain::TEXTURE_ATLAS_PATH).value(), TextureLoad::DEFAULT
+      load_png(Terrain::TEXTURE_ATLAS_PATH), TextureLoad::DEFAULT
   )}
 , normal_atlas{Texture::from_image(
-      load_png(Terrain::NORMAL_ATLAS_PATH).value(), TextureLoad::DEFAULT
+      load_png(Terrain::NORMAL_ATLAS_PATH), TextureLoad::DEFAULT
   )} {
     auto const n_meshes = sizes.x * sizes.y * sizes.z;
 
@@ -111,7 +110,9 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         )] = true;
     }
 
-    if (Chunk::WIDTH == voxel_pos.x + 1 && self.chunks.get_sizes().x != chunk_pos.x + 1) {
+    if (Chunk::WIDTH == voxel_pos.x + 1 &&
+        self.chunks.get_sizes().x != chunk_pos.x + 1)
+    {
         self.is_modified[self.chunks.index_of(
             glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z)
         )] = true;
@@ -123,7 +124,9 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         )] = true;
     }
 
-    if (Chunk::HEIGHT == voxel_pos.y + 1 && self.chunks.get_sizes().y != chunk_pos.y + 1) {
+    if (Chunk::HEIGHT == voxel_pos.y + 1 &&
+        self.chunks.get_sizes().y != chunk_pos.y + 1)
+    {
         self.is_modified[self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z)
         )] = true;
@@ -135,7 +138,9 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         )] = true;
     }
 
-    if (Chunk::DEPTH == voxel_pos.z + 1 && self.chunks.get_sizes().z != chunk_pos.z + 1) {
+    if (Chunk::DEPTH == voxel_pos.z + 1 &&
+        self.chunks.get_sizes().z != chunk_pos.z + 1)
+    {
         self.is_modified[self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
         )] = true;

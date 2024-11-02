@@ -1,7 +1,10 @@
-#include <print>
 #include <cstring>
 #include <ranges>
+#include <stdexcept>
+
 #include <rapidjson/document.h>
+#include <fmt/format.h>
+
 #include "../loaders.hpp"
 
 namespace tmine {
@@ -13,26 +16,16 @@ auto load_game_blocks(
     char const* path,
     std::unordered_map<std::string, GameBlockTextureIdentifier> const&
         texture_data
-) -> std::optional<std::vector<GameBlock>> {
-    auto const maybe_file_content = read_to_string(path);
-
-    if (!maybe_file_content.has_value()) {
-        return std::nullopt;
-    }
-
-    auto const file_content =
-        std::string{std::move(maybe_file_content).value()};
+) -> std::vector<GameBlock> {
+    auto const file_content = read_to_string(path);
 
     auto document = rj::Document{};
     document.Parse(file_content.c_str());
 
     if (!document.IsArray()) {
-        std::println(
-            stderr, "invalid game blocks description '{}': should be an array",
-            path
-        );
-
-        return std::nullopt;
+        throw std::runtime_error(fmt::format(
+            "invalid game blocks description '{}': should be an array", path
+        ));
     }
 
     auto result = std::vector<GameBlock>{};
@@ -46,14 +39,11 @@ auto load_game_blocks(
 
     for (auto [i, entry] : document.GetArray() | vs::enumerate) {
         if (!entry.IsObject()) {
-            std::println(
-                stderr,
+            throw std::runtime_error(fmt::format(
                 "invalid array element in game blocks description '{}': should "
                 "be an object",
                 path
-            );
-
-            return std::nullopt;
+            ));
         }
 
         auto name = std::optional<std::string>{};
@@ -67,72 +57,55 @@ auto load_game_blocks(
         auto front_texture_id = std::optional<TextureId>{};
         auto back_texture_id = std::optional<TextureId>{};
 
-        auto const print_unknown_texture_message = [&path](char const* name) {
-            std::println(
-                stderr, "unknown texture name '{}' in '{}'", name, path
-            );
-        };
-
         for (auto const& [property, value] : entry.GetObject()) {
             auto const property_string = property.GetString();
 
             if (0 == std::strcmp("name", property_string)) {
                 if (!value.IsString()) {
-                    std::println(
-                        stderr, "property 'name' should be a string in '{}'",
-                        path
-                    );
-                    return std::nullopt;
+                    throw std::runtime_error(fmt::format(
+                        "property 'name' should be a string in '{}'", path
+                    ));
                 }
 
                 name = value.GetString();
             } else if (0 == std::strcmp("id", property_string)) {
                 if (!value.IsInt()) {
-                    std::println(
-                        stderr, "property 'id' should be an integer in '{}'",
-                        path
-                    );
-                    return std::nullopt;
+                    throw std::runtime_error(fmt::format(
+                        "property 'id' should be an integer in '{}'", path
+                    ));
                 }
 
                 auto const stored_id = value.GetInt();
 
                 if (stored_id < 0 || 0xFF < stored_id) {
-                    std::println(
-                        stderr, "invalid block id '{}' in '{}'", stored_id, path
-                    );
-                    return std::nullopt;
+                    throw std::runtime_error(fmt::format(
+                        "invalid block id '{}' in '{}'", stored_id, path
+                    ));
                 }
 
                 voxel_id = stored_id;
             } else if (0 == std::strcmp("variation", property_string)) {
                 if (!value.IsInt()) {
-                    std::println(
-                        stderr,
+                    throw std::runtime_error(fmt::format(
                         "property 'variation' should be an integer in '{}'",
                         path
-                    );
-                    return std::nullopt;
+                    ));
                 }
 
                 auto const stored_variation = value.GetInt();
 
                 if (stored_variation < 0 || 127 < stored_variation) {
-                    std::println(
-                        stderr, "invalid variation '{}' in '{}'",
-                        stored_variation, path
-                    );
-                    return std::nullopt;
+                    throw std::runtime_error(fmt::format(
+                        "invalid variation '{}' in '{}'", stored_variation, path
+                    ));
                 }
 
                 variation = stored_variation;
             } else if (0 == std::strcmp("translucent", property_string)) {
                 if (!value.IsBool()) {
-                    std::println(
-                        stderr,
+                    throw std::runtime_error(fmt::format(
                         "property 'translucent' should be a bool in '{}'", path
-                    );
-                    return std::nullopt;
+                    ));
                 }
 
                 is_translucent = value.GetBool();
@@ -141,8 +114,10 @@ auto load_game_blocks(
                     auto const texture_name = value.GetString();
 
                     if (!texture_data.contains(texture_name)) {
-                        print_unknown_texture_message(texture_name);
-                        return std::nullopt;
+                        throw std::runtime_error(fmt::format(
+                            "unknown texture name '{}' in '{}'", texture_name,
+                            path
+                        ));
                     }
 
                     auto const id = texture_data.at(texture_name).id;
@@ -158,20 +133,20 @@ auto load_game_blocks(
                         auto const side_name = side.GetString();
 
                         if (!texture.IsString()) {
-                            std::println(
-                                stderr,
+                            throw std::runtime_error(fmt::format(
                                 "invalid property in 'texture': all members "
                                 "should be strings in '{}'",
                                 path
-                            );
-                            return std::nullopt;
+                            ));
                         }
 
                         auto const texture_name = texture.GetString();
 
                         if (!texture_data.contains(texture_name)) {
-                            print_unknown_texture_message(texture_name);
-                            return std::nullopt;
+                            throw std::runtime_error(fmt::format(
+                                "unknown texture name '{}' in '{}'",
+                                texture_name, path
+                            ));
                         }
 
                         auto const id = texture_data.at(texture_name).id;
@@ -194,65 +169,55 @@ auto load_game_blocks(
                             front_texture_id = id;
                             back_texture_id = id;
                         } else {
-                            std::println(
-                                stderr, "invalid size name '{}' in '{}'",
-                                side_name, path
-                            );
-                            return std::nullopt;
+                            throw std::runtime_error(fmt::format(
+                                "invalid size name '{}' in '{}'", side_name,
+                                path
+                            ));
                         }
                     }
                 } else {
-                    std::println(
-                        stderr,
+                    throw std::runtime_error(fmt::format(
                         "property 'texture' should be a string or an object in "
                         "'{}'",
                         path
-                    );
-                    return std::nullopt;
+                    ));
                 }
             } else {
-                std::println(
-                    stderr, "unknown property '{}' in '{}'", property_string,
-                    path
-                );
-                return std::nullopt;
+                throw std::runtime_error(fmt::format(
+                    "unknown property '{}' in '{}'", property_string, path
+                ));
             }
         }
 
         if (!name.has_value()) {
-            std::println(
-                stderr, "property 'name' has not been set in '{}'", path
+            throw std::runtime_error(
+                fmt::format("property 'name' has not been set in '{}'", path)
             );
-            return std::nullopt;
         }
 
         if (!voxel_id.has_value()) {
-            std::println(
-                stderr, "property 'id' has not been set for '{}' block in '{}'",
+            throw std::runtime_error(fmt::format(
+                "property 'id' has not been set for '{}' block in '{}'",
                 name.value(), path
-            );
-            return std::nullopt;
+            ));
         }
 
         if (voxel_id.value() != i + 1) {
-            std::println(
-                stderr,
+            throw std::runtime_error(fmt::format(
                 "voxel ids should be the same as their order in the list in "
                 "'{}'",
                 path
-            );
-            return std::nullopt;
+            ));
         }
 
         if (!top_texture_id.has_value() || !bottom_texture_id.has_value() ||
             !left_texture_id.has_value() || !right_texture_id.has_value() ||
             !front_texture_id.has_value() || !back_texture_id.has_value())
         {
-            std::println(
-                stderr, "not all sides have a texture for '{}' block in '{}'",
+            throw std::runtime_error(fmt::format(
+                "not all sides have a texture for '{}' block in '{}'",
                 name.value(), path
-            );
-            return std::nullopt;
+            ));
         }
 
         result.emplace_back(GameBlock{
@@ -269,21 +234,15 @@ auto load_game_blocks(
     return result;
 }
 
-auto load_game_block_textures(char const* path) -> std::optional<
-    std::unordered_map<std::string, GameBlockTextureIdentifier>> {
-    auto maybe_file_content = read_to_string(path);
+auto load_game_block_textures(char const* path)
+    -> std::unordered_map<std::string, GameBlockTextureIdentifier> {
+    auto file_content = read_to_string(path);
 
-    if (!maybe_file_content.has_value()) {
-        return std::nullopt;
-    }
-
-    auto file_content = std::string{std::move(maybe_file_content).value()};
     auto document = rj::Document{};
     document.Parse(file_content.c_str());
 
     if (!document.IsArray()) {
-        std::println(stderr, "'{}' should be an array", path);
-        return std::nullopt;
+        throw std::runtime_error(fmt::format("'{}' should be an array", path));
     }
 
     auto result = std::unordered_map<std::string, GameBlockTextureIdentifier>{};
@@ -292,10 +251,9 @@ auto load_game_block_textures(char const* path) -> std::optional<
 
     for (auto [i, entry] : document.GetArray() | vs::enumerate) {
         if (!entry.IsObject()) {
-            std::println(
-                stderr, "array elements should be objects in '{}'", path
+            throw std::runtime_error(
+                fmt::format("array elements should be objects in '{}'", path)
             );
-            return std::nullopt;
         }
 
         auto name = std::optional<std::string>{};
@@ -306,64 +264,54 @@ auto load_game_block_textures(char const* path) -> std::optional<
 
             if (0 == std::strcmp("name", key_string)) {
                 if (!value.IsString()) {
-                    std::println(
-                        stderr,
+                    throw std::runtime_error(fmt::format(
                         "invalid property 'name' in '{}': should be a string",
                         path
-                    );
-                    return std::nullopt;
+                    ));
                 }
 
                 name = value.GetString();
             } else if (0 == std::strcmp("id", key_string)) {
                 if (!value.IsInt()) {
-                    std::println(
-                        stderr,
+                    throw std::runtime_error(fmt::format(
                         "invlid property 'id' in '{}': should be an integer",
                         path
-                    );
-                    return std::nullopt;
+                    ));
                 }
 
                 auto const read_id = value.GetInt();
 
                 if (read_id < 0 || 0xFF < read_id) {
-                    std::println(
-                        stderr, "too large texture id '{}' in '{}'", read_id,
-                        path
-                    );
-                    return std::nullopt;
+                    throw std::runtime_error(fmt::format(
+                        "too large texture id '{}' in '{}'", read_id, path
+                    ));
                 }
 
                 id = (TextureId) read_id;
             } else {
-                std::println(
-                    stderr, "unknown property '{}' in '{}'", key_string, path
-                );
-                return std::nullopt;
+                throw std::runtime_error(fmt::format(
+                    "unknown property '{}' in '{}'", key_string, path
+                ));
             }
         }
 
         if (!name.has_value()) {
-            std::println(stderr, "no property 'name' in '{}'", path);
-            return std::nullopt;
+            throw std::runtime_error(
+                fmt::format("no property 'name' in '{}'", path)
+            );
         }
 
         if (!id.has_value()) {
-            std::println(
-                stderr, "no property 'id' for '{}' texture in '{}'",
-                name.value(), path
-            );
-            return std::nullopt;
+            throw std::runtime_error(fmt::format(
+                "no property 'id' for '{}' texture in '{}'", name.value(), path
+            ));
         }
 
         if (id.value() != i + 1) {
-            std::println(
-                "texture ids should be the same as their order in the list in "
-                "'{}'",
+            throw std::runtime_error(fmt::format(
+                "texture ids should be the same as their order in the list in '{}'",
                 path
-            );
-            return std::nullopt;
+            ));
         }
 
         auto key = std::string{name.value()};
@@ -381,22 +329,9 @@ auto load_game_block_textures(char const* path) -> std::optional<
 
 auto load_game_blocks_data(
     char const* game_blocks_path, char const* game_block_textures_path
-) -> std::optional<GameBlocksData> {
-    auto maybe_textures = load_game_block_textures(game_block_textures_path);
-
-    if (!maybe_textures.has_value()) {
-        return std::nullopt;
-    }
-
-    auto textures = std::move(maybe_textures).value();
-
-    auto maybe_blocks = load_game_blocks(game_blocks_path, textures);
-
-    if (!maybe_blocks.has_value()) {
-        return std::nullopt;
-    }
-
-    auto blocks = std::move(maybe_blocks).value();
+) -> GameBlocksData {
+    auto textures = load_game_block_textures(game_block_textures_path);
+    auto blocks = load_game_blocks(game_blocks_path, textures);
 
     auto textures_inline =
         std::vector<GameBlockTextureIdentifier>(textures.size());
