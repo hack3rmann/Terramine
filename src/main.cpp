@@ -31,7 +31,7 @@ auto main() -> int {
     Text::init();
     MasterHandler::init();
 
-    glClearColor(0.61f, 0.86f, 1.0f, 1.0f);
+    glClearColor(27.0 / 255.0, 26.0 / 255.0, 33.0 / 255.0, 1.0f);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
