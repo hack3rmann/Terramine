@@ -19,12 +19,12 @@ public:
 
 public:
     static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 2>{3, 2};
+        std::array<usize, 2>{3, 2};
 
 private:
-    tmine::Mesh mesh;
-    tmine::ShaderProgram shader;
-    tmine::Texture texture;
+    Mesh mesh;
+    ShaderProgram shader;
+    Texture texture;
 };
 
 class LineBox {
@@ -44,11 +44,11 @@ private:
         -> void;
 
 private:
-    tmine::ShaderProgram shader;
-    tmine::Mesh mesh;
+    ShaderProgram shader;
+    Mesh mesh;
 
     static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 2>{3, 4};
+        std::array<usize, 2>{3, 4};
 };
 
 class Terrain {
