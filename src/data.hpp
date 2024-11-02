@@ -36,8 +36,14 @@ struct GameBlock {
     static auto constexpr META_TRANSLUCENT = BlockMeta{0b10000000};
     static auto constexpr META_VARIATION = BlockMeta{0b01111111};
 
-    inline static auto meta_of(bool is_translucent, u8 variation) noexcept -> BlockMeta {
-        return variation | ((BlockMeta) is_translucent << 7);
+    inline static auto constexpr meta_of(
+        bool is_translucent, u8 variation
+    ) noexcept -> BlockMeta {
+        if (is_translucent) {
+            return (variation & META_VARIATION) | META_TRANSLUCENT;
+        } else {
+            return variation & META_VARIATION;
+        }
     }
 
     inline auto get_variation(this GameBlock const& self) noexcept -> u8 {

@@ -4,7 +4,6 @@
 
 #include "Camera.h"
 #include "objects.hpp"
-#include "Voxels/Chunks.h"
 
 using namespace glm;
 
@@ -25,6 +24,6 @@ public:
 
     Player();
     Player(float lastTime, float gravity, vec3 speed);
-    void update(Chunks* chunks, tmine::LineBox* lineBatch);
+    void update(tmine::Terrain* terrain, tmine::LineBox* lineBatch);
     void updateTime();
 };

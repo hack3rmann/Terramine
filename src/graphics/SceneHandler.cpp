@@ -31,14 +31,14 @@ void SceneHandler::terminate() {
 }
 
 void SceneHandler::updateAll() {
-    plr->update(terrarian->terra->chunks, lines->lineBatch);
+    plr->update(&terrarian->terrain, lines->lineBatch);
     terrarian->reloadChunks(plr->cam);
 }
 
 void SceneHandler::updateChunks() { terrarian->reloadChunks(plr->cam); }
 
 void SceneHandler::updatePlayer() {
-    plr->update(terrarian->terra->chunks, lines->lineBatch);
+    plr->update(&terrarian->terrain, lines->lineBatch);
 }
 
 void SceneHandler::render() {
@@ -93,22 +93,23 @@ void SkyboxHandler::render(Camera const* cam) {
 }
 
 /* Terrarian handler */
-TerrarianHandler::TerrarianHandler() {
-    terra = new Terrarian("assets/textureAtlas3.png");
-}
+TerrarianHandler::TerrarianHandler()
+: terrain{glm::uvec3{8, 8, 8}} {}
 
 void TerrarianHandler::reloadChunks([[maybe_unused]] Camera const* cam) {
-    terra->reload();
+    this->terrain.update();
 }
 
-void TerrarianHandler::terminate() { delete terra; }
+void TerrarianHandler::terminate() {}
 
 void TerrarianHandler::render(Camera const* cam) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    terra->render(cam);
-    glDisable(GL_DEPTH_TEST);
+
+    this->terrain.render(*cam, glm::vec3{0.2f, -0.5f, 1.0f});
+
     glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
 }
 
 void TerrarianHandler::renderShadows(
@@ -116,15 +117,14 @@ void TerrarianHandler::renderShadows(
 ) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    terra->render(cam);
+
+    this->terrain.render(*cam, glm::vec3{0.2f, -0.5f, 1.0f});
+
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 }
 
-void TerrarianHandler::refreshRes() {
-    terra->refreshShader();
-    terra->refreshTextures();
-}
+void TerrarianHandler::refreshRes() {}
 
 /* LineBatch handler */
 LineBoxHandler::LineBoxHandler() { lineBatch = new LineBox(); }

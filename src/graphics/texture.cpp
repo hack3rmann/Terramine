@@ -77,7 +77,8 @@ auto Texture::operator=(this Texture& self, Texture&& other) noexcept
     return self;
 }
 
-void Texture::bind(this Texture const& self) {
+void Texture::bind(this Texture const& self, u32 slot) {
+    glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, self.id);
 }
 

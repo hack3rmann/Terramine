@@ -46,7 +46,7 @@ Button::Button(
 
 void Button::render() {
     /* Bind texture */
-    textures[state]->bind();
+    textures[state]->bind(0);
 
     /* Use shader program */
     shader.bind();

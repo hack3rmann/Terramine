@@ -2,7 +2,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Voxels/Voxel.h"
 #include "Window.h"
 #include "events.hpp"
 
@@ -15,9 +14,9 @@ Player::Player() {
 }
 
 Player::Player(float lastTime, float gravity, vec3 speed)
-    : lastTime(lastTime)
-    , gravity(gravity)
-    , speed(speed) {
+: lastTime(lastTime)
+, gravity(gravity)
+, speed(speed) {
     cam = new Camera(vec3(32.0f, 70.0f, 32.0f), radians(60.0f));
     camX = camY = 0.0f;
     currentBlock = 1;
@@ -29,7 +28,7 @@ void Player::updateTime() {
     lastTime = currTime;
 }
 
-void Player::update(Chunks* chunks, LineBox* lineBatch) {
+void Player::update(Terrain* terrain, LineBox* lineBatch) {
     updateTime();
     if (io.just_pressed(Key::F)) {
         isSpeedUp = !isSpeedUp;
@@ -53,35 +52,45 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
 
     /* Movement */
     if (io.is_pressed(Key::W) &&
-        chunks->rayCast(
-            vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
-            cam->frontMove, 0.3f
-        ) != nullptr &&
-        chunks->rayCast(
-            vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
-            cam->frontMove, 0.3f
-        ) == nullptr &&
-        chunks->rayCast(
-            vec3(cam->position.x, cam->position.y + 1.0f, cam->position.z),
-            cam->frontMove, 0.3f
-        ) == nullptr &&
-        chunks->rayCast(cam->position, cam->frontMove, 0.3f) == nullptr)
+        terrain->get_array()
+            .ray_cast(
+                vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
+                cam->frontMove, 0.3f
+            )
+            .has_hit &&
+        terrain->get_array()
+            .ray_cast(
+                vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
+                cam->frontMove, 0.3f
+            )
+            .has_hit &&
+        terrain->get_array()
+            .ray_cast(
+                vec3(cam->position.x, cam->position.y + 1.0f, cam->position.z),
+                cam->frontMove, 0.3f
+            )
+            .has_hit &&
+        terrain->get_array()
+            .ray_cast(cam->position, cam->frontMove, 0.3f)
+            .has_hit)
     {
         speed.y = 8.5f;
     }
     if (io.is_pressed(Key::W)) {
-        vec3 norm;
-        if (chunks->rayCast(cam->position, cam->frontMove, 0.3f, norm) ==
-                nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
-                cam->frontMove, 0.3f, norm
-            ) == nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
-                cam->frontMove, 0.3f, norm
-            ) == nullptr)
-        {
+        auto res1 =
+            terrain->get_array().ray_cast(cam->position, cam->frontMove, 0.3f);
+        auto res2 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
+            cam->frontMove, 0.3f
+        );
+        auto res3 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
+            cam->frontMove, 0.3f
+        );
+
+        auto norm = res3.normal;
+
+        if (!res1.has_hit && !res2.has_hit && !res3.has_hit) {
             speed += cam->frontMove / dTime / 10.0f * speedFactor;
         } else {
             vec3 dir(norm.z, norm.x, -norm.y);
@@ -99,18 +108,20 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
         }
     }
     if (io.is_pressed(Key::S)) {
-        vec3 norm;
-        if (chunks->rayCast(cam->position, -cam->frontMove, 0.3f, norm) ==
-                nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
-                -cam->frontMove, 0.3f, norm
-            ) == nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
-                -cam->frontMove, 0.3f, norm
-            ) == nullptr)
-        {
+        auto res1 =
+            terrain->get_array().ray_cast(cam->position, -cam->frontMove, 0.3f);
+        auto res2 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
+            -cam->frontMove, 0.3f
+        );
+        auto res3 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
+            -cam->frontMove, 0.3f
+        );
+
+        auto norm = res3.normal;
+
+        if (!res1.has_hit && !res2.has_hit && !res3.has_hit) {
             speed -= cam->frontMove / dTime / 10.0f * speedFactor;
         } else {
             vec3 dir(norm.z, norm.x, -norm.y);
@@ -119,18 +130,20 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
         }
     }
     if (io.is_pressed(Key::A)) {
-        vec3 norm;
-        if (chunks->rayCast(cam->position, -cam->right, 0.3f, norm) ==
-                nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
-                -cam->right, 0.3f, norm
-            ) == nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
-                -cam->right, 0.3f, norm
-            ) == nullptr)
-        {
+        auto res1 =
+            terrain->get_array().ray_cast(cam->position, -cam->right, 0.3f);
+        auto res2 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
+            -cam->right, 0.3f
+        );
+        auto res3 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
+            -cam->right, 0.3f
+        );
+
+        auto norm = res3.normal;
+
+        if (!res1.has_hit && !res2.has_hit && !res3.has_hit) {
             speed -= cam->right / dTime / 10.0f * speedFactor;
         } else {
             vec3 dir(norm.z, norm.x, -norm.y);
@@ -139,17 +152,20 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
         }
     }
     if (io.is_pressed(Key::D)) {
-        vec3 norm;
-        if (chunks->rayCast(cam->position, cam->right, 0.3f, norm) == nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
-                cam->right, 0.3f, norm
-            ) == nullptr &&
-            chunks->rayCast(
-                vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
-                cam->right, 0.3f, norm
-            ) == nullptr)
-        {
+        auto res1 =
+            terrain->get_array().ray_cast(cam->position, cam->right, 0.3f);
+        auto res2 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 1.0f, cam->position.z),
+            cam->right, 0.3f
+        );
+        auto res3 = terrain->get_array().ray_cast(
+            vec3(cam->position.x, cam->position.y - 2.0f, cam->position.z),
+            cam->right, 0.3f
+        );
+
+        auto norm = res3.normal;
+
+        if (!res1.has_hit && !res2.has_hit && !res3.has_hit) {
             speed += cam->right / dTime / 10.0f * speedFactor;
         } else {
             vec3 dir(norm.z, norm.x, -norm.y);
@@ -157,33 +173,42 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
                      speedFactor;
         }
     }
-    if (io.is_pressed(Key::LeftShift)) {
-        if (chunks->rayCast(cam->position, -cam->up, 2.6f) == nullptr)
-            ;
-    }
     if (io.is_pressed(Key::Space)) {
-        if (chunks->rayCast(cam->position, -cam->up, 2.6f) != nullptr) {
+        if (terrain->get_array()
+                .ray_cast(cam->position, -cam->up, 2.6f)
+                .has_hit)
+        {
             speed.y = 20.0f;
         }
     }
 
-    if (chunks->rayCast(
-            cam->position, -cam->up, abs(speed.y * dTime * dTime) + 2.6f
-        ) == nullptr)
+#define GRAVITY 1
+
+    if (!terrain->get_array()
+             .ray_cast(
+                 cam->position, -cam->up, abs(speed.y * dTime * dTime) + 2.6f
+             )
+             .has_hit)
     {
+#if GRAVITY
         speed.y += gravity * dTime;
+#endif
     } else {
         if (speed.y < 0) {
             speed.y = 0.0f;
         }
     }
 
-    if (chunks->rayCast(
-            cam->position, cam->up, abs(speed.y * dTime * dTime) + 0.2f
-        ) != nullptr &&
+    if (terrain->get_array()
+            .ray_cast(
+                cam->position, cam->up, abs(speed.y * dTime * dTime) + 0.2f
+            )
+            .has_hit &&
         speed.y > 0)
     {
+#if GRAVITY
         speed.y = -speed.y * 0.5;
+#endif
     }
 
     if (io.is_pressed(Key::P)) {
@@ -206,26 +231,23 @@ void Player::update(Chunks* chunks, LineBox* lineBatch) {
     }
     cam->rotate(camX, camY, 0.0f);
 
-    /* Interacting -> raycasting */ {
-        vec3 end;
-        vec3 norm;
-        vec3 iend;
-        Voxel* vox = chunks->rayCast(
-            cam->position, cam->frontCam, 10.0f, end, norm, iend
-        );
-        if (vox != nullptr) {
+    {
+        auto result =
+            terrain->get_array().ray_cast(cam->position, cam->frontCam, 10.0f);
+
+        if (result.has_hit) {
             lineBatch->box(
-                iend + 0.5f, glm::vec3(1.001f), glm::vec4(glm::vec3(60.0f / 255.0f), 0.5f));
+                glm::vec3{result.voxel_pos} + 0.5f, glm::vec3(1.001f),
+                glm::vec4(glm::vec3(60.0f / 255.0f), 0.5f)
+            );
 
             if (io.just_clicked(MouseButton::Left)) {
-                chunks->set((int) iend.x, (int) iend.y, (int) iend.z, 0);
+                terrain->set_voxel(result.voxel_pos, 0);
             }
 
             if (io.just_clicked(MouseButton::Right)) {
-                chunks->set(
-                    (int) iend.x + (int) norm.x, (int) iend.y + (int) norm.y,
-                    (int) iend.z + (int) norm.z, currentBlock
-                );
+                auto const pos = result.voxel_pos + glm::uvec3{result.normal};
+                terrain->set_voxel(pos, (VoxelId) this->currentBlock);
             }
         }
     }

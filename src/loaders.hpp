@@ -3,7 +3,6 @@
 #include "data.hpp"
 #include "graphics.hpp"
 
-#include <filesystem>
 #include <optional>
 #include <unordered_map>
 
@@ -13,16 +12,14 @@ char constexpr SHADERS_PATH[] = "assets/Shaders";
 
 auto read_to_string(char const* path) -> std::optional<std::string>;
 
-auto load_png(std::filesystem::path image_path) -> std::optional<Image>;
+auto load_png(char const* path) -> std::optional<Image>;
 
 auto load_shader_source(
-    std::filesystem::path vertex_source_path,
-    std::filesystem::path fragment_source_path
+    char const* vertex_source_path, char const* fragment_source_path
 ) -> std::optional<ShaderSource>;
 
 auto load_shader(
-    std::filesystem::path vertex_source_path,
-    std::filesystem::path fragment_source_path
+    char const* vertex_source_path, char const* fragment_source_path
 ) -> std::optional<ShaderProgram>;
 
 auto load_game_blocks(
@@ -35,8 +32,7 @@ auto load_game_block_textures(char const* path
 ) -> std::optional<std::unordered_map<std::string, GameBlockTextureIdentifier>>;
 
 auto load_game_blocks_data(
-    char const* game_blocks_path,
-    char const* game_block_textures_path
+    char const* game_blocks_path, char const* game_block_textures_path
 ) -> std::optional<GameBlocksData>;
 
 }  // namespace tmine

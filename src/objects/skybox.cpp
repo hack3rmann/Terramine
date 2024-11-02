@@ -6,7 +6,6 @@
 #include "../loaders.hpp"
 
 using namespace tmine;
-namespace fs = std::filesystem;
 
 auto constexpr N_VERTICES = usize{36};
 auto constexpr VERTEX_SIZE =
@@ -57,7 +56,7 @@ static auto add_skybox_cube(std::vector<f32>* buffer_ptr) -> void {
     add_vertex(buffer_ptr, {-0.5f, 0.5f, 0.5f}, {1.0f, 0.5f});
 }
 
-Skybox::Skybox(fs::path texture_path)
+Skybox::Skybox(char const* texture_path)
 : mesh{{}, Skybox::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
 , shader{load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl").value()}
 , texture{Texture::from_image(load_png(std::move(texture_path)).value(), TextureLoad::DEFAULT)} {
@@ -70,7 +69,7 @@ Skybox::Skybox(fs::path texture_path)
 }
 
 void Skybox::render(this Skybox const& self, Camera const& cam) {
-    self.texture.bind();
+    self.texture.bind(0);
     self.shader.bind();
 
     self.shader.uniform_mat4("projView", cam.getProjection() * cam.getView());

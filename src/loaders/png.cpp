@@ -10,18 +10,16 @@
 
 namespace tmine {
 
-namespace fs = std::filesystem;
-
-auto load_png(fs::path image_path) -> std::optional<Image> {
+auto load_png(char const* path) -> std::optional<Image> {
     FILE* image_file;
     int result = 0;
     spng_ctx* ctx = NULL;
 
-    image_file = std::fopen(image_path.c_str(), "rb");
+    image_file = std::fopen(path, "rb");
 
     if (image_file == nullptr) {
         fprintf(
-            stderr, "failed to open files '%s': %s\n", image_path.c_str(),
+            stderr, "failed to open files '%s': %s\n", path,
             std::strerror(errno)
         );
         return std::nullopt;

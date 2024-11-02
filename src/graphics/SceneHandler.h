@@ -2,7 +2,6 @@
 
 #include "../Camera.h"
 #include "../Player.h"
-#include "../Voxels/Terrarian.h"
 #include "FrameBuffer.h"
 #include "../objects.hpp"
 
@@ -34,7 +33,7 @@ public:
 class TerrarianHandler {
     friend class SceneHandler;
 
-    Terrarian* terra;
+    tmine::Terrain terrain;
 
 public:
     TerrarianHandler();

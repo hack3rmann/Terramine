@@ -23,10 +23,15 @@ public:
     auto set_voxel(this Chunk& self, glm::uvec3 pos, VoxelId id) noexcept
         -> void;
 
+    inline auto get_pos(this Chunk const& self) noexcept -> glm::uvec3 {
+        return self.pos;
+    }
+
 public:
     static auto constexpr WIDTH = usize{8};
     static auto constexpr HEIGHT = usize{8};
     static auto constexpr DEPTH = usize{8};
+    static auto constexpr SIZES = glm::uvec3{WIDTH, HEIGHT, DEPTH};
     static auto constexpr VOLUME = WIDTH * HEIGHT * DEPTH;
 
 private:
@@ -70,6 +75,22 @@ public:
         f32 max_distance
     ) -> RayCastResult;
 
+    inline auto get_sizes(this ChunkArray const& self) noexcept -> glm::uvec3 {
+        return self.sizes;
+    }
+
+    inline auto as_span(this ChunkArray const& self) noexcept -> std::span<Chunk const> {
+        return self.chunks;
+    }
+
+    inline auto get_span(this ChunkArray& self) noexcept -> std::span<Chunk> {
+        return self.chunks;
+    }
+
+    inline auto chunk_count(this ChunkArray const& self) noexcept -> usize {
+        return self.sizes.x * self.sizes.y * self.sizes.z;
+    }
+
 private:
     std::vector<Chunk> chunks;
     glm::uvec3 sizes;
@@ -86,8 +107,12 @@ public:
         glm::uvec3 pos, Mesh* result_mesh
     ) -> void;
 
+    static auto make_empty_mesh() -> Mesh;
+
 public:
     static auto constexpr DO_AMBIENT_OCCLUSION = true;
+    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
+        std::array<tmine::usize, 5>{3, 3, 2, 1, 3};
 
 private:
     GameBlocksData data;

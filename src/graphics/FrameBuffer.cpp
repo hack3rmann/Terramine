@@ -95,7 +95,7 @@ void FrameBuffer::reload(std::string const& vName, std::string const& fName) {
 
     glBindVertexArray(0);
 
-    screenShader = load_shader(vName, fName).value();
+    screenShader = load_shader(vName.c_str(), fName.c_str()).value();
 
     /* Attaching color renderbuffer */
     glGenRenderbuffers(1, &color_rbo);
@@ -244,6 +244,7 @@ void FrameBuffer::drawColor() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     /* Binding texture */
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, colorAtt);
 
     /* Draw */
@@ -302,9 +303,10 @@ int FrameBuffer::check() {
 }
 
 void FrameBuffer::refreshShader() {
-    screenShader =
-        ShaderProgram::from_source(load_shader_source(vName, fName).value())
-            .value();
+    screenShader = ShaderProgram::from_source(
+                       load_shader_source(vName.c_str(), fName.c_str()).value()
+    )
+                       .value();
 }
 
 void FrameBuffer::bindColorTex() { glBindTexture(GL_TEXTURE_2D, colorAtt); }
