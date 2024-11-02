@@ -32,7 +32,7 @@ Sprite::Sprite(
 
 void Sprite::render() {
     /* Texture */
-    texture.bind();
+    texture.bind(0);
 
     /* Shader */
     shader.bind();

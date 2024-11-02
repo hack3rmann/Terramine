@@ -31,7 +31,7 @@ public:
     static auto from_image(Image const& image, TextureLoadFlags flags) noexcept
         -> Texture;
 
-    auto bind(this Texture const& self) -> void;
+    auto bind(this Texture const& self, u32 slot) -> void;
     auto unbind(this Texture const& self) -> void;
 
     static auto unbind_all() -> void;

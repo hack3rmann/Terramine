@@ -7,9 +7,9 @@ ChunkArray::ChunkArray(glm::uvec3 sizes)
 , sizes{sizes} {
     this->chunks.reserve(sizes.x * sizes.y * sizes.z);
 
-    for (usize x = 0; x < sizes.x; ++x) {
-        for (usize y = 0; y < sizes.y; ++y) {
-            for (usize z = 0; z < sizes.y; ++z) {
+    for (usize y = 0; y < sizes.y; ++y) {
+        for (usize z = 0; z < sizes.z; ++z) {
+            for (usize x = 0; x < sizes.x; ++x) {
                 this->chunks.emplace_back(glm::uvec3{x, y, z});
             }
         }
@@ -49,8 +49,8 @@ auto ChunkArray::chunk(this ChunkArray& self, glm::uvec3 pos) noexcept
 auto ChunkArray::get_voxel(
     this ChunkArray const& self, glm::uvec3 voxel_pos
 ) noexcept -> std::optional<VoxelId> {
-    auto const chunk_pos = voxel_pos / self.sizes;
-    auto const local_pos = voxel_pos % self.sizes;
+    auto const chunk_pos = voxel_pos / Chunk::SIZES;
+    auto const local_pos = voxel_pos % Chunk::SIZES;
 
     auto chunk = self.chunk(chunk_pos);
 
@@ -64,8 +64,8 @@ auto ChunkArray::get_voxel(
 auto ChunkArray::set_voxel(
     this ChunkArray& self, glm::uvec3 voxel_pos, VoxelId value
 ) noexcept -> void {
-    auto const chunk_pos = voxel_pos / self.sizes;
-    auto const local_pos = voxel_pos % self.sizes;
+    auto const chunk_pos = voxel_pos / Chunk::SIZES;
+    auto const local_pos = voxel_pos % Chunk::SIZES;
 
     auto chunk = self.chunk(chunk_pos);
 
@@ -116,7 +116,7 @@ auto ChunkArray::ray_cast(
     while (t <= max_distance) {
         auto voxel = self.get_voxel({ix, iy, iz});
 
-        if (!voxel.has_value() || 0 == voxel.value()) {
+        if (voxel.has_value() && 0 != voxel.value()) {
             auto normal = glm::vec3{0.0f};
 
             switch (stepped_index) {

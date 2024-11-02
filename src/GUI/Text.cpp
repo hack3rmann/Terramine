@@ -96,7 +96,7 @@ void Text::render() {
     }
 
     shader.bind();
-    fontTex.bind();
+    fontTex.bind(0);
 
     float aspect = (float) Window::height / (float) Window::width;
     proj = glm::ortho(-1.0f, 1.0f, -aspect, aspect, 0.0f, 100.0f);

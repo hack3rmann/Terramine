@@ -10,9 +10,9 @@ void Camera::updateVectors() {
 }
 
 Camera::Camera(vec3 position, float fov)
-    : rotation(1.0f)
-    , fov(fov)
-    , position(position) {
+: rotation(1.0f)
+, fov(fov)
+, position(position) {
     updateVectors();
 }
 

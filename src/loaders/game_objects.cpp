@@ -37,7 +37,12 @@ auto load_game_blocks(
 
     auto result = std::vector<GameBlock>{};
     result.reserve(document.Size() + 1);
-    result.emplace_back("air");
+    result.emplace_back(GameBlock{
+        .name = "air",
+        .texture_ids = {0, 0, 0, 0, 0, 0},
+        .voxel_id = 0,
+        .meta = GameBlock::meta_of(true, 0),
+    });
 
     for (auto [i, entry] : document.GetArray() | vs::enumerate) {
         if (!entry.IsObject()) {

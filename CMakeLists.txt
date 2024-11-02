@@ -35,7 +35,6 @@ add_executable(
   src/graphics/shader.cpp
   src/graphics/mesh.cpp
   src/graphics/texture.cpp
-  src/graphics/VoxelRenderer.cpp
   src/GUI/Button.cpp
   src/GUI/GUI.cpp
   src/GUI/GUIHandler.cpp
@@ -48,14 +47,10 @@ add_executable(
   src/loaders/game_objects.cpp
   src/objects/skybox.cpp
   src/objects/line_batch.cpp
+  src/objects/terrain.cpp
   src/terrain/chunk.cpp
   src/terrain/chunk_array.cpp
   src/terrain/renderer.cpp
-  src/Voxels/BlockStore.cpp
-  src/Voxels/Chunk.cpp
-  src/Voxels/Chunks.cpp
-  src/Voxels/Terrarian.cpp
-  src/Voxels/Voxel.cpp
   src/events/io.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/include)
