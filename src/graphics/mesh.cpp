@@ -73,7 +73,6 @@ auto Mesh::draw(this Mesh const& self) -> void {
     if (!self.vertices.empty()) {
         glBindVertexArray(self.vertex_array_object_id);
         glDrawArrays((GLuint) self.primitive, 0, self.vertices.size());
-        glBindVertexArray(0);
     }
 }
 
