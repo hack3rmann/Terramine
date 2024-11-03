@@ -12,12 +12,8 @@
 #include "../events.hpp"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */
-#define TEXT_VERTEX(I, X, Y, T, S, R, G, B)                              \
-    ({                                                                   \
-        auto const next_data =                                           \
-            std::array<f32, TEXT_VERTEX_SIZE>{X, Y, T, S, R, G, B};      \
-        buffer.insert(buffer.end(), next_data.begin(), next_data.end()); \
-    })
+#define TEXT_VERTEX(I, X, Y, T, S, R, G, B) \
+    buffer.emplace_back(glm::vec2{X, Y}, glm::vec2{T, S}, glm::vec3{R, G, B})
 #define TEXT_QUAD(I, RX, RY, RW, RH, X, Y, W, H, R, G, B)    \
     ({                                                       \
         TEXT_VERTEX(I, RX, RY + RH, X, Y, R, G, B);          \
@@ -49,7 +45,7 @@ auto Text::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
 
 Text::Text(std::string text, glm::vec2 position, float fontSize)
 : text{std::move(text)}
-, mesh{{}, Text::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles} {
+, mesh{{}, Primitive::Triangles} {
     /* init */
     this->position = position;
     this->fontSize = fontSize;

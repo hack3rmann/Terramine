@@ -12,7 +12,7 @@
 using namespace tmine;
 
 Button::Button()
-: mesh{std::vector<f32>(GUI_VERTEX_SIZE * 6, 0.0f), Button::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
+: mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles}
 , state{Default} {}
 
 Button::Button(
@@ -22,7 +22,7 @@ Button::Button(
 )
 : GUIObject(posX, posY, width, height)
 , function(function)
-, mesh{std::vector<f32>(GUI_VERTEX_SIZE * 6, 0.0f), Button::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
+, mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles}
 , state{Default} {
     textures[Default] = new Texture(std::move(defTexture));
     textures[onHover] = new Texture(std::move(hoverTexture));
@@ -30,9 +30,8 @@ Button::Button(
 
     shader = load_shader("gui_vertex.glsl", "gui_fragment.glsl");
 
-    auto buffer = this->mesh.get_buffer().data();
-    int i = 0;
-    GUI_RECT(i, posX, posY, width, height, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto& buffer = this->mesh.get_buffer();
+    GUI_RECT(buffer, posX, posY, width, height, 1.0f, 1.0f, 1.0f, 1.0f);
 
     /* Coords */
     x = posX;

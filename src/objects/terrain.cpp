@@ -11,7 +11,7 @@ namespace vs = std::ranges::views;
 
 Terrain::Terrain(glm::uvec3 sizes)
 : chunks{sizes}
-, meshes{(Mesh*) ::operator new(
+, meshes{(Mesh<TerrainRenderer::Vertex>*) ::operator new(
       sizeof(this->meshes[0]) * sizes.x * sizes.y * sizes.z
   )}
 , states{new ChunkState[sizes.x * sizes.y * sizes.z]}

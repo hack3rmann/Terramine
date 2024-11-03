@@ -9,10 +9,7 @@ Texture::Texture(GLuint id, usize width, usize height)
 : id{id}
 , width{width}
 , height{height}
-, slot{AVAILABLE_SLOT + GL_TEXTURE0}
-, n_clones_ptr{new usize{1}} {
-    AVAILABLE_SLOT += 1;
-}
+, n_clones_ptr{new usize{1}} {}
 
 Texture::~Texture() {
     if (Texture::DUMMY_ID == this->id) {
@@ -30,7 +27,6 @@ Texture::Texture(Texture const& other)
 : id{other.id}
 , width{other.width}
 , height{other.height}
-, slot{other.slot}
 , n_clones_ptr{other.n_clones_ptr} {
     *other.n_clones_ptr += 1;
 }
@@ -39,12 +35,10 @@ Texture::Texture(Texture&& other) noexcept
 : id{other.id}
 , width{other.width}
 , height{other.height}
-, slot{other.slot}
 , n_clones_ptr{other.n_clones_ptr} {
     other.id = Texture::DUMMY_ID;
     other.width = 0;
     other.height = 0;
-    other.slot = 0;
     other.n_clones_ptr = nullptr;
 }
 
@@ -52,7 +46,6 @@ auto Texture::operator=(this Texture& self, Texture const& other) -> Texture& {
     self.id = other.id;
     self.width = other.width;
     self.height = other.height;
-    self.slot = other.slot;
     self.n_clones_ptr = other.n_clones_ptr;
 
     *self.n_clones_ptr += 1;
@@ -65,13 +58,11 @@ auto Texture::operator=(this Texture& self, Texture&& other) noexcept
     self.id = other.id;
     self.width = other.width;
     self.height = other.height;
-    self.slot = other.slot;
     self.n_clones_ptr = other.n_clones_ptr;
 
     other.id = Texture::DUMMY_ID;
     other.width = 0;
     other.height = 0;
-    other.slot = 0;
     other.n_clones_ptr = nullptr;
 
     return self;
@@ -100,8 +91,8 @@ auto Texture::from_image(Image const& image, TextureLoadFlags flags) noexcept
     auto const format = flags & TextureLoad::RGB ? GL_RGB : GL_RGBA;
 
     glTexImage2D(
-        GL_TEXTURE_2D, 0, format, image.width, image.height, 0,
-        format, GL_UNSIGNED_BYTE, image.data.data()
+        GL_TEXTURE_2D, 0, format, image.width, image.height, 0, format,
+        GL_UNSIGNED_BYTE, image.data.data()
     );
 
     if (flags & TextureLoad::NO_MIPMAP_LINEAR) {
