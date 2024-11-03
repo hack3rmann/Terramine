@@ -54,5 +54,5 @@ void main() {
 
     vec3 mixcolor = mix(diffuse, texColor.rgb, brightness);
 
-    color = vec4(a_light * texture(u_Texture0, a_TexCoord).xyz, 1.0);
+    color = vec4(a_light * texColor.rgb, texColor.a);
 }
