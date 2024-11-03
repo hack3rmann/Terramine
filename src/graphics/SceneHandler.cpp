@@ -9,13 +9,16 @@ using namespace tmine;
 
 /* Scene Handler */
 SceneHandler::SceneHandler(glm::uvec2 window_size) {
-    fb = new FrameBuffer("PPVertex.glsl", "PPFragment.glsl", window_size);
+    fb = new FrameBuffer(
+        "postproc_vertex.glsl", "postproc_fragment.glsl", window_size
+    );
     plr = new Player(glfwGetTime(), -30.0f, vec3(0.0f));
     lines = new LineBoxHandler();
     skybox = new SkyboxHandler();
     terrarian = new TerrarianHandler();
-    shadowBuff =
-        new FrameBuffer("PPVertex.glsl", "PPFragment.glsl", window_size);
+    shadowBuff = new FrameBuffer(
+        "postproc_vertex.glsl", "postproc_fragment.glsl", window_size
+    );
 }
 
 void SceneHandler::terminate() {
@@ -46,7 +49,9 @@ void SceneHandler::render(glm::uvec2 window_size) {
     /* Viewport change handle */
     if (this->window_size != window_size) {
         this->window_size = window_size;
-        fb->reload("PPVertex.glsl", "PPFragment.glsl", window_size);
+        fb->reload(
+            "postproc_vertex.glsl", "postproc_fragment.glsl", window_size
+        );
     }
 
     if (io.just_pressed(Key::R)) {
@@ -80,7 +85,7 @@ void SceneHandler::render(glm::uvec2 window_size) {
 /* Skybox Handler */
 SkyboxHandler::SkyboxHandler() {
     current = 0;
-    skyboxes[0] = new Skybox("assets/Skybox4.png");
+    skyboxes[0] = new Skybox("assets/images/Skybox4.png");
 }
 
 void SkyboxHandler::terminate() {

@@ -59,7 +59,7 @@ static auto add_skybox_cube(std::vector<f32>* buffer_ptr) -> void {
 
 Skybox::Skybox(char const* texture_path)
 : mesh{{}, Skybox::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
-, shader{load_shader("SkyboxVertex.glsl", "SkyboxFragment.glsl")}
+, shader{load_shader("skybox_vertex.glsl", "skybox_fragment.glsl")}
 , texture{Texture::from_image(
       load_png(std::move(texture_path)), TextureLoad::DEFAULT
   )} {

@@ -28,7 +28,7 @@ Button::Button(
     textures[onHover] = new Texture(std::move(hoverTexture));
     textures[onClick] = new Texture(std::move(clickedTexture));
 
-    shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl");
+    shader = load_shader("gui_vertex.glsl", "gui_fragment.glsl");
 
     auto buffer = this->mesh.get_buffer().data();
     int i = 0;
