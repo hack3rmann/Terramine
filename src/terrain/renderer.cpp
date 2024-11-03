@@ -9,12 +9,16 @@ auto constexpr NEG_Y_NORMAL = u32{3};
 auto constexpr POS_Z_NORMAL = u32{4};
 auto constexpr NEG_Z_NORMAL = u32{5};
 
-static auto encode_data(glm::uvec3 pos, u32 offset, u32 normal) -> f32 {
+static auto encode_data(glm::uvec3 pos, u32 offset, u32 normal, f32 light)
+    -> f32 {
     static_assert(
         Chunk::N_POSITION_BITS == 4, "only 4 bit position is supported"
     );
 
+    auto compressed_light = u8(light * 255.0f);
+
     auto constexpr N_OFFSET_BITS = 3;
+    auto constexpr N_NORMAL_BITS = 3;
     auto result = u32{0};
 
     result |= pos.x << (0 * Chunk::N_POSITION_BITS);
@@ -22,11 +26,13 @@ static auto encode_data(glm::uvec3 pos, u32 offset, u32 normal) -> f32 {
     result |= pos.z << (2 * Chunk::N_POSITION_BITS);
     result |= offset << (3 * Chunk::N_POSITION_BITS);
     result |= normal << (3 * Chunk::N_POSITION_BITS + N_OFFSET_BITS);
+    result |= (u32) compressed_light
+           << (3 * Chunk::N_POSITION_BITS + N_OFFSET_BITS + N_NORMAL_BITS);
 
     return std::bit_cast<f32>(result);
 }
 
-static auto add_vertex(std::vector<f32>* buffer_ptr, std::array<f32, 4> elems)
+static auto add_vertex(std::vector<f32>* buffer_ptr, std::array<f32, 3> elems)
     -> void {
     buffer_ptr->insert(buffer_ptr->end(), elems.begin(), elems.end());
 }
@@ -182,29 +188,47 @@ auto TerrainRenderer::render(
                     }
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b101, POS_Y_NORMAL),
-                                  tu2, tv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b101, POS_Y_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  tu2, tv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b100, POS_Y_NORMAL),
-                                  tu2, tv2, l * (1.0f - c - b - f)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b100, POS_Y_NORMAL,
+                                      l * (1.0f - c - b - f)
+                                  ),
+                                  tu2, tv2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b000, POS_Y_NORMAL),
-                                  tu1, tv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b000, POS_Y_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  tu1, tv2}
                     );
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b101, POS_Y_NORMAL),
-                                  tu2, tv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b101, POS_Y_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  tu2, tv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b000, POS_Y_NORMAL),
-                                  tu1, tv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b000, POS_Y_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  tu1, tv2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b001, POS_Y_NORMAL),
-                                  tu1, tv1, l * (1.0f - a - d - h)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b001, POS_Y_NORMAL,
+                                      l * (1.0f - a - d - h)
+                                  ),
+                                  tu1, tv1}
                     );
                 }
                 if (!is_opaque(
@@ -259,29 +283,47 @@ auto TerrainRenderer::render(
                     }
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b111, NEG_Y_NORMAL),
-                                  bou1, bov1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b111, NEG_Y_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  bou1, bov1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b010, NEG_Y_NORMAL),
-                                  bou2, bov2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b010, NEG_Y_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  bou2, bov2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b110, NEG_Y_NORMAL),
-                                  bou1, bov2, l * (1.0f - c - b - f)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b110, NEG_Y_NORMAL,
+                                      l * (1.0f - c - b - f)
+                                  ),
+                                  bou1, bov2}
                     );
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b111, NEG_Y_NORMAL),
-                                  bou1, bov1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b111, NEG_Y_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  bou1, bov1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b011, NEG_Y_NORMAL),
-                                  bou2, bov1, l * (1.0f - a - d - h)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b011, NEG_Y_NORMAL,
+                                      l * (1.0f - a - d - h)
+                                  ),
+                                  bou2, bov1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b010, NEG_Y_NORMAL),
-                                  bou2, bov2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b010, NEG_Y_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  bou2, bov2}
                     );
                 }
 
@@ -337,29 +379,47 @@ auto TerrainRenderer::render(
                     }
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b011, POS_X_NORMAL),
-                                  ru2, rv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b011, POS_X_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  ru2, rv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b001, POS_X_NORMAL),
-                                  ru2, rv2, l * (1.0f - d - a - h)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b001, POS_X_NORMAL,
+                                      l * (1.0f - d - a - h)
+                                  ),
+                                  ru2, rv2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b000, POS_X_NORMAL),
-                                  ru1, rv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b000, POS_X_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  ru1, rv2}
                     );
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b011, POS_X_NORMAL),
-                                  ru2, rv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b011, POS_X_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  ru2, rv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b000, POS_X_NORMAL),
-                                  ru1, rv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b000, POS_X_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  ru1, rv2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b010, POS_X_NORMAL),
-                                  ru1, rv1, l * (1.0f - b - c - f)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b010, POS_X_NORMAL,
+                                      l * (1.0f - b - c - f)
+                                  ),
+                                  ru1, rv1}
                     );
                 }
                 if (!is_opaque(
@@ -414,29 +474,47 @@ auto TerrainRenderer::render(
                     }
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b111, NEG_X_NORMAL),
-                                  lu1, lv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b111, NEG_X_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  lu1, lv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b100, NEG_X_NORMAL),
-                                  lu2, lv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b100, NEG_X_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  lu2, lv2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b101, NEG_X_NORMAL),
-                                  lu1, lv2, l * (1.0f - d - a - h)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b101, NEG_X_NORMAL,
+                                      l * (1.0f - d - a - h)
+                                  ),
+                                  lu1, lv2}
                     );
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b111, NEG_X_NORMAL),
-                                  lu1, lv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b111, NEG_X_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  lu1, lv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b110, NEG_X_NORMAL),
-                                  lu2, lv1, l * (1.0f - b - c - f)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b110, NEG_X_NORMAL,
+                                      l * (1.0f - b - c - f)
+                                  ),
+                                  lu2, lv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b100, NEG_X_NORMAL),
-                                  lu2, lv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b100, NEG_X_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  lu2, lv2}
                     );
                 }
 
@@ -492,29 +570,47 @@ auto TerrainRenderer::render(
                     }
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b110, POS_Z_NORMAL),
-                                  bau1, bav1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b110, POS_Z_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  bau1, bav1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b000, POS_Z_NORMAL),
-                                  bau2, bav2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b000, POS_Z_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  bau2, bav2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b100, POS_Z_NORMAL),
-                                  bau1, bav2, l * (1.0f - a - d - h)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b100, POS_Z_NORMAL,
+                                      l * (1.0f - a - d - h)
+                                  ),
+                                  bau1, bav2}
                     );
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b110, POS_Z_NORMAL),
-                                  bau1, bav1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b110, POS_Z_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  bau1, bav1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b010, POS_Z_NORMAL),
-                                  bau2, bav1, l * (1.0f - b - c - f)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b010, POS_Z_NORMAL,
+                                      l * (1.0f - b - c - f)
+                                  ),
+                                  bau2, bav1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b000, POS_Z_NORMAL),
-                                  bau2, bav2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b000, POS_Z_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  bau2, bav2}
                     );
                 }
                 if (!is_opaque(
@@ -569,29 +665,47 @@ auto TerrainRenderer::render(
                     }
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b111, NEG_Z_NORMAL),
-                                  fu2, fv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b111, NEG_Z_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  fu2, fv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b101, NEG_Z_NORMAL),
-                                  fu2, fv2, l * (1.0f - a - d - h)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b101, NEG_Z_NORMAL,
+                                      l * (1.0f - a - d - h)
+                                  ),
+                                  fu2, fv2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b001, NEG_Z_NORMAL),
-                                  fu1, fv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b001, NEG_Z_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  fu1, fv2}
                     );
 
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b111, NEG_Z_NORMAL),
-                                  fu2, fv1, l * (1.0f - c - d - e)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b111, NEG_Z_NORMAL,
+                                      l * (1.0f - c - d - e)
+                                  ),
+                                  fu2, fv1}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b001, NEG_Z_NORMAL),
-                                  fu1, fv2, l * (1.0f - a - b - g)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b001, NEG_Z_NORMAL,
+                                      l * (1.0f - a - b - g)
+                                  ),
+                                  fu1, fv2}
                     );
                     add_vertex(
-                        &buffer, {encode_data({x, y, z}, 0b011, NEG_Z_NORMAL),
-                                  fu1, fv1, l * (1.0f - b - c - f)}
+                        &buffer, {encode_data(
+                                      {x, y, z}, 0b011, NEG_Z_NORMAL,
+                                      l * (1.0f - b - c - f)
+                                  ),
+                                  fu1, fv1}
                     );
                 }
             }
