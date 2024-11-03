@@ -8,19 +8,6 @@ uniform sampler2D u_Texture0;
 uniform vec2 resolution;
 
 void main() {
-	if (gl_FragCoord.x >= resolution.x / 2 - 1 &&
-		gl_FragCoord.x <= resolution.x / 2 + 1 &&
-		gl_FragCoord.y >= resolution.y / 2 - 8 &&
-		gl_FragCoord.y <= resolution.y / 2 + 8 ||
-		gl_FragCoord.x >= resolution.x / 2 - 8 &&
-		gl_FragCoord.x <= resolution.x / 2 + 8 &&
-		gl_FragCoord.y >= resolution.y / 2 - 0.5 &&
-		gl_FragCoord.y <= resolution.y / 2 + 1) {
-		vec4 texColor = vColor * texture(u_Texture0, a_TexCoord);
-		vec3 i = vec3((texColor.r + texColor.g + texColor.b) / 3);
-		color = vec4(vec3(1.0f - i) * 2.0f, 1.0f);
-	} else {
-		vec4 texColor = vColor * texture(u_Texture0, a_TexCoord);
-		color = texColor;
-	}
+    vec4 texColor = vColor * texture(u_Texture0, a_TexCoord);
+    color = texColor;
 }

@@ -1,5 +1,4 @@
 #include "FrameBuffer.h"
-
 #include "../loaders.hpp"
 
 using namespace tmine;
@@ -16,7 +15,11 @@ float FrameBuffer::screenQuad[24] = {
     -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f
 };
 
-FrameBuffer::FrameBuffer(std::string const& vName, std::string const& fName, glm::uvec2 window_size) {
+FrameBuffer::FrameBuffer(
+    std::string const& vName, std::string const& fName, glm::uvec2 window_size
+)
+: width{(int) window_size.x}
+, height{(int) window_size.y} {
     reload(vName, fName, window_size);
 }
 
@@ -33,7 +36,9 @@ void FrameBuffer::bind() {
     );
 }
 
-void FrameBuffer::reload(std::string const& vName, std::string const& fName, glm::uvec2 window_size) {
+void FrameBuffer::reload(
+    std::string const& vName, std::string const& fName, glm::uvec2 window_size
+) {
     this->vName = vName;
     this->fName = fName;
     msaa = 4;
@@ -246,6 +251,11 @@ void FrameBuffer::drawColor() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, colorAtt);
 
+    screenShader.uniform_int("screenColor", 0);
+    screenShader.uniform_vec2(
+        "resolution", glm::vec2{this->width, this->height}
+    );
+
     /* Draw */
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -280,6 +290,9 @@ void FrameBuffer::drawBoth() {
     /* Shader uniforms */
     screenShader.uniform_int("screenDepth", 0);
     screenShader.uniform_int("screenColor", 1);
+    screenShader.uniform_vec2(
+        "resolution", glm::vec2{this->width, this->height}
+    );
 
     /* Binding Textures */
     glActiveTexture(GL_TEXTURE0);
@@ -295,10 +308,7 @@ void FrameBuffer::drawBoth() {
 }
 
 int FrameBuffer::check() {
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-        return 1;
-    }
-    return 0;
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 }
 
 void FrameBuffer::refreshShader() {
