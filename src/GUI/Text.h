@@ -14,10 +14,17 @@ class Text {
     static Charset chars;
     static tmine::Texture fontTex;
     static tmine::ShaderProgram shader;
-    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 3>{2, 2, 3};
 
-    tmine::Mesh mesh;
+    struct Vertex {
+        glm::vec2 pos;
+        glm::vec2 uv;
+        glm::vec3 color;
+
+        static auto constexpr ATTRIBUTE_SIZES =
+            std::array<tmine::usize, 3>{2, 2, 3};
+    };
+
+    tmine::Mesh<Vertex> mesh;
     glm::vec2 position;
     glm::mat4 model;
 

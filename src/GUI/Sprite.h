@@ -7,9 +7,7 @@
 
 class Sprite : public GUIObject {
 public:
-    tmine::Mesh mesh;
-    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 3>{2, 2, 4};
+    tmine::Mesh<GUIObject::Vertex> mesh;
     tmine::Texture texture;
 
     tmine::ShaderProgram shader;

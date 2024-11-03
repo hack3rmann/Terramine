@@ -17,12 +17,16 @@ public:
         this Skybox const& self, Camera const& cam, glm::uvec2 window_size
     ) -> void;
 
-public:
-    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<usize, 2>{3, 2};
+private:
+    struct Vertex {
+        glm::vec3 pos;
+        glm::vec2 uv;
+
+        static auto constexpr ATTRIBUTE_SIZES = std::array<usize, 2>{3, 2};
+    };
 
 private:
-    Mesh mesh;
+    Mesh<Vertex> mesh;
     ShaderProgram shader;
     Texture texture;
 };
@@ -37,18 +41,24 @@ public:
         this LineBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
     ) -> void;
 
-    auto render(this LineBox const& self, Camera const& cam, f32 aspect_ratio) -> void;
+    auto render(this LineBox const& self, Camera const& cam, f32 aspect_ratio)
+        -> void;
 
 private:
     auto line(this LineBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color)
         -> void;
 
 private:
-    ShaderProgram shader;
-    Mesh mesh;
+    struct Vertex {
+        glm::vec3 pos;
+        glm::vec4 color;
 
-    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<usize, 2>{3, 4};
+        static auto constexpr ATTRIBUTE_SIZES = std::array<usize, 2>{3, 4};
+    };
+
+private:
+    ShaderProgram shader;
+    Mesh<Vertex> mesh;
 };
 
 enum class ChunkState : u8 {
@@ -81,8 +91,10 @@ private:
     auto generate_meshes(this Terrain& self) -> void;
 
 public:
-    static char constexpr TEXTURE_ATLAS_PATH[] = "assets/images/texture_atlas.png";
-    static char constexpr NORMAL_ATLAS_PATH[] = "assets/images/normal_atlas.png";
+    static char constexpr TEXTURE_ATLAS_PATH[] =
+        "assets/images/texture_atlas.png";
+    static char constexpr NORMAL_ATLAS_PATH[] =
+        "assets/images/normal_atlas.png";
     static char constexpr VERTEX_SHADER_NAME[] = "terrain_vertex.glsl";
     static char constexpr FRAGMENT_SHADER_NAME[] = "terrain_fragment.glsl";
     static char constexpr BLOCK_DATA_PATH[] = "assets/data/blocks.json";
@@ -91,7 +103,7 @@ public:
 
 private:
     ChunkArray chunks;
-    std::unique_ptr<Mesh[]> meshes;
+    std::unique_ptr<Mesh<TerrainRenderer::Vertex>[]> meshes;
     std::unique_ptr<ChunkState[]> states;
     TerrainRenderer renderer;
     ShaderProgram shader;

@@ -6,19 +6,15 @@ namespace tmine {
 
 LineBox::LineBox()
 : shader{load_shader("lines_vertex.glsl", "lines_fragment.glsl")}
-, mesh{{}, LineBox::VERTEX_ATTRIBUTE_SIZES, Primitive::Lines} {}
+, mesh{{}, Primitive::Lines} {}
 
 auto LineBox::line(
     this LineBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color
 ) -> void {
-    auto const next_vertices =
-        std::array<f32, 14>{from.x,  from.y,  from.z,  color.r, color.g,
-                            color.b, color.a, to.x,    to.y,    to.z,
-                            color.r, color.g, color.b, color.a};
-
     auto& buffer = self.mesh.get_buffer();
 
-    buffer.insert(buffer.end(), next_vertices.begin(), next_vertices.end());
+    buffer.emplace_back(from, color);
+    buffer.emplace_back(to, color);
 }
 
 auto LineBox::render(

@@ -14,9 +14,7 @@ enum States { Default, onHover, onClick };
 class Button : public GUIObject {
     tmine::Texture* textures[3];
     std::function<void()> function;
-    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 3>{2, 2, 4};
-    tmine::Mesh mesh;
+    tmine::Mesh<GUIObject::Vertex> mesh;
     States state;
     tmine::ShaderProgram shader;
     float x, y, w, h;

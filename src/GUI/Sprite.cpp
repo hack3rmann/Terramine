@@ -7,22 +7,18 @@
 using namespace tmine;
 
 Sprite::Sprite()
-: mesh{
-      std::vector(GUI_VERTEX_SIZE * 6, 0.0f), Sprite::VERTEX_ATTRIBUTE_SIZES,
-      Primitive::Triangles
-  } {}
+: mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles} {}
 
 Sprite::Sprite(
     float posX, float posY, float width, float height, Texture texture
 )
 : GUIObject(posX, posY, width, height)
-, mesh{std::vector(GUI_VERTEX_SIZE * 6, 0.0f), Sprite::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
+, mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles}
 , texture{std::move(texture)} {
     shader = load_shader("gui_vertex.glsl", "gui_fragment.glsl");
 
-    auto buffer = this->mesh.get_buffer().data();
-    int i = 0;
-    GUI_RECT(i, posX, posY, width, height, 1.0f, 1.0f, 1.0f, 1.0f);
+    auto& buffer = this->mesh.get_buffer();
+    GUI_RECT(buffer, posX, posY, width, height, 1.0f, 1.0f, 1.0f, 1.0f);
 
     /* Init */
     x = posX;

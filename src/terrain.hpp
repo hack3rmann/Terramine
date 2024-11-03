@@ -117,21 +117,28 @@ enum class TerrainRenderUploadMesh {
 };
 
 class TerrainRenderer {
+    friend class Terrain;
+
 public:
     explicit TerrainRenderer(GameBlocksData data) noexcept;
 
+private:
+    struct Vertex {
+        f32 data;
+
+        static auto constexpr ATTRIBUTE_SIZES = std::array<usize, 1>{1};
+    };
+
     auto render(
         this TerrainRenderer const& self, ChunkArray const& chunks,
-        glm::uvec3 pos, Mesh* result_mesh,
+        glm::uvec3 pos, Mesh<Vertex>* result_mesh,
         TerrainRenderUploadMesh upload = TerrainRenderUploadMesh::DoUpload
     ) -> void;
 
-    static auto make_empty_mesh() -> Mesh;
+    static auto make_empty_mesh() -> Mesh<Vertex>;
 
 public:
     static auto constexpr DO_AMBIENT_OCCLUSION = true;
-    static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 1>{1};
 
 private:
     GameBlocksData data;
