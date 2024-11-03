@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "graphics.hpp"
-#include "Camera.h"
+#include "controls.hpp"
 #include "terrain.hpp"
 
 namespace tmine {

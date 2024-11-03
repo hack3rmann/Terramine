@@ -64,11 +64,11 @@ auto Terrain::render(
     this Terrain const& self, Camera const& cam, glm::uvec3 light_direction, glm::uvec2 window_size
 ) -> void {
     self.shader.bind();
-    self.shader.uniform_mat4("proj", cam.getProjection(Window::aspect_ratio_of(window_size)));
-    self.shader.uniform_mat4("view", cam.getView());
+    self.shader.uniform_mat4("proj", cam.get_projection(Window::aspect_ratio_of(window_size)));
+    self.shader.uniform_mat4("view", cam.get_view());
     self.shader.uniform_vec2("resolution", glm::vec2{window_size});
     self.shader.uniform_vec3("toLightVec", -light_direction);
-    self.shader.uniform_vec3("lightColor", vec3(0.96f, 0.24f, 0.0f));
+    self.shader.uniform_vec3("lightColor", glm::vec3(0.96f, 0.24f, 0.0f));
     self.shader.uniform_int("u_Texture0", 0);
     self.shader.uniform_int("u_Texture1", 1);
 
@@ -84,7 +84,7 @@ auto Terrain::render(
         auto const offset =
             glm::vec3{pos} * glm::vec3{Chunk::SIZES} + glm::vec3{0.5f};
 
-        model = glm::translate(mat4(1.0f), offset);
+        model = glm::translate(glm::mat4{1.0f}, offset);
 
         self.shader.uniform_mat4("model", model);
         mesh.draw();
