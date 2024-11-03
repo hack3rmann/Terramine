@@ -55,6 +55,9 @@ public:
     auto index_of(this ChunkArray const& self, glm::uvec3 chunk_pos) noexcept
         -> usize;
 
+    auto index_to_pos(this ChunkArray const& self, usize index) noexcept
+        -> glm::uvec3;
+
     auto is_in_bounds(
         this ChunkArray const& self, glm::uvec3 chunk_pos
     ) noexcept -> bool;
@@ -80,12 +83,21 @@ public:
         return self.sizes;
     }
 
-    inline auto as_span(this ChunkArray const& self) noexcept -> std::span<Chunk const> {
-        return self.chunks;
+    inline auto get_volume(this ChunkArray const& self) noexcept -> usize {
+        return self.sizes.x * self.sizes.y * self.sizes.z;
+    }
+
+    inline auto as_span(this ChunkArray const& self) noexcept
+        -> std::span<Chunk const> {
+        return std::span<Chunk const>{
+            self.chunks.get(), self.chunks.get() + self.get_volume()
+        };
     }
 
     inline auto get_span(this ChunkArray& self) noexcept -> std::span<Chunk> {
-        return self.chunks;
+        return std::span<Chunk>{
+            self.chunks.get(), self.chunks.get() + self.get_volume()
+        };
     }
 
     inline auto chunk_count(this ChunkArray const& self) noexcept -> usize {
@@ -93,11 +105,16 @@ public:
     }
 
 private:
-    std::vector<Chunk> chunks;
+    std::unique_ptr<Chunk[]> chunks;
     glm::uvec3 sizes;
 };
 
 auto height_map_at(glm::uvec2 pos) -> f32;
+
+enum class TerrainRenderUploadMesh {
+    DoUpload,
+    Skip,
+};
 
 class TerrainRenderer {
 public:
@@ -105,7 +122,8 @@ public:
 
     auto render(
         this TerrainRenderer const& self, ChunkArray const& chunks,
-        glm::uvec3 pos, Mesh* result_mesh
+        glm::uvec3 pos, Mesh* result_mesh,
+        TerrainRenderUploadMesh upload = TerrainRenderUploadMesh::DoUpload
     ) -> void;
 
     static auto make_empty_mesh() -> Mesh;
@@ -113,7 +131,7 @@ public:
 public:
     static auto constexpr DO_AMBIENT_OCCLUSION = true;
     static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 4>{1, 2, 1, 3};
+        std::array<tmine::usize, 3>{1, 2, 1};
 
 private:
     GameBlocksData data;

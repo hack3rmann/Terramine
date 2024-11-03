@@ -51,6 +51,12 @@ private:
         std::array<usize, 2>{3, 4};
 };
 
+enum class ChunkState : u8 {
+    UpToDate,
+    VoxelsUpdated,
+    MeshUpdated,
+};
+
 class Terrain {
     friend class TerrarianHandler;
 
@@ -86,7 +92,7 @@ public:
 private:
     ChunkArray chunks;
     std::unique_ptr<Mesh[]> meshes;
-    std::unique_ptr<bool[]> is_modified;
+    std::unique_ptr<ChunkState[]> states;
     TerrainRenderer renderer;
     ShaderProgram shader;
     Texture texture_atlas;

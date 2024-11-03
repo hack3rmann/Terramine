@@ -15,7 +15,7 @@ Terrain::Terrain(glm::uvec3 sizes)
 , meshes{(Mesh*) ::operator new(
       sizeof(this->meshes[0]) * sizes.x * sizes.y * sizes.z
   )}
-, is_modified{new bool[sizes.x * sizes.y * sizes.z]}
+, states{new ChunkState[sizes.x * sizes.y * sizes.z]}
 , renderer{load_game_blocks_data(
       Terrain::BLOCK_DATA_PATH, Terrain::BLOCK_TEXTURE_DATA_PATH
   )}
@@ -29,7 +29,7 @@ Terrain::Terrain(glm::uvec3 sizes)
   )} {
     auto const n_meshes = sizes.x * sizes.y * sizes.z;
 
-    std::memset(this->is_modified.get(), true, n_meshes);
+    std::memset(this->states.get(), (u8) ChunkState::VoxelsUpdated, n_meshes);
 
     // HACK(hac3rmann): so we need to manually call constructor on each element
     for (usize i = 0; i < n_meshes; ++i) {
@@ -40,31 +40,42 @@ Terrain::Terrain(glm::uvec3 sizes)
 }
 
 auto Terrain::generate_meshes(this Terrain& self) -> void {
-    for (usize x = 0; x < self.chunks.get_sizes().x; ++x) {
-        for (usize y = 0; y < self.chunks.get_sizes().y; ++y) {
-            for (usize z = 0; z < self.chunks.get_sizes().z; ++z) {
-                auto const pos = glm::uvec3{x, y, z};
-                auto const index = self.chunks.index_of(pos);
+#pragma omp parallel for
+    for (usize i = 0; i < self.chunks.get_volume(); ++i) {
+        auto const pos = self.chunks.index_to_pos(i);
 
-                if (self.is_modified[index]) {
-                    self.is_modified[index] = false;
-                } else {
-                    continue;
-                }
-
-                self.renderer.render(self.chunks, pos, &self.meshes[index]);
-            }
+        if (ChunkState::VoxelsUpdated == self.states[i]) {
+            self.states[i] = ChunkState::MeshUpdated;
+        } else {
+            continue;
         }
+
+        // Do not reload mesh buffer on multithread
+        self.renderer.render(
+            self.chunks, pos, &self.meshes[i], TerrainRenderUploadMesh::Skip
+        );
+    }
+
+    // Reload buffers on main thread
+    for (usize i = 0; i < self.chunks.get_volume(); ++i) {
+        if (ChunkState::MeshUpdated == self.states[i]) {
+            self.states[i] = ChunkState::UpToDate;
+        }
+
+        self.meshes[i].reload_buffer();
     }
 }
 
 auto Terrain::update(this Terrain& self) -> void { self.generate_meshes(); }
 
 auto Terrain::render(
-    this Terrain const& self, Camera const& cam, glm::uvec3 light_direction, glm::uvec2 window_size
+    this Terrain const& self, Camera const& cam, glm::uvec3 light_direction,
+    glm::uvec2 window_size
 ) -> void {
     self.shader.bind();
-    self.shader.uniform_mat4("proj", cam.get_projection(Window::aspect_ratio_of(window_size)));
+    self.shader.uniform_mat4(
+        "proj", cam.get_projection(Window::aspect_ratio_of(window_size))
+    );
     self.shader.uniform_mat4("view", cam.get_view());
     self.shader.uniform_vec2("resolution", glm::vec2{window_size});
     self.shader.uniform_vec3("toLightVec", -light_direction);
@@ -102,48 +113,48 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
     }
 
     // TODO(hack3rmann): modify neighbors
-    self.is_modified[self.chunks.index_of(chunk_pos)] = true;
+    self.states[self.chunks.index_of(chunk_pos)] = ChunkState::VoxelsUpdated;
 
     if (0 == voxel_pos.x && 0 != chunk_pos.x) {
-        self.is_modified[self.chunks.index_of(
+        self.states[self.chunks.index_of(
             glm::uvec3(chunk_pos.x - 1, chunk_pos.y, chunk_pos.z)
-        )] = true;
+        )] = ChunkState::VoxelsUpdated;
     }
 
     if (Chunk::WIDTH == voxel_pos.x + 1 &&
         self.chunks.get_sizes().x != chunk_pos.x + 1)
     {
-        self.is_modified[self.chunks.index_of(
+        self.states[self.chunks.index_of(
             glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z)
-        )] = true;
+        )] = ChunkState::VoxelsUpdated;
     }
 
     if (0 == voxel_pos.y && 0 != chunk_pos.y) {
-        self.is_modified[self.chunks.index_of(
+        self.states[self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y - 1, chunk_pos.z)
-        )] = true;
+        )] = ChunkState::VoxelsUpdated;
     }
 
     if (Chunk::HEIGHT == voxel_pos.y + 1 &&
         self.chunks.get_sizes().y != chunk_pos.y + 1)
     {
-        self.is_modified[self.chunks.index_of(
+        self.states[self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z)
-        )] = true;
+        )] = ChunkState::VoxelsUpdated;
     }
 
     if (0 == voxel_pos.z && 0 != chunk_pos.z) {
-        self.is_modified[self.chunks.index_of(
+        self.states[self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z - 1)
-        )] = true;
+        )] = ChunkState::VoxelsUpdated;
     }
 
     if (Chunk::DEPTH == voxel_pos.z + 1 &&
         self.chunks.get_sizes().z != chunk_pos.z + 1)
     {
-        self.is_modified[self.chunks.index_of(
+        self.states[self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
-        )] = true;
+        )] = ChunkState::VoxelsUpdated;
     }
 
     self.chunks.set_voxel(pos, value);
