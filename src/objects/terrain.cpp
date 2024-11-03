@@ -10,8 +10,7 @@ namespace tmine {
 namespace vs = std::ranges::views;
 
 Terrain::Terrain(glm::uvec3 sizes)
-: chunks{sizes}  // HACK(hack3rmann): there is no way in C++ to make array from
-                 // a function that returns new elements
+: chunks{sizes}
 , meshes{(Mesh*) ::operator new(
       sizeof(this->meshes[0]) * sizes.x * sizes.y * sizes.z
   )}
@@ -31,7 +30,6 @@ Terrain::Terrain(glm::uvec3 sizes)
 
     std::memset(this->states.get(), (u8) ChunkState::VoxelsUpdated, n_meshes);
 
-    // HACK(hac3rmann): so we need to manually call constructor on each element
     for (usize i = 0; i < n_meshes; ++i) {
         new (this->meshes.get() + i) Mesh{TerrainRenderer::make_empty_mesh()};
     }

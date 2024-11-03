@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <fmt/format.h>
 
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
@@ -37,18 +38,16 @@ ShaderProgram Text::shader;
 void Text::init() {
     ParseFont(chars);
     fontTex = Texture::from_image(
-        load_png("assets/font.png"), TextureLoad::NO_MIPMAP_LINEAR
+        load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR
     );
-    shader = load_shader("textVertex.glsl", "textFragment.glsl");
+    shader = load_shader("text_vertex.glsl", "text_fragment.glsl");
 }
 
 auto Text::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
     return glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 0.0f, 100.0f);
 }
 
-Text::Text(
-    std::string text, glm::vec2 position, float fontSize
-)
+Text::Text(std::string text, glm::vec2 position, float fontSize)
 : text{std::move(text)}
 , mesh{{}, Text::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles} {
     /* init */
@@ -94,7 +93,7 @@ Text::Text(
 
 void Text::render(f32 aspect_ratio) {
     if (io.just_pressed(Key::R)) {
-        shader = load_shader("textVertex.glsl", "textFragment.glsl");
+        shader = load_shader("text_vertex.glsl", "text_fragment.glsl");
         reload();
     }
 
@@ -152,7 +151,15 @@ bool ParseFont(Charset& CharsetDesc) {
     std::string Line;
     std::string Read, Key, Value;
     std::size_t i;
-    Stream.open("assets/font.fnt");
+    char constexpr FONT_FILE_NAME[] = "assets/fonts/font.fnt";
+    Stream.open(FONT_FILE_NAME);
+
+    if (!Stream.is_open()) {
+        throw std::runtime_error(
+            fmt::format("failed to open font file '{}'", FONT_FILE_NAME)
+        );
+    }
+
     while (!Stream.eof()) {
         std::stringstream LineStream;
         std::getline(Stream, Line);

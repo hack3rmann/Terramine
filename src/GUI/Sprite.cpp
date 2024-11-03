@@ -18,7 +18,7 @@ Sprite::Sprite(
 : GUIObject(posX, posY, width, height)
 , mesh{std::vector(GUI_VERTEX_SIZE * 6, 0.0f), Sprite::VERTEX_ATTRIBUTE_SIZES, Primitive::Triangles}
 , texture{std::move(texture)} {
-    shader = load_shader("GUIVertex.glsl", "GUIFragment.glsl");
+    shader = load_shader("gui_vertex.glsl", "gui_fragment.glsl");
 
     auto buffer = this->mesh.get_buffer().data();
     int i = 0;

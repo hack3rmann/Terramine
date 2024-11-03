@@ -10,7 +10,7 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current, Window* window) {
     /* Init */
     GUIs = new GUI*[8];
     shader = ShaderProgram::from_source(
-        load_shader_source("GUIVertex.glsl", "GUIFragment.glsl")
+        load_shader_source("gui_vertex.glsl", "gui_fragment.glsl")
     );
     this->current = startMenu;
     for (int i = 0; i < 8; i++) {
@@ -19,19 +19,19 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current, Window* window) {
 
     /* Loading basic textures */
     bg = Texture::from_image(
-        load_png("assets/startScreenBackground.png"), TextureLoad::DEFAULT
+        load_png("assets/images/startScreenBackground.png"), TextureLoad::DEFAULT
     );
     bDef = Texture::from_image(
-        load_png("assets/testButtonDef.png"), TextureLoad::DEFAULT
+        load_png("assets/images/testButtonDef.png"), TextureLoad::DEFAULT
     );
     bHover = Texture::from_image(
-        load_png("assets/testButtonHover.png"), TextureLoad::DEFAULT
+        load_png("assets/images/testButtonHover.png"), TextureLoad::DEFAULT
     );
     bClicked = Texture::from_image(
-        load_png("assets/testButtonClicked.png"), TextureLoad::DEFAULT
+        load_png("assets/images/testButtonClicked.png"), TextureLoad::DEFAULT
     );
     darker = Texture::from_image(
-        load_png("assets/darker.png"), TextureLoad::DEFAULT
+        load_png("assets/images/darker.png"), TextureLoad::DEFAULT
     );
 
     /* Empty menu init */

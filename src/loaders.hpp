@@ -7,7 +7,7 @@
 
 namespace tmine {
 
-char constexpr SHADERS_PATH[] = "assets/Shaders";
+char constexpr SHADERS_PATH[] = "assets/shaders";
 
 auto read_to_string(char const* path) -> std::string;
 
