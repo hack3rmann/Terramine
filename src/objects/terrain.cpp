@@ -112,7 +112,6 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         return;
     }
 
-    // TODO(hack3rmann): modify neighbors
     self.states[self.chunks.index_of(chunk_pos)] = ChunkState::VoxelsUpdated;
 
     if (0 == voxel_pos.x && 0 != chunk_pos.x) {
