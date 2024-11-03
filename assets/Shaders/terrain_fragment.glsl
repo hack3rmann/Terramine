@@ -1,6 +1,6 @@
 #version 330 core
 
-in vec4 vColor;
+in float a_light;
 in vec2 a_TexCoord;
 in vec3 norm;
 in vec3 toCam;
@@ -34,9 +34,9 @@ void main() {
     float shineDamper = 1000.0f;
     float reflectivity = 0.25f;
 
-    vec4 texColor = vColor * texture(u_Texture0, a_TexCoord);
+    vec4 texColor = texture(u_Texture0, a_TexCoord);
 
-    vec3 unitN = normalize(surfNorm);
+    vec3 unitN = surfNorm;
     vec3 unitL = normalize(v_toLightVec);
     vec3 lightDir = -unitL;
     vec3 unitC = normalize(toCam);
@@ -54,29 +54,5 @@ void main() {
 
     vec3 mixcolor = mix(diffuse, texColor.rgb, brightness);
 
-    //vec3 texColor = texture(u_Texture0, a_TexCoord).rgb;
-    //vec3 normal = normalize(norm);
-    //float reflectivity = 0.5f;
-    //float shineDamper = 10.0f;
-    //
-    ///* Ambient */
-    //vec3 ambient = 0.3f * texColor;
-    //
-    ///* Diffuse */
-    //vec3 lightDir = -normalize(v_toLightVec);
-    //float nDOTl = dot(lightDir, normal);
-    //float diff = max(nDOTl, 0.0f);
-    //vec3 diffuse = diff * lightColor;
-    //
-    ///* Specular */
-    //vec3 reflectedLight = reflect(lightDir, normal);
-    //float specularFactor = dot(reflectedLight, normalize(toCam));
-    //float dampedFactor = pow(specularFactor, shineDamper);
-    //vec3 specular = vec3(dampedFactor * lightColor * reflectivity);
-
-    /* Calculate shadow */
-    /* float shadow = shadowCalc();
-        	vec3 lighting = (shadow * (mixcolor + finalSpec)) * vec3(texColor); */
-
-    color = vColor * texture(u_Texture0, a_TexCoord); //vec4(finalSpec.rgb + mixcolor, 1.0f);
+    color = vec4(a_light * texture(u_Texture0, a_TexCoord).xyz, 1.0);
 }
