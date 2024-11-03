@@ -26,7 +26,6 @@ add_executable(
     terramine
     ${DEPS_DIR}/glad/src/gl.c
     src/main.cpp
-    src/Camera.cpp
     src/Player.cpp
     src/graphics/FrameBuffer.cpp
     src/graphics/MasterHandler.cpp
@@ -40,6 +39,7 @@ add_executable(
     src/GUI/GUIObject.cpp
     src/GUI/Sprite.cpp
     src/GUI/Text.cpp
+    src/controls/camera.cpp
     src/events/io.cpp
     src/loaders/png.cpp
     src/loaders/shader.cpp

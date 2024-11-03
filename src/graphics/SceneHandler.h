@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Camera.h"
+#include "../controls.hpp"
 #include "../Player.h"
 #include "FrameBuffer.h"
 #include "../objects.hpp"
@@ -38,12 +38,12 @@ class TerrarianHandler {
 
 public:
     TerrarianHandler();
-    void reloadChunks(Camera const* cam);
+    void reloadChunks(tmine::Camera const* cam);
     void refreshRes();
     void terminate();
-    void render(Camera const* cam, glm::uvec2 window_size);
+    void render(tmine::Camera const* cam, glm::uvec2 window_size);
     void renderShadows(
-        Camera const* cam, FrameBuffer* shadowBuff, glm::uvec2 window_size
+        tmine::Camera const* cam, FrameBuffer* shadowBuff, glm::uvec2 window_size
     );
 };
 
@@ -55,7 +55,7 @@ class LineBoxHandler {
 public:
     LineBoxHandler();
     void terminate();
-    void render(Camera const* cam, tmine::f32 aspect_ratio);
+    void render(tmine::Camera const* cam, tmine::f32 aspect_ratio);
 };
 
 class SkyboxHandler {
@@ -67,5 +67,5 @@ class SkyboxHandler {
 public:
     SkyboxHandler();
     void terminate();
-    void render(Camera const* cam, glm::uvec2 window_size);
+    void render(tmine::Camera const* cam, glm::uvec2 window_size);
 };

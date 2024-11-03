@@ -11,8 +11,9 @@ auto constexpr N_VERTICES = usize{36};
 auto constexpr VERTEX_SIZE =
     std::ranges::fold_left(Skybox::VERTEX_ATTRIBUTE_SIZES, 0, std::plus{});
 
-static auto add_vertex(std::vector<f32>* buffer_ptr, vec3 pos, vec2 uv)
-    -> void {
+static auto add_vertex(
+    std::vector<f32>* buffer_ptr, glm::vec3 pos, glm::vec2 uv
+) -> void {
     auto const attributes = std::array<f32, 5>{pos.x, pos.y, pos.z, uv.x, uv.y};
     buffer_ptr->insert(buffer_ptr->end(), attributes.begin(), attributes.end());
 }
@@ -78,9 +79,9 @@ void Skybox::render(
 
     self.shader.uniform_mat4(
         "projView",
-        cam.getProjection(Window::aspect_ratio_of(window_size)) * cam.getView()
+        cam.get_projection(Window::aspect_ratio_of(window_size)) * cam.get_view()
     );
-    self.shader.uniform_vec3("camPos", cam.position);
+    self.shader.uniform_vec3("camPos", cam.get_pos());
     self.shader.uniform_vec2("resolution", glm::vec2{window_size});
 
     self.mesh.draw();

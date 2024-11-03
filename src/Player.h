@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Camera.h"
+#include "controls.hpp"
 #include "objects.hpp"
 
 using namespace glm;
@@ -17,7 +17,7 @@ class Player {
 
 public:
     tmine::LineBox* lineBatch;
-    Camera* cam;
+    tmine::Camera cam;
     vec3 speed;
     int currentBlock;
     bool isSpeedUp;

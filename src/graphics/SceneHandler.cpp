@@ -33,10 +33,10 @@ void SceneHandler::terminate() {
 
 void SceneHandler::updateAll(glm::uvec2 window_size) {
     plr->update(&terrarian->terrain, lines->lineBatch, window_size);
-    terrarian->reloadChunks(plr->cam);
+    terrarian->reloadChunks(&plr->cam);
 }
 
-void SceneHandler::updateChunks() { terrarian->reloadChunks(plr->cam); }
+void SceneHandler::updateChunks() { terrarian->reloadChunks(&plr->cam); }
 
 void SceneHandler::updatePlayer(glm::uvec2 window_size) {
     plr->update(&terrarian->terrain, lines->lineBatch, window_size);
@@ -57,7 +57,7 @@ void SceneHandler::render(glm::uvec2 window_size) {
     /* Render to shadow view */
     shadowBuff->bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    terrarian->render(plr->cam, this->window_size);
+    terrarian->render(&plr->cam, this->window_size);
     shadowBuff->unbind();
 
     /* Render to post-processing framebuffer */
@@ -68,9 +68,9 @@ void SceneHandler::render(glm::uvec2 window_size) {
         fprintf(stderr, "Frame buffer in not complete...");
     }
 
-    skybox->render(plr->cam, this->window_size);
-    terrarian->renderShadows(plr->cam, shadowBuff, this->window_size);
-    lines->render(plr->cam, Window::aspect_ratio_of(window_size));
+    skybox->render(&plr->cam, this->window_size);
+    terrarian->renderShadows(&plr->cam, shadowBuff, this->window_size);
+    lines->render(&plr->cam, Window::aspect_ratio_of(window_size));
     fb->unbind();
 
     /* Draw result of postprocessing */
