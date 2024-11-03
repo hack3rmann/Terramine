@@ -131,7 +131,7 @@ public:
 public:
     static auto constexpr DO_AMBIENT_OCCLUSION = true;
     static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 2>{1, 2};
+        std::array<tmine::usize, 1>{1};
 
 private:
     GameBlocksData data;
