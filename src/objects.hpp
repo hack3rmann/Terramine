@@ -104,7 +104,7 @@ public:
 private:
     ChunkArray chunks;
     std::unique_ptr<Mesh<TerrainRenderer::Vertex>[]> meshes;
-    std::unique_ptr<ChunkState[]> states;
+    std::vector<usize> chunks_to_update;
     TerrainRenderer renderer;
     ShaderProgram shader;
     Texture texture_atlas;

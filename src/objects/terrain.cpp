@@ -14,7 +14,7 @@ Terrain::Terrain(glm::uvec3 sizes)
 , meshes{(Mesh<TerrainRenderer::Vertex>*) ::operator new(
       sizeof(this->meshes[0]) * sizes.x * sizes.y * sizes.z
   )}
-, states{new ChunkState[sizes.x * sizes.y * sizes.z]}
+, chunks_to_update(sizes.x * sizes.y * sizes.z)
 , renderer{load_game_blocks_data(
       Terrain::BLOCK_DATA_PATH, Terrain::BLOCK_TEXTURE_DATA_PATH
   )}
@@ -28,7 +28,10 @@ Terrain::Terrain(glm::uvec3 sizes)
   )} {
     auto const n_meshes = sizes.x * sizes.y * sizes.z;
 
-    std::memset(this->states.get(), (u8) ChunkState::VoxelsUpdated, n_meshes);
+#pragma omp parallel for
+    for (usize i = 0; i < n_meshes; ++i) {
+        this->chunks_to_update[i] = i;
+    }
 
     for (usize i = 0; i < n_meshes; ++i) {
         new (this->meshes.get() + i) Mesh{TerrainRenderer::make_empty_mesh()};
@@ -39,14 +42,8 @@ Terrain::Terrain(glm::uvec3 sizes)
 
 auto Terrain::generate_meshes(this Terrain& self) -> void {
 #pragma omp parallel for
-    for (usize i = 0; i < self.chunks.get_volume(); ++i) {
+    for (auto i : self.chunks_to_update) {
         auto const pos = self.chunks.index_to_pos(i);
-
-        if (ChunkState::VoxelsUpdated == self.states[i]) {
-            self.states[i] = ChunkState::MeshUpdated;
-        } else {
-            continue;
-        }
 
         // Do not reload mesh buffer on multithread
         self.renderer.render(
@@ -55,13 +52,11 @@ auto Terrain::generate_meshes(this Terrain& self) -> void {
     }
 
     // Reload buffers on main thread
-    for (usize i = 0; i < self.chunks.get_volume(); ++i) {
-        if (ChunkState::MeshUpdated == self.states[i]) {
-            self.states[i] = ChunkState::UpToDate;
-        }
-
+    for (auto i : self.chunks_to_update) {
         self.meshes[i].reload_buffer();
     }
+
+    self.chunks_to_update.clear();
 }
 
 auto Terrain::update(this Terrain& self) -> void { self.generate_meshes(); }
@@ -110,48 +105,48 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         return;
     }
 
-    self.states[self.chunks.index_of(chunk_pos)] = ChunkState::VoxelsUpdated;
+    self.chunks_to_update.push_back(self.chunks.index_of(chunk_pos));
 
     if (0 == voxel_pos.x && 0 != chunk_pos.x) {
-        self.states[self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x - 1, chunk_pos.y, chunk_pos.z)
-        )] = ChunkState::VoxelsUpdated;
+        ));
     }
 
     if (Chunk::WIDTH == voxel_pos.x + 1 &&
         self.chunks.get_sizes().x != chunk_pos.x + 1)
     {
-        self.states[self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z)
-        )] = ChunkState::VoxelsUpdated;
+        ));
     }
 
     if (0 == voxel_pos.y && 0 != chunk_pos.y) {
-        self.states[self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y - 1, chunk_pos.z)
-        )] = ChunkState::VoxelsUpdated;
+        ));
     }
 
     if (Chunk::HEIGHT == voxel_pos.y + 1 &&
         self.chunks.get_sizes().y != chunk_pos.y + 1)
     {
-        self.states[self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z)
-        )] = ChunkState::VoxelsUpdated;
+        ));
     }
 
     if (0 == voxel_pos.z && 0 != chunk_pos.z) {
-        self.states[self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z - 1)
-        )] = ChunkState::VoxelsUpdated;
+        ));
     }
 
     if (Chunk::DEPTH == voxel_pos.z + 1 &&
         self.chunks.get_sizes().z != chunk_pos.z + 1)
     {
-        self.states[self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
-        )] = ChunkState::VoxelsUpdated;
+        ));
     }
 
     self.chunks.set_voxel(pos, value);
