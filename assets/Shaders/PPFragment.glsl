@@ -66,6 +66,7 @@ void main() {
     //hslCol.r += hue;
 
     color = vec4(HSLtoRGB(hslCol), 1.0);
+    color = inputColor;
 
     if (gl_FragCoord.x >= resolution.x / 2 - 1 &&
             gl_FragCoord.x <= resolution.x / 2 + 1 &&
