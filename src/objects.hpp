@@ -77,8 +77,8 @@ private:
 public:
     static char constexpr TEXTURE_ATLAS_PATH[] = "assets/texture_atlas.png";
     static char constexpr NORMAL_ATLAS_PATH[] = "assets/normal_atlas.png";
-    static char constexpr VERTEX_SHADER_NAME[] = "vertexShader.glsl";
-    static char constexpr FRAGMENT_SHADER_NAME[] = "fragmentShader.glsl";
+    static char constexpr VERTEX_SHADER_NAME[] = "terrain_vertex.glsl";
+    static char constexpr FRAGMENT_SHADER_NAME[] = "terrain_fragment.glsl";
     static char constexpr BLOCK_DATA_PATH[] = "assets/blocks.json";
     static char constexpr BLOCK_TEXTURE_DATA_PATH[] =
         "assets/block_textures.json";

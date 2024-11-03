@@ -2,7 +2,22 @@
 
 namespace tmine {
 
-static auto add_vertex(std::vector<f32>* buffer_ptr, std::array<f32, 12> elems)
+static auto encode_position(glm::uvec3 pos, u32 offset) -> f32 {
+    static_assert(
+        Chunk::N_POSITION_BITS == 4, "only 4 bit position is supported"
+    );
+
+    auto result = u32{0};
+
+    result |= pos.x << (0 * Chunk::N_POSITION_BITS);
+    result |= pos.y << (1 * Chunk::N_POSITION_BITS);
+    result |= pos.z << (2 * Chunk::N_POSITION_BITS);
+    result |= offset << (3 * Chunk::N_POSITION_BITS);
+
+    return std::bit_cast<f32>(result);
+}
+
+static auto add_vertex(std::vector<f32>* buffer_ptr, std::array<f32, 10> elems)
     -> void {
     buffer_ptr->insert(buffer_ptr->end(), elems.begin(), elems.end());
 }
@@ -157,35 +172,37 @@ auto TerrainRenderer::render(
                             ao_factor;
                     }
 
+                    
+
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z - 0.5f, 0.0f, 1.0f, 0.0f, tu2,
+                        {encode_position({x, y, z}, 0b101), 0.0f, 1.0f, 0.0f, tu2,
                          tv1, l * (1.0f - c - d - e), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z + 0.5f, 0.0f, 1.0f, 0.0f, tu2,
+                        {encode_position({x, y, z}, 0b100), 0.0f, 1.0f, 0.0f, tu2,
                          tv2, l * (1.0f - c - b - f), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 1.0f, 0.0f, tu1,
+                        {encode_position({x, y, z}, 0b000), 0.0f, 1.0f, 0.0f, tu1,
                          tv2, l * (1.0f - a - b - g), 1.0f, 0.0f, 0.0f}
                     );
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z - 0.5f, 0.0f, 1.0f, 0.0f, tu2,
+                        {encode_position({x, y, z}, 0b101), 0.0f, 1.0f, 0.0f, tu2,
                          tv1, l * (1.0f - c - d - e), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 1.0f, 0.0f, tu1,
+                        {encode_position({x, y, z}, 0b000), 0.0f, 1.0f, 0.0f, tu1,
                          tv2, l * (1.0f - a - b - g), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z - 0.5f, 0.0f, 1.0f, 0.0f, tu1,
+                        {encode_position({x, y, z}, 0b001), 0.0f, 1.0f, 0.0f, tu1,
                          tv1, l * (1.0f - a - d - h), 1.0f, 0.0f, 0.0f}
                     );
                 }
@@ -242,33 +259,33 @@ auto TerrainRenderer::render(
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, -1.0f, 0.0f, bou1,
+                        {encode_position({x, y, z}, 0b111), 0.0f, -1.0f, 0.0f, bou1,
                          bov1, l * (1.0f - c - d - e), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z + 0.5f, 0.0f, -1.0f, 0.0f, bou2,
+                        {encode_position({x, y, z}, 0b010), 0.0f, -1.0f, 0.0f, bou2,
                          bov2, l * (1.0f - a - b - g), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z + 0.5f, 0.0f, -1.0f, 0.0f, bou1,
+                        {encode_position({x, y, z}, 0b110), 0.0f, -1.0f, 0.0f, bou1,
                          bov2, l * (1.0f - c - b - f), 1.0f, 0.0f, 0.0f}
                     );
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, -1.0f, 0.0f, bou1,
+                        {encode_position({x, y, z}, 0b111), 0.0f, -1.0f, 0.0f, bou1,
                          bov1, l * (1.0f - c - d - e), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z - 0.5f, 0.0f, -1.0f, 0.0f, bou2,
+                        {encode_position({x, y, z}, 0b011), 0.0f, -1.0f, 0.0f, bou2,
                          bov1, l * (1.0f - a - d - h), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z + 0.5f, 0.0f, -1.0f, 0.0f, bou2,
+                        {encode_position({x, y, z}, 0b010), 0.0f, -1.0f, 0.0f, bou2,
                          bov2, l * (1.0f - a - b - g), 1.0f, 0.0f, 0.0f}
                     );
                 }
@@ -326,33 +343,33 @@ auto TerrainRenderer::render(
 
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z - 0.5f, 1.0f, 0.0f, 0.0f, ru2,
+                        {encode_position({x, y, z}, 0b011), 1.0f, 0.0f, 0.0f, ru2,
                          rv1, l * (1.0f - c - d - e), 0.0f, 0.0f, -1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z - 0.5f, 1.0f, 0.0f, 0.0f, ru2,
+                        {encode_position({x, y, z}, 0b001), 1.0f, 0.0f, 0.0f, ru2,
                          rv2, l * (1.0f - d - a - h), 0.0f, 0.0f, -1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z + 0.5f, 1.0f, 0.0f, 0.0f, ru1,
+                        {encode_position({x, y, z}, 0b000), 1.0f, 0.0f, 0.0f, ru1,
                          rv2, l * (1.0f - a - b - g), 0.0f, 0.0f, -1.0f}
                     );
 
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z - 0.5f, 1.0f, 0.0f, 0.0f, ru2,
+                        {encode_position({x, y, z}, 0b011), 1.0f, 0.0f, 0.0f, ru2,
                          rv1, l * (1.0f - c - d - e), 0.0f, 0.0f, -1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z + 0.5f, 1.0f, 0.0f, 0.0f, ru1,
+                        {encode_position({x, y, z}, 0b000), 1.0f, 0.0f, 0.0f, ru1,
                          rv2, l * (1.0f - a - b - g), 0.0f, 0.0f, -1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z + 0.5f, 1.0f, 0.0f, 0.0f, ru1,
+                        {encode_position({x, y, z}, 0b010), 1.0f, 0.0f, 0.0f, ru1,
                          rv1, l * (1.0f - b - c - f), 0.0f, 0.0f, -1.0f}
                     );
                 }
@@ -409,33 +426,33 @@ auto TerrainRenderer::render(
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z - 0.5f, -1.0f, 0.0f, 0.0f, lu1,
+                        {encode_position({x, y, z}, 0b111), -1.0f, 0.0f, 0.0f, lu1,
                          lv1, l * (1.0f - c - d - e), 0.0f, 0.0f, 1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z + 0.5f, -1.0f, 0.0f, 0.0f, lu2,
+                        {encode_position({x, y, z}, 0b100), -1.0f, 0.0f, 0.0f, lu2,
                          lv2, l * (1.0f - a - b - g), 0.0f, 0.0f, 1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z - 0.5f, -1.0f, 0.0f, 0.0f, lu1,
+                        {encode_position({x, y, z}, 0b101), -1.0f, 0.0f, 0.0f, lu1,
                          lv2, l * (1.0f - d - a - h), 0.0f, 0.0f, 1.0f}
                     );
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z - 0.5f, -1.0f, 0.0f, 0.0f, lu1,
+                        {encode_position({x, y, z}, 0b111), -1.0f, 0.0f, 0.0f, lu1,
                          lv1, l * (1.0f - c - d - e), 0.0f, 0.0f, 1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z + 0.5f, -1.0f, 0.0f, 0.0f, lu2,
+                        {encode_position({x, y, z}, 0b110), -1.0f, 0.0f, 0.0f, lu2,
                          lv1, l * (1.0f - b - c - f), 0.0f, 0.0f, 1.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z + 0.5f, -1.0f, 0.0f, 0.0f, lu2,
+                        {encode_position({x, y, z}, 0b100), -1.0f, 0.0f, 0.0f, lu2,
                          lv2, l * (1.0f - a - b - g), 0.0f, 0.0f, 1.0f}
                     );
                 }
@@ -493,33 +510,33 @@ auto TerrainRenderer::render(
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau1,
+                        {encode_position({x, y, z}, 0b110), 0.0f, 0.0f, 1.0f, bau1,
                          bav1, l * (1.0f - c - d - e), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau2,
+                        {encode_position({x, y, z}, 0b000), 0.0f, 0.0f, 1.0f, bau2,
                          bav2, l * (1.0f - a - b - g), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau1,
+                        {encode_position({x, y, z}, 0b100), 0.0f, 0.0f, 1.0f, bau1,
                          bav2, l * (1.0f - a - d - h), 1.0f, 0.0f, 0.0f}
                     );
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau1,
+                        {encode_position({x, y, z}, 0b110), 0.0f, 0.0f, 1.0f, bau1,
                          bav1, l * (1.0f - c - d - e), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau2,
+                        {encode_position({x, y, z}, 0b010), 0.0f, 0.0f, 1.0f, bau2,
                          bav1, l * (1.0f - b - c - f), 1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z + 0.5f, 0.0f, 0.0f, 1.0f, bau2,
+                        {encode_position({x, y, z}, 0b000), 0.0f, 0.0f, 1.0f, bau2,
                          bav2, l * (1.0f - a - b - g), 1.0f, 0.0f, 0.0f}
                     );
                 }
@@ -576,33 +593,33 @@ auto TerrainRenderer::render(
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu2,
+                        {encode_position({x, y, z}, 0b111), 0.0f, 0.0f, -1.0f, fu2,
                          fv1, l * (1.0f - c - d - e), -1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y + 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu2,
+                        {encode_position({x, y, z}, 0b101), 0.0f, 0.0f, -1.0f, fu2,
                          fv2, l * (1.0f - a - d - h), -1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu1,
+                        {encode_position({x, y, z}, 0b001), 0.0f, 0.0f, -1.0f, fu1,
                          fv2, l * (1.0f - a - b - g), -1.0f, 0.0f, 0.0f}
                     );
 
                     add_vertex(
                         &buffer,
-                        {x - 0.5f, y - 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu2,
+                        {encode_position({x, y, z}, 0b111), 0.0f, 0.0f, -1.0f, fu2,
                          fv1, l * (1.0f - c - d - e), -1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y + 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu1,
+                        {encode_position({x, y, z}, 0b001), 0.0f, 0.0f, -1.0f, fu1,
                          fv2, l * (1.0f - a - b - g), -1.0f, 0.0f, 0.0f}
                     );
                     add_vertex(
                         &buffer,
-                        {x + 0.5f, y - 0.5f, z - 0.5f, 0.0f, 0.0f, -1.0f, fu1,
+                        {encode_position({x, y, z}, 0b011), 0.0f, 0.0f, -1.0f, fu1,
                          fv1, l * (1.0f - b - c - f), -1.0f, 0.0f, 0.0f}
                     );
                 }

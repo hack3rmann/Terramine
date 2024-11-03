@@ -28,9 +28,10 @@ public:
     }
 
 public:
-    static auto constexpr WIDTH = usize{8};
-    static auto constexpr HEIGHT = usize{8};
-    static auto constexpr DEPTH = usize{8};
+    static auto constexpr N_POSITION_BITS = usize{4};
+    static auto constexpr WIDTH = usize{1 << N_POSITION_BITS};
+    static auto constexpr HEIGHT = usize{1 << N_POSITION_BITS};
+    static auto constexpr DEPTH = usize{1 << N_POSITION_BITS};
     static auto constexpr SIZES = glm::uvec3{WIDTH, HEIGHT, DEPTH};
     static auto constexpr VOLUME = WIDTH * HEIGHT * DEPTH;
 
@@ -112,7 +113,7 @@ public:
 public:
     static auto constexpr DO_AMBIENT_OCCLUSION = true;
     static auto constexpr VERTEX_ATTRIBUTE_SIZES =
-        std::array<tmine::usize, 5>{3, 3, 2, 1, 3};
+        std::array<tmine::usize, 5>{1, 3, 2, 1, 3};
 
 private:
     GameBlocksData data;
