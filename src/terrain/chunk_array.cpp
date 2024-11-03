@@ -3,22 +3,33 @@
 namespace tmine {
 
 ChunkArray::ChunkArray(glm::uvec3 sizes)
-: chunks{}
+: chunks{(Chunk*) ::operator new(
+      sizeof(this->chunks[0]) * sizes.x * sizes.y * sizes.z
+  )}
 , sizes{sizes} {
-    this->chunks.reserve(sizes.x * sizes.y * sizes.z);
+    auto const volume = sizes.x * sizes.y * sizes.z;
 
-    for (usize y = 0; y < sizes.y; ++y) {
-        for (usize z = 0; z < sizes.z; ++z) {
-            for (usize x = 0; x < sizes.x; ++x) {
-                this->chunks.emplace_back(glm::uvec3{x, y, z});
-            }
-        }
+#pragma omp parallel for
+    for (usize i = 0; i < volume; ++i) {
+        auto const pos = this->index_to_pos(i);
+
+        new (this->chunks.get() + i) Chunk{pos};
     }
 }
 
 auto ChunkArray::index_of(this ChunkArray const& self, glm::uvec3 pos) noexcept
     -> usize {
     return (pos.y * self.sizes.z + pos.z) * self.sizes.x + pos.x;
+}
+
+auto ChunkArray::index_to_pos(this ChunkArray const& self, usize index) noexcept
+    -> glm::uvec3 {
+    usize x = index % self.sizes.x;
+    usize zy = index / self.sizes.x;
+    usize z = zy % self.sizes.z;
+    usize y = zy / self.sizes.z;
+
+    return glm::uvec3{x, y, z};
 }
 
 auto ChunkArray::is_in_bounds(

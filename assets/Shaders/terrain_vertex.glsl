@@ -3,7 +3,6 @@
 layout(location = 0) in float position_pack;
 layout(location = 1) in vec2 v_TexCoord;
 layout(location = 2) in float v_light;
-layout(location = 3) in vec3 v_Tangent;
 
 out float a_light;
 out vec2 a_TexCoord;
@@ -22,7 +21,7 @@ uniform mat4 proj;
 uniform vec3 toLightVec;
 uniform mat4 toLightSpace;
 
-void unpack_data(uint pack, out vec3 position, out vec3 normal) {
+void unpack_data(uint pack, out vec3 position, out vec3 normal, out vec3 tangent) {
     vec3 normals[] = vec3[](
             vec3(1.0, 0.0, 0.0),
             vec3(-1.0, 0.0, 0.0),
@@ -30,6 +29,15 @@ void unpack_data(uint pack, out vec3 position, out vec3 normal) {
             vec3(0.0, -1.0, 0.0),
             vec3(0.0, 0.0, 1.0),
             vec3(0.0, 0.0, -1.0)
+        );
+    
+    vec3 tangents[] = vec3[](
+            vec3(0.0, 0.0, -1.0),
+            vec3(0.0, 0.0, 1.0),
+            vec3(1.0, 0.0, 0.0),
+            vec3(1.0, 0.0, 0.0),
+            vec3(1.0, 0.0, 0.0),
+            vec3(-1.0, 0.0, 0.0)
         );
 
     uint n_bits = 4u;
@@ -51,11 +59,13 @@ void unpack_data(uint pack, out vec3 position, out vec3 normal) {
         );
 
     normal = normals[normal_index];
+    tangent = tangents[normal_index];
 }
 
 void main() {
     vec3 position;
-    unpack_data(floatBitsToUint(position_pack), position, norm);
+    vec3 v_Tangent;
+    unpack_data(floatBitsToUint(position_pack), position, norm, v_Tangent);
 
     vec4 worldPos = model * vec4(position, 1.0f);
     FragPos = worldPos.xyz;

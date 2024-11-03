@@ -95,7 +95,7 @@ void SkyboxHandler::render(Camera const* cam, glm::uvec2 window_size) {
 
 /* Terrarian handler */
 TerrarianHandler::TerrarianHandler()
-: terrain{glm::uvec3{4, 4, 4}} {}
+: terrain{glm::uvec3{32, 8, 32}} {}
 
 void TerrarianHandler::reloadChunks([[maybe_unused]] Camera const* cam) {
     this->terrain.update();
