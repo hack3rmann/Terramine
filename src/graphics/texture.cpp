@@ -5,79 +5,19 @@
 
 using namespace tmine;
 
-Texture::Texture(GLuint id, usize width, usize height)
-: id{id}
-, width{width}
-, height{height}
-, n_clones_ptr{new usize{1}} {}
+Texture::Texture(GLuint id, glm::uvec2 size)
+: data{std::make_shared<TextureData>(TextureData{.id = id, .size = size})} {}
 
-Texture::~Texture() {
-    if (Texture::DUMMY_ID == this->id) {
-        return;
-    } else if (*this->n_clones_ptr > 1) {
-        *this->n_clones_ptr -= 1;
+void Texture::bind(this Texture const& self, u32 slot) {
+    if (nullptr == self.data) {
         return;
     }
 
-    delete this->n_clones_ptr;
-    glDeleteTextures(1, &this->id);
-}
-
-Texture::Texture(Texture const& other)
-: id{other.id}
-, width{other.width}
-, height{other.height}
-, n_clones_ptr{other.n_clones_ptr} {
-    *other.n_clones_ptr += 1;
-}
-
-Texture::Texture(Texture&& other) noexcept
-: id{other.id}
-, width{other.width}
-, height{other.height}
-, n_clones_ptr{other.n_clones_ptr} {
-    other.id = Texture::DUMMY_ID;
-    other.width = 0;
-    other.height = 0;
-    other.n_clones_ptr = nullptr;
-}
-
-auto Texture::operator=(this Texture& self, Texture const& other) -> Texture& {
-    self.id = other.id;
-    self.width = other.width;
-    self.height = other.height;
-    self.n_clones_ptr = other.n_clones_ptr;
-
-    *self.n_clones_ptr += 1;
-
-    return self;
-}
-
-auto Texture::operator=(this Texture& self, Texture&& other) noexcept
-    -> Texture& {
-    self.id = other.id;
-    self.width = other.width;
-    self.height = other.height;
-    self.n_clones_ptr = other.n_clones_ptr;
-
-    other.id = Texture::DUMMY_ID;
-    other.width = 0;
-    other.height = 0;
-    other.n_clones_ptr = nullptr;
-
-    return self;
-}
-
-void Texture::bind(this Texture const& self, u32 slot) {
     glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_2D, self.id);
+    glBindTexture(GL_TEXTURE_2D, self.data->id);
 }
 
-auto Texture::unbind([[maybe_unused]] this Texture const& self) -> void {
-    Texture::unbind_all();
-}
-
-auto Texture::unbind_all() -> void { glBindTexture(GL_TEXTURE_2D, 0); }
+auto Texture::unbind(u32 slot) -> void { glBindTexture(GL_TEXTURE_2D, slot); }
 
 auto Texture::from_image(Image const& image, TextureLoadFlags flags) noexcept
     -> Texture {
@@ -113,5 +53,5 @@ auto Texture::from_image(Image const& image, TextureLoadFlags flags) noexcept
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    return Texture{id, image.width, image.height};
+    return Texture{id, glm::uvec2{image.width, image.height}};
 }
