@@ -33,7 +33,7 @@ struct ParseResult {
     }
 };
 
-auto parse_string(std::string_view src, std::string_view match)
+auto parse_sequence(std::string_view src, std::string_view match)
     -> ParseResult<std::string_view>;
 
 auto parse_char(std::string_view src, char value) -> ParseResult<char>;
@@ -60,6 +60,12 @@ struct Info {
     glm::ivec4 padding;
     glm::ivec2 spacing;
 };
+
+auto parse_key_value_integer(std::string_view src, std::string_view key)
+    -> ParseResult<i64>;
+
+auto parse_key_value_string(std::string_view src, std::string_view key)
+    -> ParseResult<std::string_view>;
 
 auto parse_string(std::string_view src) -> ParseResult<std::string_view>;
 

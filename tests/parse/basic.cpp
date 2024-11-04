@@ -3,14 +3,14 @@
 
 namespace tmine_test {
 
-auto test_parse_string() -> void {
-    auto const result1 = tmine::parse_string("hello, world!", "hello");
+auto test_parse_sequence() -> void {
+    auto const result1 = tmine::parse_sequence("hello, world!", "hello");
 
     tmine_assert(result1.ok());
     tmine_assert_eq(result1.get_value(), "hello");
     tmine_assert_eq(result1.tail, ", world!");
 
-    auto const result2 = tmine::parse_string("Hello, World!", "Minecraft");
+    auto const result2 = tmine::parse_sequence("Hello, World!", "Minecraft");
 
     tmine_assert(!result2.ok());
 }
@@ -30,22 +30,22 @@ auto test_parse_char() -> void {
 auto test_parse_combine() -> void {
     auto const src = "Minecraft is a good game";
 
-    auto const result1 = tmine::parse_string(src, "Terraria") |
-                         tmine::parse_string(src, "Minecraft");
+    auto const result1 = tmine::parse_sequence(src, "Terraria") |
+                         tmine::parse_sequence(src, "Minecraft");
 
     tmine_assert(result1.ok());
     tmine_assert_eq(result1.get_value(), "Minecraft");
     tmine_assert_eq(result1.tail, " is a good game");
 
-    auto const result2 = tmine::parse_string(src, "Minecraft") |
-                         tmine::parse_string(src, "Terraria");
+    auto const result2 = tmine::parse_sequence(src, "Minecraft") |
+                         tmine::parse_sequence(src, "Terraria");
 
     tmine_assert(result2.ok());
     tmine_assert_eq(result2.get_value(), "Minecraft");
     tmine_assert_eq(result2.tail, " is a good game");
 
-    auto const result3 = tmine::parse_string(src, "Terraria") |
-                         tmine::parse_string(src, "VintageStory");
+    auto const result3 = tmine::parse_sequence(src, "Terraria") |
+                         tmine::parse_sequence(src, "VintageStory");
 
     tmine_assert(!result3.ok());
 }
@@ -66,6 +66,12 @@ auto test_parse_integer() -> void {
     auto const result3 = tmine::parse_integer("Hello, Wolrd!");
 
     tmine_assert(!result3.ok());
+
+    auto const result4 = tmine::parse_integer("-666");
+
+    tmine_assert(result4.ok());
+    tmine_assert_eq(result4.get_value(), -666);
+    tmine_assert_eq(result4.tail, "");
 }
 
 auto test_parse_whitespaces() -> void {
@@ -108,22 +114,6 @@ auto test_parse_newline() -> void {
     tmine_assert(result2.ok());
     tmine_assert_eq(result2.get_value(), "\r\n");
     tmine_assert_eq(result2.tail, "New line");
-}
-
-auto test_parse_fnt_string() -> void {
-    auto const result1 = tmine::fnt::parse_string("\"String\"");
-
-    tmine_assert(result1.ok());
-    tmine_assert_eq(result1.get_value(), "String");
-    tmine_assert_eq(result1.tail, "");
-
-    auto const result2 = tmine::fnt::parse_string("\"NotString");
-
-    tmine_assert(!result2.ok());
-
-    auto const result3 = tmine::fnt::parse_string("AlsoNotAString");
-    
-    tmine_assert(!result3.ok());
 }
 
 }  // namespace tmine_test
