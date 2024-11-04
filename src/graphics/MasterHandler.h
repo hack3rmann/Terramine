@@ -8,11 +8,11 @@
 
 class MasterHandler {
 public:
-    static SceneHandler* sceneHandler;
-    static GUIHandler* gui;
+    SceneHandler sceneHandler;
+    GUIHandler gui;
 
-    static void init(tmine::Window* window);
-    static void render(glm::uvec2 window_size);
-    static void terminate();
-    static void updateAll(glm::uvec2 window_size);
+    explicit MasterHandler(tmine::Window* window);
+    
+    void render(glm::uvec2 window_size);
+    void updateAll(glm::uvec2 window_size);
 };

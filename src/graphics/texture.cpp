@@ -1,12 +1,17 @@
 #include <glad/gl.h>
 #include <cstdio>
+#include <fmt/printf.h>
 
 #include "../graphics.hpp"
 
 using namespace tmine;
 
+TextureData::~TextureData() {
+    glDeleteTextures(1, &this->id);
+}
+
 Texture::Texture(GLuint id, glm::uvec2 size)
-: data{std::make_shared<TextureData>(TextureData{.id = id, .size = size})} {}
+: data{std::make_shared<TextureData>(id, size)} {}
 
 void Texture::bind(this Texture const& self, u32 slot) {
     if (nullptr == self.data) {

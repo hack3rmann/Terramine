@@ -11,9 +11,6 @@ struct Charset;
 
 class Text {
     std::string text;
-    static Charset chars;
-    static tmine::Texture fontTex;
-    static tmine::ShaderProgram shader;
 
     struct Vertex {
         glm::vec2 pos;
@@ -24,6 +21,9 @@ class Text {
             std::array<tmine::usize, 3>{2, 2, 3};
     };
 
+    tmine::ShaderProgram shader;
+    tmine::Texture fontTex;
+
     tmine::Mesh<Vertex> mesh;
     glm::vec2 position;
     glm::mat4 model;
@@ -32,7 +32,8 @@ class Text {
     float fontSize;
 
 public:
-    static void init();
+    static auto get_charset() -> Charset&;
+
     void render(tmine::f32 aspect_ratio);
     void reload();
     static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
@@ -64,6 +65,8 @@ struct Charset {
     unsigned short Width, Height;
     unsigned short Pages;
     CharDescriptor Chars[256];
+
+    Charset();
 };
 
 bool ParseFont(Charset& CharsetDesc);

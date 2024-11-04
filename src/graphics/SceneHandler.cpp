@@ -16,13 +16,6 @@ SceneHandler::SceneHandler(glm::uvec2 window_size)
 , fb{"postproc_vertex.glsl", "postproc_fragment.glsl", window_size}
 , shadowBuff{"postproc_vertex.glsl", "postproc_fragment.glsl", window_size} {}
 
-void SceneHandler::terminate() {
-    terrarian.terminate();
-    lines.terminate();
-    skybox.terminate();
-    fb.terminate();
-}
-
 void SceneHandler::updateAll(glm::uvec2 window_size) {
     plr.update(&terrarian.terrain, &lines.lineBatch, window_size);
     terrarian.reloadChunks(&plr.cam);
@@ -72,19 +65,12 @@ void SceneHandler::render(glm::uvec2 window_size) {
 }
 
 /* Skybox Handler */
-SkyboxHandler::SkyboxHandler() {
-    current = 0;
-    skyboxes[0] = new Skybox("assets/images/Skybox4.png");
-}
-
-void SkyboxHandler::terminate() {
-    for (unsigned int i = 0; i < 5; i++) {
-        delete skyboxes[i];
-    }
-}
+SkyboxHandler::SkyboxHandler()
+: skyboxes{Skybox{"assets/images/Skybox4.png"}}
+, current{0} {}
 
 void SkyboxHandler::render(Camera const* cam, glm::uvec2 window_size) {
-    skyboxes[current]->render(*cam, window_size);
+    skyboxes[current].render(*cam, window_size);
 }
 
 /* Terrarian handler */
@@ -94,8 +80,6 @@ TerrarianHandler::TerrarianHandler()
 void TerrarianHandler::reloadChunks([[maybe_unused]] Camera const* cam) {
     this->terrain.update();
 }
-
-void TerrarianHandler::terminate() {}
 
 void TerrarianHandler::render(Camera const* cam, glm::uvec2 window_size) {
     glEnable(GL_DEPTH_TEST);
@@ -125,8 +109,6 @@ void TerrarianHandler::refreshRes() {}
 /* LineBatch handler */
 LineBoxHandler::LineBoxHandler()
 : lineBatch{} {}
-
-void LineBoxHandler::terminate() {}
 
 void LineBoxHandler::render(Camera const* cam, f32 aspect_ratio) {
     glEnable(GL_DEPTH_TEST);

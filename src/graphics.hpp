@@ -23,7 +23,29 @@ struct TextureLoad {
 struct TextureData {
     GLuint id{DUMMY_ID};
     glm::uvec2 size{0, 0};
-    static auto constexpr DUMMY_ID = ~GLuint{0};
+    static auto constexpr DUMMY_ID = GLuint{0};
+
+    ~TextureData();
+
+    inline explicit TextureData(GLuint id, glm::uvec2 size)
+    : id{id}
+    , size{size} {}
+
+    TextureData(TextureData&) = delete;
+
+    inline TextureData(TextureData&& other) noexcept
+    : id{other.id} {
+        other.id = DUMMY_ID;
+    }
+
+    auto operator=(this TextureData&, TextureData&) -> TextureData& = delete;
+
+    inline auto operator=(this TextureData& self, TextureData&& other) noexcept
+        -> TextureData& {
+        self.id = other.id;
+        other.id = DUMMY_ID;
+        return self;
+    }
 };
 
 class Texture {
@@ -43,7 +65,28 @@ private:
 
 struct ShaderData {
     GLuint id{DUMMY_ID};
-    static auto constexpr DUMMY_ID = ~GLuint{0};
+    static auto constexpr DUMMY_ID = GLuint{0};
+
+    ~ShaderData();
+
+    inline explicit ShaderData(GLuint id)
+    : id{id} {}
+
+    ShaderData(ShaderData&) = delete;
+
+    inline ShaderData(ShaderData&& other) noexcept
+    : id{other.id} {
+        other.id = DUMMY_ID;
+    }
+
+    auto operator=(this ShaderData&, ShaderData&) -> ShaderData& = delete;
+
+    auto operator=(this ShaderData& self, ShaderData&& other) noexcept
+        -> ShaderData& {
+        self.id = other.id;
+        other.id = DUMMY_ID;
+        return self;
+    }
 };
 
 class ShaderProgram {
@@ -137,8 +180,8 @@ public:
             return;
         }
 
-        glDeleteVertexArrays(1, &vertex_array_object_id);
         glDeleteBuffers(1, &vertex_buffer_object_id);
+        glDeleteVertexArrays(1, &vertex_array_object_id);
     }
 
     Mesh(Mesh const& other)

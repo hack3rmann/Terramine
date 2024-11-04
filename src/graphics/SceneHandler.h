@@ -18,7 +18,6 @@ public:
     TerrarianHandler();
     void reloadChunks(tmine::Camera const* cam);
     void refreshRes();
-    void terminate();
     void render(tmine::Camera const* cam, glm::uvec2 window_size);
     void renderShadows(
         tmine::Camera const* cam, FrameBuffer* shadowBuff, glm::uvec2 window_size
@@ -32,19 +31,17 @@ class LineBoxHandler {
 
 public:
     LineBoxHandler();
-    void terminate();
     void render(tmine::Camera const* cam, tmine::f32 aspect_ratio);
 };
 
 class SkyboxHandler {
     friend class SceneHandler;
 
-    tmine::Skybox* skyboxes[5];
+    std::vector<tmine::Skybox> skyboxes;
     int current;
 
 public:
     SkyboxHandler();
-    void terminate();
     void render(tmine::Camera const* cam, glm::uvec2 window_size);
 };
 
@@ -62,7 +59,6 @@ class SceneHandler {
 public:
     SceneHandler(glm::uvec2 window_size);
 
-    void terminate();
     void updateAll(glm::uvec2 window_size);
     void updatePlayer(glm::uvec2 window_size);
     void updateChunks();
