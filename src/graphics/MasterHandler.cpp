@@ -9,7 +9,6 @@ MasterHandler::MasterHandler(Window* window)
 , gui(startMenu, window) {}
 
 void MasterHandler::render(glm::uvec2 window_size) {
-    /* Normal rendering (if window not hidden) */
     if (0 != window_size.x + window_size.y) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (gui.current == startMenu) {
@@ -20,10 +19,7 @@ void MasterHandler::render(glm::uvec2 window_size) {
         } else {
             sceneHandler.render(window_size);
         }
-    }
-    /* Hidden window */
-    else
-    {
+    } else {
         if (gui.current == pauseMenu || gui.current == nothing) {
             gui.current = pauseMenu;
         } else {

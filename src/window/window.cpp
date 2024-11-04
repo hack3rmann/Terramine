@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <fmt/format.h>
 
 #include "../window.hpp"
 
@@ -12,12 +13,19 @@ static void window_size_callback(GLFWwindow* window, i32 width, i32 height) {
     data->size.y = height;
 }
 
+[[noreturn]] static auto error_callback(int id, char const* description)
+    -> void {
+    throw std::runtime_error(fmt::format("GLFW error {}: {}", id, description));
+}
+
 Window::Window(char const* title, u32 width, u32 height)
 : glfw_window{nullptr}
 , data{std::make_unique<WindowData>(glm::uvec2{width, height}, false)} {
     if (!glfwInit()) {
         throw std::runtime_error("failed to initialize GLFW");
     }
+
+    glfwSetErrorCallback(error_callback);
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
