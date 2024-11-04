@@ -9,7 +9,7 @@ static auto is_whitespace(char value) -> bool {
     return (9 <= value && value <= 13) || 32 == value;
 }
 
-auto parse_string(std::string_view src, std::string_view match)
+auto parse_sequence(std::string_view src, std::string_view match)
     -> ParseResult<std::string_view> {
     if (src.size() < match.size() || !src.starts_with(match)) {
         return ParseResult<std::string_view>{
@@ -73,8 +73,8 @@ auto parse_whitespace(std::string_view src, u32 min_count)
 }
 
 auto parse_newline(std::string_view src) -> ParseResult<std::string_view> {
-    return parse_string(src, "\r\n") | parse_string(src, "\n") |
-           parse_string(src, "\r");
+    return parse_sequence(src, "\r\n") | parse_sequence(src, "\n") |
+           parse_sequence(src, "\r");
 }
 
 }  // namespace tmine
