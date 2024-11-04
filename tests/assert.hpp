@@ -19,7 +19,7 @@
         if (left_result != right_result) {                             \
             throw std::runtime_error(fmt::format(                      \
                 "test '{}' failed: assertion '{} == {}' "              \
-                "failed with left = {:?} and right = {:?}",            \
+                "failed with left = '{}' and right = '{}'",            \
                 __FUNCTION__, #left, #right, left_result, right_result \
             ));                                                        \
         }                                                              \
@@ -33,7 +33,7 @@
         if (left_result == right_result) {                             \
             throw std::runtime_error(fmt::format(                      \
                 "test '{}' failed: assertion '{} != {}' "              \
-                "failed with left = {:?} and right = {:?}",            \
+                "failed with left = '{}' and right = '{}'",            \
                 __FUNCTION__, #left, #right, left_result, right_result \
             ));                                                        \
         }                                                              \

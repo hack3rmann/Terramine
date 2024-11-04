@@ -11,7 +11,7 @@
 template <std::invocable F>
 inline auto perform_test_impl(F test, std::string_view name) -> void {
     try {
-        fmt::print(stderr, "test {:.^32}", name);
+        fmt::print(stderr, "test {:.^48}", name);
 
         test();
 
