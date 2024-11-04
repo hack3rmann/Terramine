@@ -10,89 +10,42 @@
 namespace tmine {
 
 ShaderProgram::ShaderProgram(GLuint id)
-: id{id}
-, n_clones_ptr{new usize{1}} {}
+: data{std::make_shared<ShaderData>(id)} {}
 
-ShaderProgram::~ShaderProgram() {
-    if (ShaderProgram::DUMMY_ID == this->id) {
-        return;
-    } else if (*this->n_clones_ptr > 1) {
-        *this->n_clones_ptr -= 1;
-        return;
-    }
-
-    glDeleteProgram(id);
-}
-
-ShaderProgram::ShaderProgram(ShaderProgram const& other)
-: id{other.id}
-, n_clones_ptr{other.n_clones_ptr} {
-    *other.n_clones_ptr += 1;
-}
-
-ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
-: id{other.id}
-, n_clones_ptr{other.n_clones_ptr} {
-    other.id = ShaderProgram::DUMMY_ID;
-    other.n_clones_ptr = nullptr;
-}
-
-auto ShaderProgram::operator=(
-    this ShaderProgram& self, ShaderProgram const& other
-) -> ShaderProgram& {
-    self.id = other.id;
-    self.n_clones_ptr = other.n_clones_ptr;
-
-    *self.n_clones_ptr += 1;
-
-    return self;
-}
-
-auto ShaderProgram::operator=(
-    this ShaderProgram& self, ShaderProgram&& other
-) noexcept -> ShaderProgram& {
-    self.id = other.id;
-    self.n_clones_ptr = other.n_clones_ptr;
-
-    other.id = ShaderProgram::DUMMY_ID;
-    other.n_clones_ptr = nullptr;
-
-    return self;
-}
 
 auto ShaderProgram::bind(this ShaderProgram const& self) -> void {
-    if (ShaderProgram::DUMMY_ID == self.id) {
+    if (nullptr == self.data) {
         return;
     }
 
-    glUseProgram(self.id);
+    glUseProgram(self.data->id);
 }
 
 auto ShaderProgram::uniform_mat4(
     this ShaderProgram const& self, char const* name, glm::mat4 matrix
 ) -> void {
-    auto const location = glGetUniformLocation(self.id, name);
+    auto const location = glGetUniformLocation(self.data->id, name);
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 auto ShaderProgram::uniform_vec2(
     this ShaderProgram const& self, char const* name, glm::vec2 vec
 ) -> void {
-    auto const location = glGetUniformLocation(self.id, name);
+    auto const location = glGetUniformLocation(self.data->id, name);
     glUniform2f(location, vec.x, vec.y);
 }
 
 auto ShaderProgram::uniform_vec3(
     this ShaderProgram const& self, char const* name, glm::vec3 vec
 ) -> void {
-    auto const location = glGetUniformLocation(self.id, name);
+    auto const location = glGetUniformLocation(self.data->id, name);
     glUniform3f(location, vec.x, vec.y, vec.z);
 }
 
 auto ShaderProgram::uniform_int(
     this ShaderProgram const& self, char const* name, i32 num
 ) -> void {
-    auto const location = glGetUniformLocation(self.id, name);
+    auto const location = glGetUniformLocation(self.data->id, name);
     glUniform1i(location, num);
 }
 
