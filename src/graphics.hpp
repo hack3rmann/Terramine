@@ -59,6 +59,14 @@ public:
     auto bind(this Texture const& self, u32 slot) -> void;
     static auto unbind(u32 slot) -> void;
 
+    auto get_size(this Texture const& self) -> glm::uvec2 {
+        return self.data->size;
+    }
+
+    auto get_aspect_ratio(this Texture const& self) -> f32 {
+        return (f32) self.data->size.x / (f32) self.data->size.y;
+    }
+
 private:
     std::shared_ptr<TextureData> data;
 };
