@@ -11,8 +11,8 @@ namespace vs = std::ranges::views;
 
 Terrain::Terrain(glm::uvec3 sizes)
 : chunks{sizes}
-, meshes{(Mesh<TerrainRenderer::Vertex>*) ::operator new(
-      sizeof(this->meshes[0]) * sizes.x * sizes.y * sizes.z
+, meshes{std::make_unique<Mesh<TerrainRenderer::Vertex>[]>(
+      sizes.x * sizes.y * sizes.z
   )}
 , chunks_to_update(sizes.x * sizes.y * sizes.z)
 , renderer{load_game_blocks_data(
@@ -28,13 +28,9 @@ Terrain::Terrain(glm::uvec3 sizes)
   )} {
     auto const n_meshes = sizes.x * sizes.y * sizes.z;
 
-#pragma omp parallel for
     for (usize i = 0; i < n_meshes; ++i) {
+        this->meshes[i] = TerrainRenderer::make_empty_mesh();
         this->chunks_to_update[i] = i;
-    }
-
-    for (usize i = 0; i < n_meshes; ++i) {
-        new (this->meshes.get() + i) Mesh{TerrainRenderer::make_empty_mesh()};
     }
 
     this->generate_meshes();
@@ -105,6 +101,8 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         return;
     }
 
+    auto const sizes = self.chunks.get_sizes();
+
     self.chunks_to_update.push_back(self.chunks.index_of(chunk_pos));
 
     if (0 == voxel_pos.x && 0 != chunk_pos.x) {
@@ -113,9 +111,7 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         ));
     }
 
-    if (Chunk::WIDTH == voxel_pos.x + 1 &&
-        self.chunks.get_sizes().x != chunk_pos.x + 1)
-    {
+    if (Chunk::WIDTH == voxel_pos.x + 1 && sizes.x != chunk_pos.x + 1) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z)
         ));
@@ -127,9 +123,7 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         ));
     }
 
-    if (Chunk::HEIGHT == voxel_pos.y + 1 &&
-        self.chunks.get_sizes().y != chunk_pos.y + 1)
-    {
+    if (Chunk::HEIGHT == voxel_pos.y + 1 && sizes.y != chunk_pos.y + 1) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z)
         ));
@@ -141,9 +135,7 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         ));
     }
 
-    if (Chunk::DEPTH == voxel_pos.z + 1 &&
-        self.chunks.get_sizes().z != chunk_pos.z + 1)
-    {
+    if (Chunk::DEPTH == voxel_pos.z + 1 && sizes.z != chunk_pos.z + 1) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
         ));
