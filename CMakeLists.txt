@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28.2)
 
 include(FetchContent)
 
+project(terramine)
+
 set(DEPS_DIR ${CMAKE_SOURCE_DIR}/deps)
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
@@ -20,12 +22,8 @@ if(${SANITIZE})
     )
 endif()
 
-project(terramine)
-
-add_executable(
-    terramine
+set(TERRAMINE_SOURCE_FILES
     ${DEPS_DIR}/glad/src/gl.c
-    src/main.cpp
     src/Player.cpp
     src/graphics/FrameBuffer.cpp
     src/graphics/MasterHandler.cpp
@@ -47,10 +45,23 @@ add_executable(
     src/objects/skybox.cpp
     src/objects/line_batch.cpp
     src/objects/terrain.cpp
+    src/parser/basic.cpp
+    src/parser/fnt.cpp
     src/terrain/chunk.cpp
     src/terrain/chunk_array.cpp
     src/terrain/renderer.cpp
     src/window/window.cpp)
+
+add_executable(terramine
+    src/main.cpp
+    ${TERRAMINE_SOURCE_FILES})
+
+add_executable(test
+    tests/main.cpp
+    tests/parse/basic.cpp
+    ${TERRAMINE_SOURCE_FILES})
+
+target_include_directories(test PRIVATE src)
 
 
 option(BUILD_EXAMPLES "" OFF)
@@ -80,6 +91,7 @@ if (NOT fmt_FOUND)
     FetchContent_MakeAvailable(fmt)
 
     target_link_libraries(terramine fmt)
+    target_link_libraries(test fmt)
 endif()
 
 
@@ -90,14 +102,21 @@ add_subdirectory(${DEPS_DIR}/glfw ${BUILD_DIR}/deps/glfw)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glfw/include)
 target_link_directories(terramine PRIVATE ${BUILD_DIR}/deps/glfw/src)
 target_link_libraries(terramine glfw3)
+target_include_directories(test PRIVATE ${DEPS_DIR}/glfw/include)
+target_link_directories(test PRIVATE ${BUILD_DIR}/deps/glfw/src)
+target_link_libraries(test glfw3)
 
 
 add_subdirectory(${DEPS_DIR}/glm ${BUILD_DIR}/deps/glm)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glm)
 target_link_directories(terramine PRIVATE ${BUILD_DIR}/deps/glm/glm)
 target_link_libraries(terramine glm)
+target_include_directories(test PRIVATE ${DEPS_DIR}/glm)
+target_link_directories(test PRIVATE ${BUILD_DIR}/deps/glm/glm)
+target_link_libraries(test glm)
 
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/rapidjson/include)
+target_include_directories(test PRIVATE ${DEPS_DIR}/rapidjson/include)
 
 set(BUILD_EXAMPLES OFF)
 add_subdirectory(${DEPS_DIR}/spng ${BUILD_DIR}/deps/spng)
@@ -105,3 +124,7 @@ target_include_directories(terramine PRIVATE ${DEPS_DIR}/spng/spng)
 target_link_directories(terramine PRIVATE ${BUILD_DIR}/deps/spng)
 target_link_libraries(terramine spng_static)
 target_compile_definitions(terramine PRIVATE SPNG_STATIC)
+target_include_directories(test PRIVATE ${DEPS_DIR}/spng/spng)
+target_link_directories(test PRIVATE ${BUILD_DIR}/deps/spng)
+target_link_libraries(test spng_static)
+target_compile_definitions(test PRIVATE SPNG_STATIC)

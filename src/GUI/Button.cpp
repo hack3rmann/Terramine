@@ -17,11 +17,11 @@ Button::Button()
 , text{"", glm::vec2{}, 1.0f} {}
 
 Button::Button(
-    float posX, float posY, float width, float height, Texture defTexture,
+    float posX, float posY, f32 size, Texture defTexture,
     Texture hoverTexture, Texture clickedTexture, std::string text,
     std::function<void()> function
 )
-: GUIObject(posX, posY, width, height)
+: GUIObject(posX, posY, size, size)
 , function(function)
 , mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles}
 , state{Default}
@@ -32,8 +32,11 @@ Button::Button(
 
     shader = load_shader("gui_vertex.glsl", "gui_fragment.glsl");
 
+    auto const texture_size = this->textures[0].get_size();
+    auto const aspect_ratio = (f32) texture_size.y / (f32) texture_size.x;
+
     auto& buffer = this->mesh.get_buffer();
-    GUI_RECT(buffer, posX, posY, width, height, 1.0f, 1.0f, 1.0f, 1.0f);
+    GUI_RECT(buffer, posX, posY, size, aspect_ratio * size, 1.0f, 1.0f, 1.0f, 1.0f);
 
     /* Coords */
     x = posX;

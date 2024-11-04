@@ -15,7 +15,7 @@ void GUI::addButton(
     std::function<void()> function
 ) {
     buttons.emplace_back(
-        posX, posY, width, height, std::move(defTexture),
+        posX, posY, width, std::move(defTexture),
         std::move(hoverTexture), std::move(clickedTexture), text, function
     );
 
@@ -26,7 +26,7 @@ void GUI::addButton(
 void GUI::addSprite(
     float posX, float posY, float width, float height, Texture texture
 ) {
-    sprites.emplace_back(posX, posY, width, height, std::move(texture));
+    sprites.emplace_back(posX, posY, width, std::move(texture));
 
     objectsSprites++;
     size++;

@@ -25,7 +25,7 @@ class Button : public GUIObject {
 public:
     Button();
     Button(
-        float posX, float posY, float width, float height,
+        float posX, float posY, tmine::f32 size,
         tmine::Texture defTexture, tmine::Texture hoverTexture,
         tmine::Texture clickedTexture, std::string text,
         std::function<void()> function
