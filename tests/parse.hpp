@@ -10,5 +10,6 @@ auto test_parse_combine() -> void;
 auto test_parse_integer() -> void;
 auto test_parse_whitespaces() -> void;
 auto test_parse_newline() -> void;
+auto test_parse_fnt_string() -> void;
 
 }

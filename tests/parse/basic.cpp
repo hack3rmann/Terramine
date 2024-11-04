@@ -110,4 +110,20 @@ auto test_parse_newline() -> void {
     tmine_assert_eq(result2.tail, "New line");
 }
 
+auto test_parse_fnt_string() -> void {
+    auto const result1 = tmine::fnt::parse_string("\"String\"");
+
+    tmine_assert(result1.ok());
+    tmine_assert_eq(result1.get_value(), "String");
+    tmine_assert_eq(result1.tail, "");
+
+    auto const result2 = tmine::fnt::parse_string("\"NotString");
+
+    tmine_assert(!result2.ok());
+
+    auto const result3 = tmine::fnt::parse_string("AlsoNotAString");
+    
+    tmine_assert(!result3.ok());
+}
+
 }  // namespace tmine_test

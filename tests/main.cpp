@@ -10,4 +10,5 @@ auto main() -> int {
     perform_test(test_parse_integer);
     perform_test(test_parse_whitespaces);
     perform_test(test_parse_newline);
+    perform_test(test_parse_fnt_string);
 }
