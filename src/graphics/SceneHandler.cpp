@@ -28,12 +28,9 @@ void SceneHandler::updatePlayer(glm::uvec2 window_size) {
 }
 
 void SceneHandler::render(glm::uvec2 window_size) {
-    /* Viewport change handle */
     if (this->window_size != window_size) {
         this->window_size = window_size;
-        fb.reload(
-            "postproc_vertex.glsl", "postproc_fragment.glsl", window_size
-        );
+        fb = FrameBuffer{"postproc_vertex.glsl", "postproc_fragment.glsl", window_size};
     }
 
     if (io.just_pressed(Key::R)) {
