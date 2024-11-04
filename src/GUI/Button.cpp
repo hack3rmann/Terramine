@@ -13,7 +13,8 @@ using namespace tmine;
 
 Button::Button()
 : mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles}
-, state{Default} {}
+, state{Default}
+, text{"", glm::vec2{}, 1.0f} {}
 
 Button::Button(
     float posX, float posY, float width, float height, Texture defTexture,
@@ -23,10 +24,11 @@ Button::Button(
 : GUIObject(posX, posY, width, height)
 , function(function)
 , mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles}
-, state{Default} {
-    textures[Default] = new Texture(std::move(defTexture));
-    textures[onHover] = new Texture(std::move(hoverTexture));
-    textures[onClick] = new Texture(std::move(clickedTexture));
+, state{Default}
+, text{text, glm::vec2(posX, posY), 1.0f} {
+    textures[Default] = Texture(std::move(defTexture));
+    textures[onHover] = Texture(std::move(hoverTexture));
+    textures[onClick] = Texture(std::move(clickedTexture));
 
     shader = load_shader("gui_vertex.glsl", "gui_fragment.glsl");
 
@@ -38,9 +40,6 @@ Button::Button(
     y = posY;
     w = width;
     h = height;
-
-    /* Texts */
-    this->text = new Text(text, glm::vec2(posX, posY), 1.0f);
 }
 
 auto Button::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
@@ -49,7 +48,7 @@ auto Button::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
 
 void Button::render(f32 aspect_ratio) {
     /* Bind texture */
-    textures[state]->bind(0);
+    textures[state].bind(0);
 
     /* Use shader program */
     shader.bind();
@@ -64,7 +63,7 @@ void Button::render(f32 aspect_ratio) {
     /* Draw */
     mesh.reload_buffer();
     mesh.draw();
-    text->render(aspect_ratio);
+    text.render(aspect_ratio);
 }
 
 void Button::refreshState(glm::uvec2 window_size) {
@@ -101,11 +100,5 @@ void Button::refreshState(glm::uvec2 window_size) {
         }
 
         state = Default;
-    }
-}
-
-void Button::cleanUp() {
-    for (int i = 0; i < 3; i++) {
-        delete textures[i];
     }
 }

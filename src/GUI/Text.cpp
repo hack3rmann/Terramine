@@ -9,7 +9,6 @@
 
 #include "../types.hpp"
 #include "../loaders.hpp"
-#include "../events.hpp"
 
 #define TEXT_VERTEX_SIZE (2 + 2 + 3) /* XY TS RGB */
 #define TEXT_VERTEX(I, X, Y, T, S, R, G, B) \
@@ -26,17 +25,13 @@
 
 using namespace tmine;
 
-/* Static fields init */
-Texture Text::fontTex;
-Charset Text::chars;
-ShaderProgram Text::shader;
+auto Text::get_charset() -> Charset& {
+    static Charset CHARSET{};
+    return CHARSET;
+}
 
-void Text::init() {
-    ParseFont(chars);
-    fontTex = Texture::from_image(
-        load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR
-    );
-    shader = load_shader("text_vertex.glsl", "text_fragment.glsl");
+Charset::Charset() {
+    ParseFont(*this);
 }
 
 auto Text::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
@@ -45,6 +40,8 @@ auto Text::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
 
 Text::Text(std::string text, glm::vec2 position, float fontSize)
 : text{std::move(text)}
+, shader{load_shader("text_vertex.glsl", "text_fragment.glsl")}
+, fontTex{Texture::from_image(load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR)}
 , mesh{{}, Primitive::Triangles} {
     /* init */
     this->position = position;
@@ -53,8 +50,8 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
     /* Calculating length */
     float length = 0.0;
     for (unsigned int i = 0; i < this->text.size(); i++) {
-        auto& curr = chars.Chars[(usize) this->text[i]];
-        float sizeW = chars.Width;
+        auto& curr = Text::get_charset().Chars[(usize) this->text[i]];
+        float sizeW = Text::get_charset().Width;
 
         length += (curr.XAdvance) / sizeW * fontSize;
     }
@@ -65,10 +62,10 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
 
     /* Load all quads to array */
     for (unsigned int i = 0; i < this->text.size(); i++) {
-        auto& curr = chars.Chars[(usize) this->text[i]];
-        float sizeW = chars.Width;
-        float sizeH = chars.Height;
-        float lh = chars.LineHeight;
+        auto& curr = Text::get_charset().Chars[(usize) this->text[i]];
+        float sizeW = Text::get_charset().Width;
+        float sizeH = Text::get_charset().Height;
+        float lh = Text::get_charset().LineHeight;
         float w = curr.Width;
         float h = curr.Height;
         float rw = curr.Width * fontSize;
@@ -88,11 +85,6 @@ Text::Text(std::string text, glm::vec2 position, float fontSize)
 }
 
 void Text::render(f32 aspect_ratio) {
-    if (io.just_pressed(Key::R)) {
-        shader = load_shader("text_vertex.glsl", "text_fragment.glsl");
-        reload();
-    }
-
     shader.bind();
     fontTex.bind(0);
 
@@ -110,8 +102,8 @@ void Text::render(f32 aspect_ratio) {
 void Text::reload() {
     float length = 0.0;
     for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[(usize) text[i]];
-        float sizeW = chars.Width;
+        auto& curr = Text::get_charset().Chars[(usize) text[i]];
+        float sizeW = Text::get_charset().Width;
 
         length += (curr.XAdvance) / sizeW * fontSize;
     }
@@ -120,10 +112,10 @@ void Text::reload() {
     auto& buffer = this->mesh.get_buffer();
 
     for (unsigned int i = 0; i < text.size(); i++) {
-        auto& curr = chars.Chars[(usize) text[i]];
-        float sizeW = chars.Width;
-        float sizeH = chars.Height;
-        float lh = chars.LineHeight;
+        auto& curr = Text::get_charset().Chars[(usize) text[i]];
+        float sizeW = Text::get_charset().Width;
+        float sizeH = Text::get_charset().Height;
+        float lh = Text::get_charset().LineHeight;
         float w = curr.Width;
         float h = curr.Height;
         float rw = curr.Width * fontSize;

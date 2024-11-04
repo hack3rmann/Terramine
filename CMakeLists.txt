@@ -31,7 +31,6 @@ add_executable(
     src/graphics/MasterHandler.cpp
     src/graphics/SceneHandler.cpp
     src/graphics/shader.cpp
-    src/graphics/mesh.cpp
     src/graphics/texture.cpp
     src/GUI/Button.cpp
     src/GUI/GUI.cpp

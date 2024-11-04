@@ -4,9 +4,7 @@
 
 namespace tmine {
 
-static void window_size_callback(
-    [[maybe_unused]] GLFWwindow* window, i32 width, i32 height
-) {
+static void window_size_callback(GLFWwindow* window, i32 width, i32 height) {
     glViewport(0, 0, width, height);
 
     auto data = reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));

@@ -23,5 +23,4 @@ public:
     );
     static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
     void render(tmine::f32 aspect_ratio);
-    void cleanUp();
 };

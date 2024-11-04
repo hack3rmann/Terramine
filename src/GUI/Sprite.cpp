@@ -26,7 +26,7 @@ Sprite::Sprite(
 }
 
 auto Sprite::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
-    return glm::ortho(-1.0f, 1.0f, -aspect_ratio, aspect_ratio, 0.0f, 100.0f);
+    return glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 0.0f, 100.0f);
 }
 
 void Sprite::render(f32 aspect_ratio) {
@@ -47,5 +47,3 @@ void Sprite::render(f32 aspect_ratio) {
     mesh.reload_buffer();
     mesh.draw();
 }
-
-void Sprite::cleanUp() {}

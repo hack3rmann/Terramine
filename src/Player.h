@@ -16,7 +16,6 @@ class Player {
     float camY;
 
 public:
-    tmine::LineBox* lineBatch;
     tmine::Camera cam;
     vec3 speed;
     int currentBlock;

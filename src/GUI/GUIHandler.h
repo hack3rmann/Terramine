@@ -4,10 +4,10 @@
 #include "../graphics.hpp"
 #include "../window.hpp"
 
-enum GUIstate { nothing, startMenu, pauseMenu, settings };
+enum GUIstate { nothing, startMenu, pauseMenu };
 
 class GUIHandler {
-    GUI** GUIs;
+    std::vector<GUI> guis;
     tmine::ShaderProgram shader;
 
     tmine::Texture bg;
@@ -19,6 +19,5 @@ class GUIHandler {
 public:
     GUIstate current;
     GUIHandler(GUIstate current, tmine::Window* window);
-    ~GUIHandler();
     void render(glm::uvec2 window_size);
 };

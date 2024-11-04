@@ -22,8 +22,8 @@ class GUI {
     int objectsButtons;
     int objectsSprites;
     int size;
-    Button* buttons[64];
-    Sprite* sprites[64];
+    std::vector<Button> buttons;
+    std::vector<Sprite> sprites;
 
 public:
     GUI();
@@ -39,5 +39,4 @@ public:
     );
     int getObjects();
     void render(glm::uvec2 window_size);
-    void cleanUp();
 };

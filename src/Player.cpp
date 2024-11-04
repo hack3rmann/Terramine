@@ -5,7 +5,6 @@ using namespace tmine;
 
 Player::Player()
 : cam{vec3(32.0f, 70.0f, 32.0f), radians(60.0f)} {
-    lineBatch = new LineBox();
     camX = camY = 0.0f;
     currentBlock = 1;
 }

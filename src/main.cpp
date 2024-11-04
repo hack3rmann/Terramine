@@ -15,8 +15,7 @@ auto main() -> int {
     auto window = Window{"Terramine"};
 
     Input::set_io_callbacks(window.get_glfw_window());
-    Text::init();
-    MasterHandler::init(&window);
+    auto master = MasterHandler{&window};
 
     glClearColor(27.0 / 255.0, 26.0 / 255.0, 33.0 / 255.0, 1.0f);
     glEnable(GL_MULTISAMPLE);
@@ -30,17 +29,15 @@ auto main() -> int {
         }
 
         if (io.just_pressed(Key::Escape)) {
-            MasterHandler::gui->current = pauseMenu;
+            master.gui.current = pauseMenu;
             window.toggle_cursor_visibility();
         }
 
-        MasterHandler::updateAll(window.get_size());
-        MasterHandler::render(window.get_size());
+        master.updateAll(window.get_size());
+        master.render(window.get_size());
 
         io.update();
         window.swap_buffers();
         window.poll_events();
     }
-
-    MasterHandler::terminate();
 }

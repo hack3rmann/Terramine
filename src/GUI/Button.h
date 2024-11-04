@@ -12,13 +12,13 @@
 enum States { Default, onHover, onClick };
 
 class Button : public GUIObject {
-    tmine::Texture* textures[3];
+    tmine::Texture textures[3];
     std::function<void()> function;
     tmine::Mesh<GUIObject::Vertex> mesh;
     States state;
     tmine::ShaderProgram shader;
     float x, y, w, h;
-    Text* text;
+    Text text;
 
     glm::mat4 model;
 
@@ -33,5 +33,4 @@ public:
     static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
     void render(tmine::f32 aspect_ratio);
     void refreshState(glm::uvec2 window_size);
-    void cleanUp();
 };

@@ -9,9 +9,12 @@
 
 namespace tmine {
 
+ShaderData::~ShaderData() {
+    glDeleteProgram(this->id);
+}
+
 ShaderProgram::ShaderProgram(GLuint id)
 : data{std::make_shared<ShaderData>(id)} {}
-
 
 auto ShaderProgram::bind(this ShaderProgram const& self) -> void {
     if (nullptr == self.data) {
