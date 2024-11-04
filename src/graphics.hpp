@@ -100,6 +100,8 @@ public:
     Mesh(std::vector<V> vertices, Primitive primitive)
     : vertices{std::move(vertices)}
     , primitive{primitive} {
+        namespace vs = std::ranges::views;
+
         glGenVertexArrays(1, &this->vertex_array_object_id);
         glGenBuffers(1, &this->vertex_buffer_object_id);
 
@@ -112,9 +114,7 @@ public:
 
         auto offset = usize{0};
 
-        for (auto const [i, size] :
-             V::ATTRIBUTE_SIZES | std::ranges::views::enumerate)
-        {
+        for (auto const [i, size] : V::ATTRIBUTE_SIZES | vs::enumerate) {
             glVertexAttribPointer(
                 i, size, GL_FLOAT, GL_FALSE, sizeof(V),
                 (GLvoid*) (offset * sizeof(f32))
@@ -127,6 +127,8 @@ public:
 
         glBindVertexArray(0);
     }
+
+    Mesh() = default;
 
     ~Mesh() {
         if (this->vertex_buffer_object_id == Mesh::DUMMY_ID ||
@@ -195,8 +197,8 @@ public:
 private:
     GLuint vertex_array_object_id{DUMMY_ID};
     GLuint vertex_buffer_object_id{DUMMY_ID};
-    std::vector<V> vertices;
-    Primitive primitive;
+    std::vector<V> vertices{};
+    Primitive primitive{Primitive::Points};
     static auto constexpr DUMMY_ID = ~GLuint{0};
 };
 

@@ -45,6 +45,6 @@ void MasterHandler::updateAll(glm::uvec2 window_size) {
 }
 
 void MasterHandler::terminate() {
-    delete sceneHandler;
     delete gui;
+    delete sceneHandler;
 }

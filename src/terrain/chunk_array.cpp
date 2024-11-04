@@ -3,7 +3,7 @@
 namespace tmine {
 
 ChunkArray::ChunkArray(glm::uvec3 sizes)
-: chunks{(Chunk*) ::operator new(
+: chunks{(Chunk*) ::operator new[](
       sizeof(this->chunks[0]) * sizes.x * sizes.y * sizes.z
   )}
 , sizes{sizes} {

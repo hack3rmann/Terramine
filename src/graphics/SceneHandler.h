@@ -9,28 +9,6 @@ class TerrarianHandler;
 class LineBoxHandler;
 class SkyboxHandler;
 
-class SceneHandler {
-    friend class MasterHandler;
-
-    Player* plr;
-    TerrarianHandler* terrarian;
-    LineBoxHandler* lines;
-    SkyboxHandler* skybox;
-    FrameBuffer* fb;
-    FrameBuffer* shadowBuff;
-    glm::uvec2 window_size;
-
-public:
-    SceneHandler(glm::uvec2 window_size);
-
-    void terminate();
-    void updateAll(glm::uvec2 window_size);
-    void updatePlayer(glm::uvec2 window_size);
-    void updateChunks();
-
-    void render(glm::uvec2 window_size);
-};
-
 class TerrarianHandler {
     friend class SceneHandler;
 
@@ -50,7 +28,7 @@ public:
 class LineBoxHandler {
     friend class SceneHandler;
 
-    tmine::LineBox* lineBatch;
+    tmine::LineBox lineBatch;
 
 public:
     LineBoxHandler();
@@ -68,4 +46,26 @@ public:
     SkyboxHandler();
     void terminate();
     void render(tmine::Camera const* cam, glm::uvec2 window_size);
+};
+
+class SceneHandler {
+    friend class MasterHandler;
+
+    Player plr;
+    TerrarianHandler terrarian;
+    LineBoxHandler lines;
+    SkyboxHandler skybox;
+    FrameBuffer fb;
+    FrameBuffer shadowBuff;
+    glm::uvec2 window_size;
+
+public:
+    SceneHandler(glm::uvec2 window_size);
+
+    void terminate();
+    void updateAll(glm::uvec2 window_size);
+    void updatePlayer(glm::uvec2 window_size);
+    void updateChunks();
+
+    void render(glm::uvec2 window_size);
 };
