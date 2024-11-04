@@ -23,12 +23,11 @@ struct ParseResult {
         return std::forward<Self>(self).value.value();
     }
 
-    friend auto operator|(ParseResult&& self, ParseResult&& other)
-        -> ParseResult {
-        if (self.value.has_value()) {
-            return std::move(self);
+    friend auto operator|(ParseResult&& lhs, ParseResult&& rhs) -> ParseResult {
+        if (lhs.ok()) {
+            return std::move(lhs);
         } else {
-            return std::move(other);
+            return std::move(rhs);
         }
     }
 };
