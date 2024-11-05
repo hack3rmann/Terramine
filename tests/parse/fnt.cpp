@@ -26,7 +26,8 @@ auto test_parse_string() -> void {
 }
 
 auto test_parse_fnt_key_value_string() -> void {
-    auto const result = tmine::fnt::parse_key_value_string("key=\"value\" tail", "key");
+    auto const result =
+        tmine::fnt::parse_key_value_string("key=\"value\" tail", "key");
 
     tmine_assert(result.ok());
     tmine_assert_eq(result.get_value(), "value");
@@ -44,7 +45,7 @@ auto test_parse_fnt_info() -> void {
     tmine_assert_eq(result.tail, "");
 
     auto const value = std::move(result).get_value();
-    
+
     tmine_assert_eq(value.face, "Segoe Print");
     tmine_assert_eq(value.size, 150);
     tmine_assert_eq(value.is_bold, false);
@@ -62,4 +63,59 @@ auto test_parse_fnt_info() -> void {
     tmine_assert_eq(value.spacing.y, -2);
 }
 
+auto test_parse_fnt_common() -> void {
+    auto const src =
+        "common lineHeight=265 base=189 scaleW=1024 scaleH=1024 pages=1 "
+        "packed=0";
+
+    auto const result = tmine::fnt::parse_common(src);
+
+    tmine_assert(result.ok());
+
+    auto const common = std::move(result).get_value();
+
+    tmine_assert_eq(common.line_height, 265);
+    tmine_assert_eq(common.base, 189);
+    tmine_assert_eq(common.scale_width, 1024);
+    tmine_assert_eq(common.scale_height, 1024);
+    tmine_assert_eq(common.n_pages, 1);
+    tmine_assert_eq(common.is_packed, false);
 }
+
+auto test_parse_fnt_page() -> void {
+    auto const src = "page id=0 file=\"font.png\"";
+
+    auto const result = tmine::fnt::parse_page(src);
+
+    tmine_assert(result.ok());
+
+    auto const page = std::move(result).get_value();
+
+    tmine_assert_eq(page.id, 0);
+    tmine_assert_eq(page.file, "font.png");
+}
+
+auto test_parse_fnt_char_desc() -> void {
+    auto const src =
+        "char id=0       x=827  y=481  width=70   height=115  xoffset=3    "
+        "yoffset=75   xadvance=75   page=0    chnl=0";
+
+    auto const result = tmine::fnt::parse_char_desc(src);
+
+    tmine_assert(result.ok());
+
+    auto symbol = std::move(result).get_value();
+
+    tmine_assert_eq(symbol.id, 0);
+    tmine_assert_eq(symbol.pos.x, 827);
+    tmine_assert_eq(symbol.pos.y, 481);
+    tmine_assert_eq(symbol.size.x, 70);
+    tmine_assert_eq(symbol.size.y, 115);
+    tmine_assert_eq(symbol.offset.x, 3);
+    tmine_assert_eq(symbol.offset.y, 75);
+    tmine_assert_eq(symbol.horizontal_advance, 75);
+    tmine_assert_eq(symbol.page_index, 0);
+    tmine_assert_eq(symbol.channel, 0);
+}
+
+}  // namespace tmine_test
