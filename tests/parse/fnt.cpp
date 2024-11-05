@@ -1,3 +1,5 @@
+#include "loaders.hpp"
+
 #include "../parse.hpp"
 #include "../assert.hpp"
 
@@ -85,7 +87,7 @@ auto test_parse_fnt_common() -> void {
 auto test_parse_fnt_page() -> void {
     auto const src = "page id=0 file=\"font.png\"";
 
-    auto const result = tmine::fnt::parse_page(src);
+    auto const result = tmine::fnt::parse_page_header(src);
 
     tmine_assert(result.ok());
 
@@ -116,6 +118,18 @@ auto test_parse_fnt_char_desc() -> void {
     tmine_assert_eq(symbol.horizontal_advance, 75);
     tmine_assert_eq(symbol.page_index, 0);
     tmine_assert_eq(symbol.channel, 0);
+}
+
+auto test_parse_fnt_font() -> void {
+    auto const src = tmine::read_to_string("assets/fonts/font.fnt");
+    auto result = tmine::fnt::parse_font(src);
+
+    tmine_assert(result.ok());
+
+    auto const font = std::move(result).get_value();
+
+    tmine_assert_eq(font.pages.size(), 1);
+    tmine_assert_eq(font.info.face, "Segoe Print");
 }
 
 }  // namespace tmine_test
