@@ -26,6 +26,8 @@ Sprite::Sprite(
     /* Init */
     x = posX;
     y = posY;
+    width = size;
+    height = aspect_ratio * size;
 }
 
 auto Sprite::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {

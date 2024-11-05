@@ -32,7 +32,7 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current, Window* window)
     );
 
     /* Start Menu init */
-    guis[startMenu].addSprite(0.0f, 0.0f, 2.0f, 2.0f, bg);
+    guis[startMenu].addSprite(0.0f, 0.0f, 2.7f, 2.0f, bg);
     guis[startMenu].addButton(
         0.0f, 0.0f, 1.0f, 0.3f, bDef, bHover, bClicked, "Start",
         [&]() { this->current = nothing; }

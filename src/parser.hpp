@@ -83,7 +83,7 @@ namespace fnt {
         bool is_packed;
     };
 
-    struct Page {
+    struct PageHeader {
         std::string file;
         u32 id;
     };
@@ -102,15 +102,28 @@ namespace fnt {
         u32 channel;
     };
 
-    struct KerningsDesc {
+    struct KerningsHeader {
         u32 count;
     };
 
-    // kerning first=70 second=46 amount=-7
     struct Kerning {
         u32 first;
         u32 second;
         i32 amount;
+    };
+
+    struct Page {
+        PageHeader header;
+        CharsHeader chars_header;
+        KerningsHeader kernings_header;
+        std::vector<CharDesc> chars;
+        std::vector<Kerning> kernings;
+    };
+
+    struct Font {
+        Info info;
+        Common common;
+        std::vector<Page> pages;
     };
 
     auto parse_key_value_integer(std::string_view src, std::string_view key)
@@ -125,13 +138,17 @@ namespace fnt {
 
     auto parse_common(std::string_view src) -> ParseResult<Common>;
 
-    auto parse_page(std::string_view src) -> ParseResult<Page>;
+    auto parse_page_header(std::string_view src) -> ParseResult<PageHeader>;
 
     auto parse_chars_header(std::string_view src) -> ParseResult<CharsHeader>;
 
     auto parse_char_desc(std::string_view src) -> ParseResult<CharDesc>;
 
     auto parse_kerning(std::string_view src) -> ParseResult<Kerning>;
+
+    auto parse_page(std::string_view src) -> ParseResult<Page>;
+
+    auto parse_font(std::string_view src) -> ParseResult<Font>;
 
 }  // namespace fnt
 
@@ -327,9 +344,9 @@ namespace parser {
         }};
     }
 
-    inline auto fnt_page() {
-        return Parser{[](std::string_view src) -> ParseResult<fnt::Page> {
-            return ::tmine::fnt::parse_page(src);
+    inline auto fnt_page_header() {
+        return Parser{[](std::string_view src) -> ParseResult<fnt::PageHeader> {
+            return ::tmine::fnt::parse_page_header(src);
         }};
     }
 
@@ -347,12 +364,24 @@ namespace parser {
         }};
     }
 
-    inline auto kernings_desc() {
+    inline auto fnt_kerning_header() {
         return (sequence("kernings") >> whitespace(1) >>
                 fnt_key_value_integer("count"))
             .map([](i64 count) {
-                return fnt::KerningsDesc{.count = (u32) count};
+                return fnt::KerningsHeader{.count = (u32) count};
             });
+    }
+
+    inline auto fnt_kerning() {
+        return Parser{[](std::string_view src) -> ParseResult<fnt::Kerning> {
+            return ::tmine::fnt::parse_kerning(src);
+        }};
+    }
+
+    inline auto fnt_page() {
+        return Parser{[](std::string_view src) -> ParseResult<fnt::Page> {
+            return ::tmine::fnt::parse_page(src);
+        }};
     }
 
 }  // namespace parser

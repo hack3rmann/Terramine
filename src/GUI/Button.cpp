@@ -41,8 +41,8 @@ Button::Button(
     /* Coords */
     x = posX;
     y = posY;
-    w = width;
-    h = height;
+    w = width = size;
+    h = height = aspect_ratio * size;
 }
 
 auto Button::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {

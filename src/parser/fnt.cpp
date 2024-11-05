@@ -25,8 +25,6 @@
 
 namespace tmine {
 namespace fnt {
-    using std::string;
-
     auto parse_string(std::string_view src) -> ParseResult<std::string_view> {
         auto const open_quote = parse_char(src, '"');
         auto tail = open_quote.tail;
@@ -197,7 +195,7 @@ namespace fnt {
         };
     }
 
-    auto parse_page(std::string_view src) -> ParseResult<Page> {
+    auto parse_page_header(std::string_view src) -> ParseResult<PageHeader> {
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -208,10 +206,10 @@ namespace fnt {
             execute_parser(tail, fnt_key_value_integer("id") << whitespace(1));
         auto const file = execute_parser(tail, fnt_key_value_string("file"));
 
-        return ParseResult<Page>{
+        return ParseResult<PageHeader>{
             .value =
-                Page{
-                    .file = string{file},
+                PageHeader{
+                    .file = std::string{file},
                     .id = (u32) id,
                 },
             .tail = tail,
@@ -219,7 +217,6 @@ namespace fnt {
     }
 
     auto parse_chars_header(std::string_view src) -> ParseResult<CharsHeader> {
-        // chars count=97
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -246,6 +243,7 @@ namespace fnt {
 
         auto const id =
             execute_parser(tail, fnt_key_value_integer("id") << whitespace(1));
+
         auto const x =
             execute_parser(tail, fnt_key_value_integer("x") << whitespace(1));
         auto const y =
@@ -268,6 +266,7 @@ namespace fnt {
         auto const page = execute_parser(
             tail, fnt_key_value_integer("page") << whitespace(1)
         );
+
         auto const channel =
             execute_parser(tail, fnt_key_value_integer("chnl"));
 
@@ -287,7 +286,6 @@ namespace fnt {
     }
 
     auto parse_kerning(std::string_view src) -> ParseResult<Kerning> {
-        // kerning first=70 second=46 amount=-7
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -310,6 +308,59 @@ namespace fnt {
                     .first = (u32) first,
                     .second = (u32) second,
                     .amount = (i32) amount,
+                },
+            .tail = tail,
+        };
+    }
+
+    auto parse_page(std::string_view src) -> ParseResult<Page> {
+        using namespace ::tmine::parser;
+
+        auto tail = src;
+
+        auto const page_header =
+            execute_parser(tail, fnt_page_header() << whitespace());
+
+        auto const char_header =
+            execute_parser(tail, fnt_chars_header() << whitespace());
+
+        auto const chars =
+            execute_parser(tail, (fnt_char_desc() << whitespace()).sequence());
+
+        auto const kerning_header =
+            execute_parser(tail, fnt_kerning_header() << whitespace());
+
+        auto const kernings =
+            execute_parser(tail, (fnt_kerning() << whitespace()).sequence());
+
+        return ParseResult<Page>{
+            .value =
+                Page{
+                    .header = std::move(page_header),
+                    .chars_header = std::move(char_header),
+                    .kernings_header = std::move(kerning_header),
+                    .chars = std::move(chars),
+                    .kernings = std::move(kernings),
+                },
+            .tail = tail,
+        };
+    }
+
+    auto parse_font(std::string_view src) -> ParseResult<Font> {
+        using namespace ::tmine::parser;
+
+        auto tail = src;
+
+        auto const info = execute_parser(tail, fnt_info() << newline());
+        auto const common = execute_parser(tail, fnt_common() << newline());
+        auto const pages = std::vector{execute_parser(tail, fnt_page())};
+
+        return ParseResult<Font>{
+            .value =
+                Font{
+                    .info = info,
+                    .common = common,
+                    .pages = std::move(pages),
                 },
             .tail = tail,
         };
