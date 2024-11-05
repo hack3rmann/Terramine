@@ -60,6 +60,7 @@ add_executable(test
     tests/main.cpp
     tests/parse/basic.cpp
     tests/parse/fnt.cpp
+    tests/parse/parser.cpp
     ${TERRAMINE_SOURCE_FILES})
 
 target_include_directories(test PRIVATE src)

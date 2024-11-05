@@ -72,4 +72,108 @@ auto parse_info(std::string_view src) -> ParseResult<Info>;
 
 }  // namespace fnt
 
+namespace parser {
+
+template <class T>
+struct Parser {
+    T parse;
+
+    template <class S>
+    friend auto operator|(Parser<T>&& lhs, Parser<S>&& rhs) {
+        auto parse = [=](std::string_view src) {
+            auto left_result = std::move(lhs.parse)(src);
+
+            if (left_result.ok()) {
+                return std::move(left_result);
+            } else {
+                auto right_result = std::move(rhs.parse)(src);
+                return std::move(right_result);
+            }
+        };
+
+        return Parser<decltype(parse)>{std::move(parse)};
+    }
+
+    template <class S>
+    friend auto operator>>(Parser<T>&& lhs, Parser<S>&& rhs) {
+        auto parse = [=](std::string_view src) {
+            auto left_result = std::move(lhs.parse)(src);
+
+            if (!left_result.ok()) {
+                return decltype(std::move(rhs.parse)(src)
+                ){.value = ::std::nullopt, .tail = src};
+            } else {
+                auto right_result = std::move(rhs.parse)(left_result.tail);
+                return std::move(right_result);
+            }
+        };
+
+        return Parser<decltype(parse)>{std::move(parse)};
+    }
+
+    template <class S>
+    friend auto operator<<(Parser<T>&& lhs, Parser<S> const& rhs) {
+        auto parse = [=](std::string_view src) {
+            auto left_result = std::move(lhs.parse)(src);
+
+            if (left_result.ok()) {
+                auto right_result = std::move(rhs.parse)(left_result.tail);
+
+                if (right_result.ok()) {
+                    return decltype(left_result
+                    ){.value = std::move(left_result).value,
+                      .tail = right_result.tail};
+                } else {
+                    return decltype(left_result
+                    ){.value = ::std::nullopt, .tail = src};
+                }
+            } else {
+                return left_result;
+            }
+        };
+
+        return Parser<decltype(parse)>{std::move(parse)};
+    }
+};
+
+inline auto sequence(std::string_view match) {
+    return Parser{
+        [match](std::string_view src) -> ParseResult<std::string_view> {
+            return parse_sequence(src, match);
+        }
+    };
+}
+
+inline auto character(char value) {
+    return Parser{[value](std::string_view src) -> ParseResult<char> {
+        return parse_char(src, value);
+    }};
+}
+
+inline auto integer(u32 radix = 10) {
+    return Parser{[radix](std::string_view src) -> ParseResult<i64> {
+        return parse_integer(src, radix);
+    }};
+}
+
+inline auto whitespace(u32 min_count = 0) {
+    return Parser{[min_count](std::string_view src) -> ParseResult<std::string_view> {
+        return parse_whitespace(src, min_count);
+    }};
+}
+
+inline auto newline() {
+    return Parser{[](std::string_view src) -> ParseResult<std::string_view> {
+        return parse_newline(src);
+    }};
+}
+
+inline auto quoted_string() {
+    return Parser{[](std::string_view src) -> ParseResult<std::string_view> {
+        return ::tmine::fnt::parse_string(src);
+    }};
+}
+
+}  // namespace parser
+
 }  // namespace tmine
