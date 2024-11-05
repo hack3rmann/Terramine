@@ -61,24 +61,20 @@ auto parse_string(std::string_view src) -> ParseResult<std::string_view> {
 
 auto parse_key_value_integer(std::string_view src, std::string_view key)
     -> ParseResult<i64> {
-    auto tail = std::string_view{};
+    using namespace ::tmine::parser;
 
-    try_parse(sequence, tail, src, key);
-    try_parse(char, tail, tail, '=');
-    auto const value = try_parse(integer, tail, tail, 10);
+    auto parser = sequence(key) >> character('=') >> integer();
 
-    return ParseResult<i64>{.value = value, .tail = tail};
+    return parser.parse(src);
 }
 
 auto parse_key_value_string(std::string_view src, std::string_view key)
     -> ParseResult<std::string_view> {
-    auto tail = std::string_view{};
+    using namespace ::tmine::parser;
 
-    try_parse(sequence, tail, src, key);
-    try_parse(char, tail, tail, '=');
-    auto const value = try_parse_argless(string, tail, tail);
+    auto parser = sequence(key) >> character('=') >> quoted_string();
 
-    return ParseResult<std::string_view>{.value = value, .tail = tail};
+    return parser.parse(src);
 }
 
 auto parse_info(std::string_view src) -> ParseResult<Info> {
