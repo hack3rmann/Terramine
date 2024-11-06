@@ -4,7 +4,7 @@
 #include "../graphics.hpp"
 #include "../window.hpp"
 
-enum GUIstate { nothing, startMenu, pauseMenu };
+enum GUIstate { Nothing, StartMenu, PauseMenu };
 
 class GUIHandler {
     std::vector<GUI> guis;
@@ -20,4 +20,5 @@ public:
     GUIstate current;
     GUIHandler(GUIstate current, tmine::Window* window);
     void render(glm::uvec2 window_size);
+    auto update(this GUIHandler& self, tmine::Window* window) -> void;
 };

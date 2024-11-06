@@ -98,9 +98,11 @@ Text::Text(
     for (auto symbol : this->text) {
         offset += add_glyph(&buffer, font, offset, size, symbol);
     }
+
+    this->mesh.reload_buffer();
 }
 
-auto Text::render(ShaderProgram const& shader, glm::uvec2 viewport_size) const
+auto Text::render(ShaderProgram const& shader, glm::uvec2 viewport_size)
     -> void {
     shader.bind();
     this->glyph_texture.bind(0);
@@ -114,7 +116,6 @@ auto Text::render(ShaderProgram const& shader, glm::uvec2 viewport_size) const
 
     shader.uniform_mat4("modelProj", proj * model);
 
-    mesh.reload_buffer();
     mesh.draw();
 }
 

@@ -11,6 +11,8 @@
 
 using namespace tmine;
 
+bool check = false;
+
 auto main() -> int {
     auto window = Window{"Terramine"};
 
@@ -29,12 +31,12 @@ auto main() -> int {
         }
 
         if (io.just_pressed(Key::Escape)) {
-            master.gui.current = pauseMenu;
+            master.gui.current = PauseMenu;
             window.toggle_cursor_visibility();
         }
 
-        master.updateAll(window.get_size());
         master.render(window.get_size());
+        master.updateAll(&window);
 
         io.update();
         window.swap_buffers();

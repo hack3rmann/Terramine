@@ -182,7 +182,8 @@ public:
     Mesh(Primitive primitive)
     : Mesh{{}, primitive} {}
 
-    Mesh() = default;
+    Mesh()
+    : Mesh{Primitive::Triangles} {}
 
     ~Mesh() {
         if (this->vertex_buffer_object_id == Mesh::DUMMY_ID ||

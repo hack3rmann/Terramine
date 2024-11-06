@@ -32,6 +32,7 @@ set(TERRAMINE_SOURCE_FILES
     src/graphics/texture.cpp
     src/gui/sprite.cpp
     src/gui/text.cpp
+    src/gui/button.cpp
     src/GUI/Button.cpp
     src/GUI/GUI.cpp
     src/GUI/GUIHandler.cpp

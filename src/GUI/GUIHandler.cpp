@@ -6,7 +6,7 @@
 
 using namespace tmine;
 
-GUIHandler::GUIHandler([[maybe_unused]] GUIstate current, Window* window)
+GUIHandler::GUIHandler(GUIstate current, Window* window)
 : guis{3}
 , current{current} {
     /* Init */
@@ -32,12 +32,12 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current, Window* window)
     );
 
     /* Start Menu init */
-    guis[startMenu].addSprite(0.0f, 0.0f, 2.7f, 2.0f, bg);
-    guis[startMenu].addButton(
+    guis[StartMenu].addSprite(0.0f, 0.0f, 2.7f, 2.0f, bg);
+    guis[StartMenu].addButton(
         0.0f, 0.0f, 1.0f, 0.3f, bDef, bHover, bClicked, "Start",
-        [&]() { this->current = nothing; }
+        [&]() { this->current = Nothing; }
     );
-    guis[startMenu].addButton(
+    guis[StartMenu].addButton(
         0.0f, -0.4f, 1.0f, 0.3f, bDef, bHover, bClicked, "Exit",
         window->get_window_close_function()
     );
@@ -45,21 +45,33 @@ GUIHandler::GUIHandler([[maybe_unused]] GUIstate current, Window* window)
     auto toggle = window->get_window_toggle_cursor_function();
 
     /* Pause manu init */
-    guis[pauseMenu].addSprite(0.0f, 0.0f, 2.0f, 2.0f, darker);
-    guis[pauseMenu].addButton(
+    guis[PauseMenu].addSprite(0.0f, 0.0f, 2.0f, 2.0f, darker);
+    guis[PauseMenu].addButton(
         0.0f, 0.2f, 1.0f, 0.3f, bDef, bHover, bClicked, "Return",
         [this, toggle]() {
-            this->current = nothing;
+            this->current = Nothing;
             toggle();
         }
     );
-    guis[pauseMenu].addButton(
+    guis[PauseMenu].addButton(
         0.0f, -0.2f, 1.0f, 0.3f, bDef, bHover, bClicked, "Exit",
-        [&]() { this->current = startMenu; }
+        [&]() { this->current = StartMenu; }
     );
 }
 
 void GUIHandler::render(glm::uvec2 window_size) {
-    shader.bind();
     guis[current].render(window_size);
+}
+
+auto GUIHandler::update(this GUIHandler& self, Window* window) -> void {
+    if (self.current == StartMenu && self.guis[StartMenu].buttons[0].clicked()) {
+        self.current = Nothing;
+    } else if (self.current == StartMenu && self.guis[StartMenu].buttons[1].clicked()) {
+        window->schedule_close();
+    } else if (self.current == PauseMenu && self.guis[PauseMenu].buttons[0].clicked()) {
+        self.current = Nothing;
+        window->toggle_cursor_visibility();
+    } else if (self.current == PauseMenu && self.guis[PauseMenu].buttons[1].clicked()) {
+        self.current = StartMenu;
+    }
 }
