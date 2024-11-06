@@ -1,3 +1,4 @@
 ﻿build
 .cache
 compile_commands.json
+aliases.sh

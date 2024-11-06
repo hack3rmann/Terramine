@@ -1,11 +1,11 @@
 #pragma once
 
 #include <string_view>
-#include <string>
 #include <optional>
 #include <glm/glm.hpp>
 
 #include "types.hpp"
+#include "data.hpp"
 
 #define parse_unwrap(tail, call)                          \
     ({                                                    \
@@ -60,72 +60,6 @@ auto parse_newline(std::string_view src) -> ParseResult<std::string_view>;
 
 namespace fnt {
 
-    struct Info {
-        std::string face;
-        std::string charset;
-        u32 size;
-        u32 horizontal_stretch;
-        bool is_bold : 1;
-        bool is_italic : 1;
-        bool is_unicode : 1;
-        bool is_smooth : 1;
-        bool is_antialiased : 1;
-        glm::ivec4 padding;
-        glm::ivec2 spacing;
-    };
-
-    struct Common {
-        u32 line_height;
-        u32 base;
-        u32 scale_width;
-        u32 scale_height;
-        u32 n_pages;
-        bool is_packed;
-    };
-
-    struct PageHeader {
-        std::string file;
-        u32 id;
-    };
-
-    struct CharsHeader {
-        u32 count;
-    };
-
-    struct CharDesc {
-        u32 id;
-        glm::uvec2 pos;
-        glm::uvec2 size;
-        glm::uvec2 offset;
-        u32 horizontal_advance;
-        u32 page_index;
-        u32 channel;
-    };
-
-    struct KerningsHeader {
-        u32 count;
-    };
-
-    struct Kerning {
-        u32 first;
-        u32 second;
-        i32 amount;
-    };
-
-    struct Page {
-        PageHeader header;
-        CharsHeader chars_header;
-        KerningsHeader kernings_header;
-        std::vector<CharDesc> chars;
-        std::vector<Kerning> kernings;
-    };
-
-    struct Font {
-        Info info;
-        Common common;
-        std::vector<Page> pages;
-    };
-
     auto parse_key_value_integer(std::string_view src, std::string_view key)
         -> ParseResult<i64>;
 
@@ -134,19 +68,19 @@ namespace fnt {
 
     auto parse_string(std::string_view src) -> ParseResult<std::string_view>;
 
-    auto parse_info(std::string_view src) -> ParseResult<Info>;
+    auto parse_info(std::string_view src) -> ParseResult<FontInfo>;
 
-    auto parse_common(std::string_view src) -> ParseResult<Common>;
+    auto parse_common(std::string_view src) -> ParseResult<FontCommon>;
 
-    auto parse_page_header(std::string_view src) -> ParseResult<PageHeader>;
+    auto parse_page_header(std::string_view src) -> ParseResult<FontPageHeader>;
 
-    auto parse_chars_header(std::string_view src) -> ParseResult<CharsHeader>;
+    auto parse_chars_header(std::string_view src) -> ParseResult<FontCharsHeader>;
 
-    auto parse_char_desc(std::string_view src) -> ParseResult<CharDesc>;
+    auto parse_char_desc(std::string_view src) -> ParseResult<FontCharDesc>;
 
-    auto parse_kerning(std::string_view src) -> ParseResult<Kerning>;
+    auto parse_kerning(std::string_view src) -> ParseResult<FontKerning>;
 
-    auto parse_page(std::string_view src) -> ParseResult<Page>;
+    auto parse_page(std::string_view src) -> ParseResult<FontPage>;
 
     auto parse_font(std::string_view src) -> ParseResult<Font>;
 
@@ -333,33 +267,33 @@ namespace parser {
     }
 
     inline auto fnt_info() {
-        return Parser{[](std::string_view src) -> ParseResult<fnt::Info> {
+        return Parser{[](std::string_view src) -> ParseResult<FontInfo> {
             return ::tmine::fnt::parse_info(src);
         }};
     }
 
     inline auto fnt_common() {
-        return Parser{[](std::string_view src) -> ParseResult<fnt::Common> {
+        return Parser{[](std::string_view src) -> ParseResult<FontCommon> {
             return ::tmine::fnt::parse_common(src);
         }};
     }
 
     inline auto fnt_page_header() {
-        return Parser{[](std::string_view src) -> ParseResult<fnt::PageHeader> {
+        return Parser{[](std::string_view src) -> ParseResult<FontPageHeader> {
             return ::tmine::fnt::parse_page_header(src);
         }};
     }
 
     inline auto fnt_chars_header() {
         return Parser{
-            [](std::string_view src) -> ParseResult<fnt::CharsHeader> {
+            [](std::string_view src) -> ParseResult<FontCharsHeader> {
                 return ::tmine::fnt::parse_chars_header(src);
             }
         };
     }
 
     inline auto fnt_char_desc() {
-        return Parser{[](std::string_view src) -> ParseResult<fnt::CharDesc> {
+        return Parser{[](std::string_view src) -> ParseResult<FontCharDesc> {
             return ::tmine::fnt::parse_char_desc(src);
         }};
     }
@@ -368,18 +302,18 @@ namespace parser {
         return (sequence("kernings") >> whitespace(1) >>
                 fnt_key_value_integer("count"))
             .map([](i64 count) {
-                return fnt::KerningsHeader{.count = (u32) count};
+                return FontKerningsHeader{.count = (u32) count};
             });
     }
 
     inline auto fnt_kerning() {
-        return Parser{[](std::string_view src) -> ParseResult<fnt::Kerning> {
+        return Parser{[](std::string_view src) -> ParseResult<FontKerning> {
             return ::tmine::fnt::parse_kerning(src);
         }};
     }
 
     inline auto fnt_page() {
-        return Parser{[](std::string_view src) -> ParseResult<fnt::Page> {
+        return Parser{[](std::string_view src) -> ParseResult<FontPage> {
             return ::tmine::fnt::parse_page(src);
         }};
     }

@@ -8,7 +8,7 @@
 #define GUI_VERTEX_SIZE (2 + 2 + 4) /* XY TS RGBA */
 #define GUI_VERTEX(buffer, X, Y, T, S, R, G, B, A) \
     buffer.emplace_back(glm::vec2{X, Y}, glm::vec2{T, S}, glm::vec4{R, G, B, A})
-#define GUI_RECT(buffer, X, Y, W, H, R, G, B, A)                      \
+#define GUI_RECT(buffer, X, Y, W, H, R, G, B, A)                         \
     GUI_VERTEX(buffer, X - W / 2.0f, Y - H / 2, 0.0f, 0.0f, R, G, B, A); \
     GUI_VERTEX(buffer, X - W / 2.0f, Y + H / 2, 0.0f, 1.0f, R, G, B, A); \
     GUI_VERTEX(buffer, X + W / 2.0f, Y + H / 2, 1.0f, 1.0f, R, G, B, A); \
@@ -23,7 +23,9 @@ class GUI {
     int objectsSprites;
     int size;
     std::vector<Button> buttons;
-    std::vector<Sprite> sprites;
+    std::vector<OldSprite> sprites;
+    tmine::Font font;
+    tmine::Texture glyph_texture;
 
 public:
     GUI();

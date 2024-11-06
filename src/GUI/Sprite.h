@@ -5,7 +5,7 @@
 #include "../graphics.hpp"
 #include "GUIObject.h"
 
-class Sprite : public GUIObject {
+class OldSprite : public GUIObject {
 public:
     tmine::Mesh<GUIObject::Vertex> mesh;
     tmine::Texture texture;
@@ -16,8 +16,8 @@ public:
 
     float x, y;
 
-    Sprite();
-    Sprite(float posX, float posY, tmine::f32 size, tmine::Texture texture);
+    OldSprite();
+    OldSprite(float posX, float posY, tmine::f32 size, tmine::Texture texture);
     static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
     void render(tmine::f32 aspect_ratio);
 };

@@ -35,11 +35,28 @@ public:
         -> void override;
 
 private:
-    Mesh<Vertex> mesh;
+    Mesh<GuiObject::Vertex> mesh;
     Texture texture;
     glm::vec2 pos;
     f32 size;
 };
 
+class Text : public GuiObject {
+public:
+    Text(
+        Font const& font, Texture glyph_texture, std::string text,
+        glm::vec2 pos, f32 size
+    );
+
+    auto render(ShaderProgram const& shader, glm::uvec2 viewport_size) const
+        -> void override;
+
+private:
+    Mesh<GuiObject::Vertex> mesh;
+    Texture glyph_texture;
+    std::string text;
+    glm::vec2 pos;
+    f32 size;
+};
 
 }  // namespace tmine

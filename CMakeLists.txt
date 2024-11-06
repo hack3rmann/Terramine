@@ -30,14 +30,16 @@ set(TERRAMINE_SOURCE_FILES
     src/graphics/SceneHandler.cpp
     src/graphics/shader.cpp
     src/graphics/texture.cpp
+    src/gui/sprite.cpp
+    src/gui/text.cpp
     src/GUI/Button.cpp
     src/GUI/GUI.cpp
     src/GUI/GUIHandler.cpp
     src/GUI/GUIObject.cpp
     src/GUI/Sprite.cpp
-    src/GUI/Text.cpp
     src/controls/camera.cpp
     src/events/io.cpp
+    src/loaders/font.cpp
     src/loaders/png.cpp
     src/loaders/shader.cpp
     src/loaders/string.cpp

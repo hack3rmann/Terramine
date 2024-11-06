@@ -179,6 +179,9 @@ public:
         glBindVertexArray(0);
     }
 
+    Mesh(Primitive primitive)
+    : Mesh{{}, primitive} {}
+
     Mesh() = default;
 
     ~Mesh() {

@@ -16,7 +16,7 @@ inline auto perform_test_impl(F test, std::string_view name) -> void {
         test();
 
         fmt::print(stderr, fmt::fg(fmt::color::lime_green), " passed\n");
-    } catch (std::runtime_error error) {
+    } catch (std::runtime_error const& error) {
         fmt::print(stderr, fmt::fg(fmt::color::red), " failed");
         fmt::print(stderr, ":\n");
 
