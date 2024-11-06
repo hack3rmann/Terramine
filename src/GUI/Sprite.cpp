@@ -6,10 +6,10 @@
 
 using namespace tmine;
 
-Sprite::Sprite()
+OldSprite::OldSprite()
 : mesh{std::vector<GUIObject::Vertex>(6), Primitive::Triangles} {}
 
-Sprite::Sprite(
+OldSprite::OldSprite(
     float posX, float posY, f32 size, Texture texture
 )
 : GUIObject(posX, posY, size, size)
@@ -30,11 +30,11 @@ Sprite::Sprite(
     height = aspect_ratio * size;
 }
 
-auto Sprite::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
+auto OldSprite::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
     return glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 0.0f, 100.0f);
 }
 
-void Sprite::render(f32 aspect_ratio) {
+void OldSprite::render(f32 aspect_ratio) {
     /* Texture */
     texture.bind(0);
 
@@ -42,7 +42,7 @@ void Sprite::render(f32 aspect_ratio) {
     shader.bind();
 
     /* Matrix init */
-    auto const proj = Sprite::get_proj(aspect_ratio);
+    auto const proj = OldSprite::get_proj(aspect_ratio);
     model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
 
     /* Shader uniforms */

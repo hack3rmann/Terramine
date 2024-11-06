@@ -1,9 +1,15 @@
 #include "GUI.h"
+
 #include "../window.hpp"
+#include "../loaders.hpp"
 
 using namespace tmine;
 
-GUI::GUI() {
+GUI::GUI()
+: font{load_font("assets/fonts/font.fnt")}
+, glyph_texture{Texture::from_image(
+      load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR
+  )} {
     objectsButtons = 0;
     objectsSprites = 0;
     size = 0;
@@ -15,8 +21,9 @@ void GUI::addButton(
     std::function<void()> function
 ) {
     buttons.emplace_back(
-        posX, posY, width, std::move(defTexture),
-        std::move(hoverTexture), std::move(clickedTexture), text, function
+        this->font, this->glyph_texture, posX, posY, width,
+        std::move(defTexture), std::move(hoverTexture),
+        std::move(clickedTexture), text, function
     );
 
     objectsButtons++;
@@ -32,14 +39,14 @@ void GUI::addSprite(
     size++;
 }
 
-void GUI::render(glm::uvec2 window_size) {
+void GUI::render(glm::uvec2 viewport_size) {
     for (auto& sprite : this->sprites) {
-        sprite.render(Window::aspect_ratio_of(window_size));
+        sprite.render(Window::aspect_ratio_of(viewport_size));
     }
 
     for (auto& button : this->buttons) {
-        button.refreshState(window_size);
-        button.render(Window::aspect_ratio_of(window_size));
+        button.refreshState(viewport_size);
+        button.render(viewport_size);
     }
 }
 

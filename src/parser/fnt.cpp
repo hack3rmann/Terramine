@@ -76,7 +76,7 @@ namespace fnt {
         return parser.parse(src);
     }
 
-    auto parse_info(std::string_view src) -> ParseResult<Info> {
+    auto parse_info(std::string_view src) -> ParseResult<FontInfo> {
         using namespace ::tmine::parser;
 
         auto tail = std::string_view{};
@@ -136,9 +136,9 @@ namespace fnt {
         try_parse(char, tail, tail, ',');
         auto const spacing_y = try_parse_argless(integer, tail, tail);
 
-        return ParseResult<Info>{
+        return ParseResult<FontInfo>{
             .value =
-                Info{
+                FontInfo{
                     .face = std::string{face},
                     .charset = std::string{charset},
                     .size = (u32) size,
@@ -156,7 +156,7 @@ namespace fnt {
         };
     }
 
-    auto parse_common(std::string_view src) -> ParseResult<Common> {
+    auto parse_common(std::string_view src) -> ParseResult<FontCommon> {
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -181,13 +181,12 @@ namespace fnt {
         auto const packed =
             execute_parser(tail, fnt_key_value_integer("packed"));
 
-        return ParseResult<Common>{
+        return ParseResult<FontCommon>{
             .value =
-                Common{
+                FontCommon{
                     .line_height = (u32) line_height,
                     .base = (u32) base,
-                    .scale_width = (u32) scale_width,
-                    .scale_height = (u32) scale_height,
+                    .scale = glm::uvec2{scale_width, scale_height},
                     .n_pages = (u32) n_pages,
                     .is_packed = 0 != packed,
                 },
@@ -195,7 +194,8 @@ namespace fnt {
         };
     }
 
-    auto parse_page_header(std::string_view src) -> ParseResult<PageHeader> {
+    auto parse_page_header(std::string_view src)
+        -> ParseResult<FontPageHeader> {
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -206,9 +206,9 @@ namespace fnt {
             execute_parser(tail, fnt_key_value_integer("id") << whitespace(1));
         auto const file = execute_parser(tail, fnt_key_value_string("file"));
 
-        return ParseResult<PageHeader>{
+        return ParseResult<FontPageHeader>{
             .value =
-                PageHeader{
+                FontPageHeader{
                     .file = std::string{file},
                     .id = (u32) id,
                 },
@@ -216,7 +216,8 @@ namespace fnt {
         };
     }
 
-    auto parse_chars_header(std::string_view src) -> ParseResult<CharsHeader> {
+    auto parse_chars_header(std::string_view src)
+        -> ParseResult<FontCharsHeader> {
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -225,16 +226,16 @@ namespace fnt {
 
         auto const count = execute_parser(tail, fnt_key_value_integer("count"));
 
-        return ParseResult<CharsHeader>{
+        return ParseResult<FontCharsHeader>{
             .value =
-                CharsHeader{
+                FontCharsHeader{
                     .count = (u32) count,
                 },
             .tail = tail,
         };
     }
 
-    auto parse_char_desc(std::string_view src) -> ParseResult<CharDesc> {
+    auto parse_char_desc(std::string_view src) -> ParseResult<FontCharDesc> {
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -270,13 +271,13 @@ namespace fnt {
         auto const channel =
             execute_parser(tail, fnt_key_value_integer("chnl"));
 
-        return ParseResult<CharDesc>{
+        return ParseResult<FontCharDesc>{
             .value =
-                CharDesc{
+                FontCharDesc{
                     .id = (u32) id,
                     .pos = glm::uvec2{x, y},
                     .size = glm::uvec2{width, height},
-                    .offset = glm::uvec2{xoffset, yoffset},
+                    .offset = glm::ivec2{xoffset, yoffset},
                     .horizontal_advance = (u32) xadvance,
                     .page_index = (u32) page,
                     .channel = (u32) channel,
@@ -285,7 +286,7 @@ namespace fnt {
         };
     }
 
-    auto parse_kerning(std::string_view src) -> ParseResult<Kerning> {
+    auto parse_kerning(std::string_view src) -> ParseResult<FontKerning> {
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -302,9 +303,9 @@ namespace fnt {
             tail, fnt_key_value_integer("amount") << whitespace(1)
         );
 
-        return ParseResult<Kerning>{
+        return ParseResult<FontKerning>{
             .value =
-                Kerning{
+                FontKerning{
                     .first = (u32) first,
                     .second = (u32) second,
                     .amount = (i32) amount,
@@ -313,7 +314,7 @@ namespace fnt {
         };
     }
 
-    auto parse_page(std::string_view src) -> ParseResult<Page> {
+    auto parse_page(std::string_view src) -> ParseResult<FontPage> {
         using namespace ::tmine::parser;
 
         auto tail = src;
@@ -324,8 +325,14 @@ namespace fnt {
         auto const char_header =
             execute_parser(tail, fnt_chars_header() << whitespace());
 
-        auto const chars =
+        auto const chars_unordered =
             execute_parser(tail, (fnt_char_desc() << whitespace()).sequence());
+
+        auto chars_ordered = std::vector<FontCharDesc>(1 << CHAR_BIT);
+
+        for (auto&& desc : chars_unordered) {
+            chars_ordered[desc.id] = std::move(desc);
+        }
 
         auto const kerning_header =
             execute_parser(tail, fnt_kerning_header() << whitespace());
@@ -333,13 +340,13 @@ namespace fnt {
         auto const kernings =
             execute_parser(tail, (fnt_kerning() << whitespace()).sequence());
 
-        return ParseResult<Page>{
+        return ParseResult<FontPage>{
             .value =
-                Page{
+                FontPage{
                     .header = std::move(page_header),
                     .chars_header = std::move(char_header),
                     .kernings_header = std::move(kerning_header),
-                    .chars = std::move(chars),
+                    .chars = std::move(chars_ordered),
                     .kernings = std::move(kernings),
                 },
             .tail = tail,

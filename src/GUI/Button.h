@@ -6,10 +6,10 @@
 
 #include "../graphics.hpp"
 #include "../types.hpp"
+#include "../gui.hpp"
 #include "GUIObject.h"
-#include "Text.h"
 
-enum States { Default, onHover, onClick };
+enum States { Default, OnHover, OnClick };
 
 class Button : public GUIObject {
     tmine::Texture textures[3];
@@ -18,19 +18,19 @@ class Button : public GUIObject {
     States state;
     tmine::ShaderProgram shader;
     float x, y, w, h;
-    Text text;
+    tmine::Text text;
 
     glm::mat4 model;
 
 public:
     Button();
     Button(
-        float posX, float posY, tmine::f32 size,
-        tmine::Texture defTexture, tmine::Texture hoverTexture,
-        tmine::Texture clickedTexture, std::string text,
-        std::function<void()> function
+        tmine::Font const& font, tmine::Texture glyph_texture, float posX,
+        float posY, tmine::f32 size, tmine::Texture defTexture,
+        tmine::Texture hoverTexture, tmine::Texture clickedTexture,
+        std::string text, std::function<void()> function
     );
     static auto get_proj(tmine::f32 aspect_ratio) -> glm::mat4;
-    void render(tmine::f32 aspect_ratio);
+    void render(glm::uvec2 viewport_size);
     void refreshState(glm::uvec2 window_size);
 };

@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <filesystem>
+#include <glm/glm.hpp>
 
 #include "types.hpp"
 
@@ -68,6 +69,71 @@ struct GameBlockTextureIdentifier {
 struct GameBlocksData {
     std::vector<GameBlock> blocks;
     std::vector<GameBlockTextureIdentifier> textures;
+};
+
+struct FontInfo {
+    std::string face;
+    std::string charset;
+    u32 size;
+    u32 horizontal_stretch;
+    bool is_bold : 1;
+    bool is_italic : 1;
+    bool is_unicode : 1;
+    bool is_smooth : 1;
+    bool is_antialiased : 1;
+    glm::ivec4 padding;
+    glm::ivec2 spacing;
+};
+
+struct FontCommon {
+    u32 line_height;
+    u32 base;
+    glm::uvec2 scale;
+    u32 n_pages;
+    bool is_packed;
+};
+
+struct FontPageHeader {
+    std::string file;
+    u32 id;
+};
+
+struct FontCharsHeader {
+    u32 count;
+};
+
+struct FontCharDesc {
+    u32 id;
+    glm::uvec2 pos;
+    glm::uvec2 size;
+    glm::ivec2 offset;
+    u32 horizontal_advance;
+    u32 page_index;
+    u32 channel;
+};
+
+struct FontKerningsHeader {
+    u32 count;
+};
+
+struct FontKerning {
+    u32 first;
+    u32 second;
+    i32 amount;
+};
+
+struct FontPage {
+    FontPageHeader header;
+    FontCharsHeader chars_header;
+    FontKerningsHeader kernings_header;
+    std::vector<FontCharDesc> chars;
+    std::vector<FontKerning> kernings;
+};
+
+struct Font {
+    FontInfo info;
+    FontCommon common;
+    std::vector<FontPage> pages;
 };
 
 }  // namespace tmine

@@ -34,4 +34,6 @@ auto load_game_blocks_data(
     char const* game_blocks_path, char const* game_block_textures_path
 ) -> GameBlocksData;
 
+auto load_font(char const* font_path) -> Font;
+
 }  // namespace tmine

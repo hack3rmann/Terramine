@@ -78,8 +78,8 @@ auto test_parse_fnt_common() -> void {
 
     tmine_assert_eq(common.line_height, 265);
     tmine_assert_eq(common.base, 189);
-    tmine_assert_eq(common.scale_width, 1024);
-    tmine_assert_eq(common.scale_height, 1024);
+    tmine_assert_eq(common.scale.x, 1024);
+    tmine_assert_eq(common.scale.y, 1024);
     tmine_assert_eq(common.n_pages, 1);
     tmine_assert_eq(common.is_packed, false);
 }
@@ -130,6 +130,8 @@ auto test_parse_fnt_font() -> void {
 
     tmine_assert_eq(font.pages.size(), 1);
     tmine_assert_eq(font.info.face, "Segoe Print");
+    tmine_assert_eq(font.pages[0].chars.size(), 97);
+    tmine_assert_eq(font.pages[0].chars[0].size.x, 70);
 }
 
 }  // namespace tmine_test
