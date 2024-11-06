@@ -130,7 +130,7 @@ auto test_parse_fnt_font() -> void {
 
     tmine_assert_eq(font.pages.size(), 1);
     tmine_assert_eq(font.info.face, "Segoe Print");
-    tmine_assert_eq(font.pages[0].chars.size(), 97);
+    tmine_assert_eq(font.pages[0].chars.size(), 256);
     tmine_assert_eq(font.pages[0].chars[0].size.x, 70);
 }
 
