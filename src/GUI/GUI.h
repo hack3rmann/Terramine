@@ -2,8 +2,7 @@
 
 #include <functional>
 
-#include "Button.h"
-#include "Sprite.h"
+#include "../gui.hpp"
 
 #define GUI_VERTEX_SIZE (2 + 2 + 4) /* XY TS RGBA */
 #define GUI_VERTEX(buffer, X, Y, T, S, R, G, B, A) \
@@ -22,10 +21,11 @@ class GUI {
     int objectsButtons;
     int objectsSprites;
     int size;
-    std::vector<Button> buttons;
-    std::vector<OldSprite> sprites;
+    std::vector<tmine::Button> buttons;
+    std::vector<tmine::Sprite> sprites;
     tmine::Font font;
-    tmine::Texture glyph_texture;
+    tmine::ButtonStyle button_style;
+    tmine::ShaderProgram shader;
 
 public:
     GUI();

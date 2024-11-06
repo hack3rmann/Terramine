@@ -11,7 +11,7 @@
 
 enum States { Default, OnHover, OnClick };
 
-class Button : public GUIObject {
+class OldButton : public GUIObject {
     tmine::Texture textures[3];
     std::function<void()> function;
     tmine::Mesh<GUIObject::Vertex> mesh;
@@ -23,8 +23,8 @@ class Button : public GUIObject {
     glm::mat4 model;
 
 public:
-    Button();
-    Button(
+    OldButton();
+    OldButton(
         tmine::Font const& font, tmine::Texture glyph_texture, float posX,
         float posY, tmine::f32 size, tmine::Texture defTexture,
         tmine::Texture hoverTexture, tmine::Texture clickedTexture,

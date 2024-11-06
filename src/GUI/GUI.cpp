@@ -7,9 +7,27 @@ using namespace tmine;
 
 GUI::GUI()
 : font{load_font("assets/fonts/font.fnt")}
-, glyph_texture{Texture::from_image(
-      load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR
-  )} {
+, button_style{ButtonStyle{
+      .textures =
+          {
+              Texture::from_image(
+                  load_png("assets/images/testButtonDef.png"),
+                  TextureLoad::DEFAULT
+              ),
+              Texture::from_image(
+                  load_png("assets/images/testButtonHover.png"),
+                  TextureLoad::DEFAULT
+              ),
+              Texture::from_image(
+                  load_png("assets/images/testButtonClicked.png"),
+                  TextureLoad::DEFAULT
+              ),
+          },
+      .glyph_texture = Texture::from_image(
+          load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR
+      ),
+  }}
+, shader{load_shader("gui_vertex.glsl", "gui_fragment.glsl")} {
     objectsButtons = 0;
     objectsSprites = 0;
     size = 0;
@@ -21,9 +39,12 @@ void GUI::addButton(
     std::function<void()> function
 ) {
     buttons.emplace_back(
-        this->font, this->glyph_texture, posX, posY, width,
-        std::move(defTexture), std::move(hoverTexture),
-        std::move(clickedTexture), text, function
+        this->button_style,
+        Text{
+            this->font, this->button_style.glyph_texture, std::move(text),
+            glm::vec2{posX, posY}, width
+        },
+        glm::vec2{posX, posY}, width
     );
 
     objectsButtons++;
@@ -33,7 +54,7 @@ void GUI::addButton(
 void GUI::addSprite(
     float posX, float posY, float width, float height, Texture texture
 ) {
-    sprites.emplace_back(posX, posY, width, std::move(texture));
+    sprites.emplace_back(glm::vec2{posX, posY}, width, std::move(texture));
 
     objectsSprites++;
     size++;
@@ -41,12 +62,11 @@ void GUI::addSprite(
 
 void GUI::render(glm::uvec2 viewport_size) {
     for (auto& sprite : this->sprites) {
-        sprite.render(Window::aspect_ratio_of(viewport_size));
+        sprite.render(this->shader, viewport_size);
     }
 
     for (auto& button : this->buttons) {
-        button.refreshState(viewport_size);
-        button.render(viewport_size);
+        button.render(this->shader, viewport_size);
     }
 }
 

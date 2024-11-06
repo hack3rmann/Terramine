@@ -14,5 +14,5 @@ public:
     explicit MasterHandler(tmine::Window* window);
     
     void render(glm::uvec2 window_size);
-    void updateAll(glm::uvec2 window_size);
+    void updateAll(tmine::Window* window);
 };

@@ -10,7 +10,7 @@
 
 using namespace tmine;
 
-Button::Button(
+OldButton::OldButton(
     Font const& font, Texture glyph_texture, float posX, float posY, f32 size,
     Texture defTexture, Texture hoverTexture, Texture clickedTexture,
     std::string text, std::function<void()> function
@@ -41,11 +41,13 @@ Button::Button(
     h = height = aspect_ratio * size;
 }
 
-auto Button::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
+auto OldButton::get_proj(tmine::f32 aspect_ratio) -> glm::mat4 {
     return glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 0.0f, 100.0f);
 }
 
-void Button::render(glm::uvec2 viewport_size) {
+void OldButton::render(glm::uvec2 viewport_size) {
+    this->refreshState(viewport_size);
+
     /* Bind texture */
     textures[state].bind(0);
 
@@ -54,7 +56,7 @@ void Button::render(glm::uvec2 viewport_size) {
 
     /* Matrix init */
     auto aspect_ratio = Window::aspect_ratio_of(viewport_size);
-    auto const proj = Button::get_proj(aspect_ratio);
+    auto const proj = OldButton::get_proj(aspect_ratio);
     model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
 
     /* Uniforms */
@@ -66,8 +68,8 @@ void Button::render(glm::uvec2 viewport_size) {
     text.render(shader, viewport_size);
 }
 
-void Button::refreshState(glm::uvec2 window_size) {
-    auto const proj = Button::get_proj(Window::aspect_ratio_of(window_size));
+void OldButton::refreshState(glm::uvec2 window_size) {
+    auto const proj = OldButton::get_proj(Window::aspect_ratio_of(window_size));
 
     /* Window coords to OpenGL coords */
 
