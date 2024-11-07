@@ -7,7 +7,17 @@
 
 namespace tmine {
 
+namespace rg = std::ranges;
 namespace vs = std::ranges::views;
+
+// Idiomatic dedup algorithm taken from
+// <https://www.geeksforgeeks.org/remove-duplicates-from-vector-in-cpp/>
+template <class T>
+static auto dedup_vector(std::vector<T>* vec) -> void {
+    rg::sort(*vec);
+    auto it = std::unique(vec->begin(), vec->end());
+    vec->erase(it, vec->end());
+}
 
 Terrain::Terrain(glm::uvec3 sizes)
 : chunks{sizes}
@@ -37,6 +47,9 @@ Terrain::Terrain(glm::uvec3 sizes)
 }
 
 auto Terrain::generate_meshes(this Terrain& self) -> void {
+    // Remove duplicates to prevent data race
+    dedup_vector(&self.chunks_to_update);
+
 #pragma omp parallel for
     for (auto i : self.chunks_to_update) {
         auto const pos = self.chunks.index_to_pos(i);
@@ -94,9 +107,9 @@ auto Terrain::render(
 auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
     -> void {
     auto const chunk_pos = pos / Chunk::SIZES;
-    auto const voxel_pos = pos % Chunk::SIZES;
+    auto const local_pos = pos % Chunk::SIZES;
 
-    if (!self.chunks.is_in_bounds(chunk_pos) || !Chunk::is_in_bounds(voxel_pos))
+    if (!self.chunks.is_in_bounds(chunk_pos) || !Chunk::is_in_bounds(local_pos))
     {
         return;
     }
@@ -105,37 +118,37 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
 
     self.chunks_to_update.push_back(self.chunks.index_of(chunk_pos));
 
-    if (0 == voxel_pos.x && 0 != chunk_pos.x) {
+    if (0 == local_pos.x && 0 != chunk_pos.x) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x - 1, chunk_pos.y, chunk_pos.z)
         ));
     }
 
-    if (Chunk::WIDTH == voxel_pos.x + 1 && sizes.x != chunk_pos.x + 1) {
+    if (Chunk::WIDTH == local_pos.x + 1 && sizes.x != chunk_pos.x + 1) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z)
         ));
     }
 
-    if (0 == voxel_pos.y && 0 != chunk_pos.y) {
+    if (0 == local_pos.y && 0 != chunk_pos.y) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y - 1, chunk_pos.z)
         ));
     }
 
-    if (Chunk::HEIGHT == voxel_pos.y + 1 && sizes.y != chunk_pos.y + 1) {
+    if (Chunk::HEIGHT == local_pos.y + 1 && sizes.y != chunk_pos.y + 1) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z)
         ));
     }
 
-    if (0 == voxel_pos.z && 0 != chunk_pos.z) {
+    if (0 == local_pos.z && 0 != chunk_pos.z) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z - 1)
         ));
     }
 
-    if (Chunk::DEPTH == voxel_pos.z + 1 && sizes.z != chunk_pos.z + 1) {
+    if (Chunk::DEPTH == local_pos.z + 1 && sizes.z != chunk_pos.z + 1) {
         self.chunks_to_update.push_back(self.chunks.index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
         ));
