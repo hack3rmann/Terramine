@@ -14,11 +14,19 @@ execute_process(COMMAND ln -sfT ${BUILD_DIR}/compile_commands.json
     ${CMAKE_SOURCE_DIR}/compile_commands.json)
 
 option(SANITIZE "Enable sanitizers" OFF)
+option(THREAD_SANITIZE "Enable thread sanitizer" OFF)
 
 if(${SANITIZE})
     message(STATUS "Build with sanitizers")
     set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -g -fsanitize=address -fsanitize=undefined -fsanitize=leak"
+        "${CMAKE_CXX_FLAGS} -g -fsanitize={address,undefined,leak}"
+    )
+endif()
+
+if(${THREAD_SANITIZE})
+    message(STATUS "Build with thread sanitizer")
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -g -fsanitize={thread,undefined}"
     )
 endif()
 
