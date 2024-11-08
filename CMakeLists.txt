@@ -56,7 +56,6 @@ set(TERRAMINE_SOURCE_FILES
     src/objects/skybox.cpp
     src/objects/line_batch.cpp
     src/objects/terrain.cpp
-    src/parser/basic.cpp
     src/parser/fnt.cpp
     src/terrain/chunk.cpp
     src/terrain/chunk_array.cpp
@@ -69,9 +68,7 @@ add_executable(terramine
 
 add_executable(test
     tests/main.cpp
-    tests/parse/basic.cpp
     tests/parse/fnt.cpp
-    tests/parse/parser.cpp
     ${TERRAMINE_SOURCE_FILES})
 
 target_include_directories(test PRIVATE src)
@@ -90,6 +87,17 @@ endif()
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET NO)
+
+
+set(COMB_VERSION 0.1.0)
+FetchContent_Declare(
+    comb
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/hack3rmann/comb/archive/refs/tags/${COMB_VERSION}.tar.gz)
+
+FetchContent_MakeAvailable(comb)
+target_link_libraries(terramine comb)
+target_link_libraries(test comb)
 
 
 set(FMT_VERSION 11.0.2)

@@ -5,28 +5,6 @@
 
 namespace tmine_test {
 
-auto test_parse_string() -> void {
-    auto const result1 = tmine::fnt::parse_string("\"String\"");
-
-    tmine_assert(result1.ok());
-    tmine_assert_eq(result1.get_value(), "String");
-    tmine_assert_eq(result1.tail, "");
-
-    auto const result2 = tmine::fnt::parse_string("\"NotString");
-
-    tmine_assert(!result2.ok());
-
-    auto const result3 = tmine::fnt::parse_string("AlsoNotAString");
-
-    tmine_assert(!result3.ok());
-
-    auto const result4 = tmine::fnt::parse_string("\"\"String!");
-
-    tmine_assert(result4.ok());
-    tmine_assert_eq(result4.get_value(), "");
-    tmine_assert_eq(result4.tail, "String!");
-}
-
 auto test_parse_fnt_key_value_string() -> void {
     auto const result =
         tmine::fnt::parse_key_value_string("key=\"value\" tail", "key");
