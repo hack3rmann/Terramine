@@ -6,7 +6,7 @@ using namespace tmine;
 
 MasterHandler::MasterHandler(Window* window)
 : sceneHandler(window->get_size())
-, gui(StartMenu, window) {}
+, gui(StartMenu) {}
 
 void MasterHandler::render(glm::uvec2 window_size) {
     if (0 != window_size.x + window_size.y) {

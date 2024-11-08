@@ -25,14 +25,14 @@ public:
     };
 
     static auto add_gui_rect(
-        std::vector<Vertex>* mesh, glm::vec2 pos, glm::vec2 size
+        std::vector<Vertex>* buffer, glm::vec2 pos, glm::vec2 size
     ) -> void;
 };
 
 class Sprite : public GuiObject {
 public:
     Sprite(glm::vec2 pos, f32 size, Texture texture);
-    
+
     virtual ~Sprite() = default;
 
     auto render(ShaderProgram const& shader, glm::uvec2 viewport_size)
@@ -108,6 +108,27 @@ private:
     ButtonState state{ButtonState::Default};
     glm::vec2 pos;
     f32 size;
+};
+
+class Gui {
+public:
+    Gui();
+
+    auto add_sprite(this Gui& self, Sprite sprite) -> void;
+    auto add_button(
+        this Gui& self, std::string_view text, glm::vec2 pos, f32 size
+    ) -> void;
+
+    auto get_button(this Gui const& self, std::string_view name) -> Button const&;
+
+    auto render(this Gui& self, glm::uvec2 viewport_size) -> void;
+
+private:
+    std::unordered_map<std::string_view, Button> buttons{};
+    std::vector<Sprite> sprites{};
+    ButtonStyle button_style;
+    Font font;
+    ShaderProgram shader;
 };
 
 }  // namespace tmine
