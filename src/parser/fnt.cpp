@@ -23,65 +23,44 @@
         result.get_value();                                 \
     })
 
+#define parse_unwrap(tail, call)                          \
+    ({                                                    \
+        auto const result = (call);                       \
+        tail = result.tail;                               \
+                                                          \
+        if (!result.ok()) {                               \
+            return {.value = std::nullopt, .tail = tail}; \
+        }                                                 \
+                                                          \
+        result.get_value();                               \
+    })
+
+#define execute_parser(tail, parser) parse_unwrap(tail, (parser) (tail))
+
+using namespace ::tmine::parser;
+using namespace comb;
+
 namespace tmine {
 namespace fnt {
-    auto parse_string(std::string_view src) -> ParseResult<std::string_view> {
-        auto const open_quote = parse_char(src, '"');
-        auto tail = open_quote.tail;
-
-        if (!open_quote.ok()) {
-            return ParseResult<std::string_view>{
-                .value = std::nullopt, .tail = src
-            };
-        }
-
-        auto n_string_symbols = usize{0};
-
-        for (auto symbol : tail) {
-            if ('"' == symbol) {
-                break;
-            }
-
-            n_string_symbols += 1;
-        }
-
-        if (n_string_symbols == tail.size() || '"' != tail[n_string_symbols]) {
-            return ParseResult<std::string_view>{
-                .value = std::nullopt, .tail = src
-            };
-        }
-
-        auto match = tail;
-        match.remove_suffix(src.size() - 1 - n_string_symbols);
-        tail.remove_prefix(n_string_symbols + 1);
-
-        return ParseResult<std::string_view>{.value = match, .tail = tail};
-    }
 
     auto parse_key_value_integer(std::string_view src, std::string_view key)
-        -> ParseResult<i64> {
-        using namespace ::tmine::parser;
-
-        auto parser = sequence(key) >> character('=') >> integer();
+        -> comb::ParseResult<i64> {
+        auto parser = prefix(key) >> character('=') >> integer();
 
         return parser.parse(src);
     }
 
     auto parse_key_value_string(std::string_view src, std::string_view key)
-        -> ParseResult<std::string_view> {
-        using namespace ::tmine::parser;
-
-        auto parser = sequence(key) >> character('=') >> quoted_string();
+        -> comb::ParseResult<std::string_view> {
+        auto parser = prefix(key) >> character('=') >> quoted_string();
 
         return parser.parse(src);
     }
 
-    auto parse_info(std::string_view src) -> ParseResult<FontInfo> {
-        using namespace ::tmine::parser;
-
+    auto parse_info(std::string_view src) -> comb::ParseResult<FontInfo> {
         auto tail = std::string_view{};
 
-        parse_unwrap(tail, (sequence("info") << whitespace(1))(src));
+        parse_unwrap(tail, (prefix("info") << whitespace(1))(src));
 
         auto const face = parse_unwrap(
             tail, (fnt_key_value_string("face") << whitespace(1))(tail)
@@ -119,24 +98,23 @@ namespace fnt {
             tail, (fnt_key_value_integer("aa") << whitespace(1))(tail)
         );
 
-        try_parse(sequence, tail, tail, "padding");
-        try_parse(char, tail, tail, '=');
-        auto const padding_x = try_parse_argless(integer, tail, tail);
-        try_parse(char, tail, tail, ',');
-        auto const padding_y = try_parse_argless(integer, tail, tail);
-        try_parse(char, tail, tail, ',');
-        auto const padding_z = try_parse_argless(integer, tail, tail);
-        try_parse(char, tail, tail, ',');
-        auto const padding_w = try_parse_argless(integer, tail, tail);
-        try_parse_argless(whitespace, tail, tail);
+        auto const padding_x = execute_parser(
+            tail, prefix("padding") >> character('=') >> integer()
+        );
+        auto const padding_y =
+            execute_parser(tail, character(',') >> integer());
+        auto const padding_z =
+            execute_parser(tail, character(',') >> integer());
+        auto const padding_w =
+            execute_parser(tail, character(',') >> integer() << whitespace());
 
-        try_parse(sequence, tail, tail, "spacing");
-        try_parse(char, tail, tail, '=');
-        auto const spacing_x = try_parse_argless(integer, tail, tail);
-        try_parse(char, tail, tail, ',');
-        auto const spacing_y = try_parse_argless(integer, tail, tail);
+        auto const spacing_x = execute_parser(
+            tail, prefix("spacing") >> character('=') >> integer()
+        );
+        auto const spacing_y =
+            execute_parser(tail, character(',') >> integer());
 
-        return ParseResult<FontInfo>{
+        return comb::ParseResult<FontInfo>{
             .value =
                 FontInfo{
                     .face = std::string{face},
@@ -156,12 +134,10 @@ namespace fnt {
         };
     }
 
-    auto parse_common(std::string_view src) -> ParseResult<FontCommon> {
-        using namespace ::tmine::parser;
-
+    auto parse_common(std::string_view src) -> comb::ParseResult<FontCommon> {
         auto tail = src;
 
-        execute_parser(tail, sequence("common") << whitespace(1));
+        execute_parser(tail, prefix("common") << whitespace(1));
 
         auto const line_height = execute_parser(
             tail, fnt_key_value_integer("lineHeight") << whitespace(1)
@@ -181,7 +157,7 @@ namespace fnt {
         auto const packed =
             execute_parser(tail, fnt_key_value_integer("packed"));
 
-        return ParseResult<FontCommon>{
+        return comb::ParseResult<FontCommon>{
             .value =
                 FontCommon{
                     .line_height = (u32) line_height,
@@ -195,18 +171,16 @@ namespace fnt {
     }
 
     auto parse_page_header(std::string_view src)
-        -> ParseResult<FontPageHeader> {
-        using namespace ::tmine::parser;
-
+        -> comb::ParseResult<FontPageHeader> {
         auto tail = src;
 
-        execute_parser(tail, sequence("page") << whitespace(1));
+        execute_parser(tail, prefix("page") << whitespace(1));
 
         auto const id =
             execute_parser(tail, fnt_key_value_integer("id") << whitespace(1));
         auto const file = execute_parser(tail, fnt_key_value_string("file"));
 
-        return ParseResult<FontPageHeader>{
+        return comb::ParseResult<FontPageHeader>{
             .value =
                 FontPageHeader{
                     .file = std::string{file},
@@ -217,16 +191,14 @@ namespace fnt {
     }
 
     auto parse_chars_header(std::string_view src)
-        -> ParseResult<FontCharsHeader> {
-        using namespace ::tmine::parser;
-
+        -> comb::ParseResult<FontCharsHeader> {
         auto tail = src;
 
-        execute_parser(tail, sequence("chars") << whitespace(1));
+        execute_parser(tail, prefix("chars") << whitespace(1));
 
         auto const count = execute_parser(tail, fnt_key_value_integer("count"));
 
-        return ParseResult<FontCharsHeader>{
+        return comb::ParseResult<FontCharsHeader>{
             .value =
                 FontCharsHeader{
                     .count = (u32) count,
@@ -235,12 +207,11 @@ namespace fnt {
         };
     }
 
-    auto parse_char_desc(std::string_view src) -> ParseResult<FontCharDesc> {
-        using namespace ::tmine::parser;
-
+    auto parse_char_desc(std::string_view src)
+        -> comb::ParseResult<FontCharDesc> {
         auto tail = src;
 
-        execute_parser(tail, sequence("char") << whitespace(1));
+        execute_parser(tail, prefix("char") << whitespace(1));
 
         auto const id =
             execute_parser(tail, fnt_key_value_integer("id") << whitespace(1));
@@ -271,7 +242,7 @@ namespace fnt {
         auto const channel =
             execute_parser(tail, fnt_key_value_integer("chnl"));
 
-        return ParseResult<FontCharDesc>{
+        return comb::ParseResult<FontCharDesc>{
             .value =
                 FontCharDesc{
                     .id = (u32) id,
@@ -286,12 +257,10 @@ namespace fnt {
         };
     }
 
-    auto parse_kerning(std::string_view src) -> ParseResult<FontKerning> {
-        using namespace ::tmine::parser;
-
+    auto parse_kerning(std::string_view src) -> comb::ParseResult<FontKerning> {
         auto tail = src;
 
-        execute_parser(tail, sequence("kerning") << whitespace(1));
+        execute_parser(tail, prefix("kerning") << whitespace(1));
 
         auto const first = execute_parser(
             tail, fnt_key_value_integer("first") << whitespace(1)
@@ -303,7 +272,7 @@ namespace fnt {
             tail, fnt_key_value_integer("amount") << whitespace(1)
         );
 
-        return ParseResult<FontKerning>{
+        return comb::ParseResult<FontKerning>{
             .value =
                 FontKerning{
                     .first = (u32) first,
@@ -314,9 +283,7 @@ namespace fnt {
         };
     }
 
-    auto parse_page(std::string_view src) -> ParseResult<FontPage> {
-        using namespace ::tmine::parser;
-
+    auto parse_page(std::string_view src) -> comb::ParseResult<FontPage> {
         auto tail = src;
 
         auto const page_header =
@@ -340,7 +307,7 @@ namespace fnt {
         auto const kernings =
             execute_parser(tail, (fnt_kerning() << whitespace()).sequence());
 
-        return ParseResult<FontPage>{
+        return comb::ParseResult<FontPage>{
             .value =
                 FontPage{
                     .header = std::move(page_header),
@@ -353,16 +320,14 @@ namespace fnt {
         };
     }
 
-    auto parse_font(std::string_view src) -> ParseResult<Font> {
-        using namespace ::tmine::parser;
-
+    auto parse_font(std::string_view src) -> comb::ParseResult<Font> {
         auto tail = src;
 
         auto const info = execute_parser(tail, fnt_info() << newline());
         auto const common = execute_parser(tail, fnt_common() << newline());
         auto const pages = std::vector{execute_parser(tail, fnt_page())};
 
-        return ParseResult<Font>{
+        return comb::ParseResult<Font>{
             .value =
                 Font{
                     .info = info,
