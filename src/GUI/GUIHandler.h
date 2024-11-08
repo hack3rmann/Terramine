@@ -1,13 +1,13 @@
 #pragma once
 
-#include "GUI.h"
+#include "../gui.hpp"
 #include "../graphics.hpp"
 #include "../window.hpp"
 
 enum GUIstate { Nothing, StartMenu, PauseMenu };
 
 class GUIHandler {
-    std::vector<GUI> guis;
+    std::vector<tmine::Gui> guis;
     tmine::ShaderProgram shader;
 
     tmine::Texture bg;
@@ -18,7 +18,7 @@ class GUIHandler {
 
 public:
     GUIstate current;
-    GUIHandler(GUIstate current, tmine::Window* window);
+    GUIHandler(GUIstate current);
     void render(glm::uvec2 window_size);
     auto update(this GUIHandler& self, tmine::Window* window) -> void;
 };
