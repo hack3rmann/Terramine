@@ -11,8 +11,6 @@
 
 using namespace tmine;
 
-bool check = false;
-
 auto main() -> int {
     auto window = Window{"Terramine"};
 
