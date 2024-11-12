@@ -5,7 +5,8 @@
 using namespace tmine;
 
 MasterHandler::MasterHandler(Window* window)
-: sceneHandler(window->get_size()) {}
+: scene{window->get_size()}
+, player{(f32) glfwGetTime(), -30.0f, vec3(0.0f)} {}
 
 void MasterHandler::render(glm::uvec2 viewport_size) {
     if (0 != viewport_size.x + viewport_size.y) {
@@ -14,10 +15,10 @@ void MasterHandler::render(glm::uvec2 viewport_size) {
         if (gui.current() == GuiState::StartMenu) {
             gui.render(viewport_size);
         } else if (gui.current() == GuiState::PauseMenu) {
-            sceneHandler.render(viewport_size);
+            this->scene.render(this->player.cam, viewport_size);
             gui.render(viewport_size);
         } else {
-            sceneHandler.render(viewport_size);
+            this->scene.render(this->player.cam, viewport_size);
         }
     } else {
         if (gui.current() == GuiState::PauseMenu || gui.current() == GuiState::None) {
@@ -29,11 +30,6 @@ void MasterHandler::render(glm::uvec2 viewport_size) {
 }
 
 void MasterHandler::updateAll(Window* window) {
-    auto const viewport_size = window->get_size();
-
-    if (0 != viewport_size.x + viewport_size.y && gui.current() == GuiState::None) {
-        sceneHandler.updateAll(viewport_size);
-    }
-
+    this->scene.update_player(&this->player);
     this->gui.update(window);
 }

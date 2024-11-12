@@ -85,7 +85,7 @@ public:
         glm::uvec2 window_size
     );
     void bind();
-    void drawColor();
+    void draw();
     void drawDepth();
     void drawBoth();
     void bindColorTex();

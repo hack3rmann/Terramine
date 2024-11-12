@@ -62,17 +62,17 @@ Skybox::Skybox(char const* texture_path)
 }
 
 void Skybox::render(
-    this Skybox const& self, Camera const& cam, glm::uvec2 window_size
+    Camera const& cam, SceneParameters const&, glm::uvec2 window_size
 ) {
-    self.texture.bind(0);
-    self.shader.bind();
+    this->texture.bind(0);
+    this->shader.bind();
 
-    self.shader.uniform_mat4(
-        "projView",
-        cam.get_projection(Window::aspect_ratio_of(window_size)) * cam.get_view()
+    this->shader.uniform_mat4(
+        "projView", cam.get_projection(Window::aspect_ratio_of(window_size)) *
+                        cam.get_view()
     );
-    self.shader.uniform_vec3("camPos", cam.get_pos());
-    self.shader.uniform_vec2("resolution", glm::vec2{window_size});
+    this->shader.uniform_vec3("camPos", cam.get_pos());
+    this->shader.uniform_vec2("resolution", glm::vec2{window_size});
 
-    self.mesh.draw();
+    this->mesh.draw();
 }

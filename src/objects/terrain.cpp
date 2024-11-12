@@ -71,37 +71,44 @@ auto Terrain::generate_meshes(this Terrain& self) -> void {
 auto Terrain::update(this Terrain& self) -> void { self.generate_meshes(); }
 
 auto Terrain::render(
-    this Terrain const& self, Camera const& cam, glm::uvec3 light_direction,
-    glm::uvec2 window_size
+    Camera const& cam, SceneParameters const& params, glm::uvec2 window_size
 ) -> void {
-    self.shader.bind();
-    self.shader.uniform_mat4(
+    this->update();
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    this->shader.bind();
+    this->shader.uniform_mat4(
         "proj", cam.get_projection(Window::aspect_ratio_of(window_size))
     );
-    self.shader.uniform_mat4("view", cam.get_view());
-    self.shader.uniform_vec2("resolution", glm::vec2{window_size});
-    self.shader.uniform_vec3("toLightVec", -light_direction);
-    self.shader.uniform_vec3("lightColor", glm::vec3(0.96f, 0.24f, 0.0f));
-    self.shader.uniform_int("u_Texture0", 0);
-    self.shader.uniform_int("u_Texture1", 1);
+    this->shader.uniform_mat4("view", cam.get_view());
+    this->shader.uniform_vec2("resolution", glm::vec2{window_size});
+    this->shader.uniform_vec3("toLightVec", -params.light_direction);
+    this->shader.uniform_vec3("lightColor", glm::vec3(0.96f, 0.24f, 0.0f));
+    this->shader.uniform_int("u_Texture0", 0);
+    this->shader.uniform_int("u_Texture1", 1);
 
-    self.texture_atlas.bind(0);
-    self.normal_atlas.bind(1);
+    this->texture_atlas.bind(0);
+    this->normal_atlas.bind(1);
 
-    auto const n_chunks = self.chunks.chunk_count();
+    auto const n_chunks = this->chunks.chunk_count();
     auto model = glm::mat4{1.0f};
-    auto meshes = std::span{self.meshes.get(), self.meshes.get() + n_chunks};
+    auto meshes = std::span{this->meshes.get(), this->meshes.get() + n_chunks};
 
-    for (auto [chunk, mesh] : vs::zip(self.chunks.as_span(), meshes)) {
+    for (auto [chunk, mesh] : vs::zip(this->chunks.as_span(), meshes)) {
         auto const pos = chunk.get_pos();
         auto const offset =
             glm::vec3{pos} * glm::vec3{Chunk::SIZES} + glm::vec3{0.5f};
 
         model = glm::translate(glm::mat4{1.0f}, offset);
 
-        self.shader.uniform_mat4("model", model);
+        this->shader.uniform_mat4("model", model);
         mesh.draw();
     }
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 }
 
 auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)

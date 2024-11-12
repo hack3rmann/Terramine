@@ -158,7 +158,7 @@ void FrameBuffer::bind() {
 
 void FrameBuffer::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-void FrameBuffer::drawColor() {
+void FrameBuffer::draw() {
     screenShader.bind();
 
     /* Vertices */
