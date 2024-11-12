@@ -30,6 +30,9 @@ void MasterHandler::render(glm::uvec2 viewport_size) {
 }
 
 void MasterHandler::updateAll(Window* window) {
-    this->scene.update_player(&this->player);
+    if (GuiState::None == this->gui.current()) {
+        this->scene.update_player(&this->player);
+    }
+
     this->gui.update(window);
 }
