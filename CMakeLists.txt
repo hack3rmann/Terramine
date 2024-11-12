@@ -35,7 +35,6 @@ set(TERRAMINE_SOURCE_FILES
     src/Player.cpp
     src/graphics/FrameBuffer.cpp
     src/graphics/MasterHandler.cpp
-    src/graphics/SceneHandler.cpp
     src/graphics/shader.cpp
     src/graphics/texture.cpp
     src/gui/sprite.cpp
@@ -50,6 +49,7 @@ set(TERRAMINE_SOURCE_FILES
     src/loaders/string.cpp
     src/loaders/game_objects.cpp
     src/objects/skybox.cpp
+    src/objects/scene.cpp
     src/objects/line_batch.cpp
     src/objects/terrain.cpp
     src/parser/fnt.cpp

@@ -2,14 +2,16 @@
 
 #include <glad/gl.h>
 
-#include "SceneHandler.h"
 #include "../gui.hpp"
 #include "../window.hpp"
+#include "../objects.hpp"
+#include "../Player.h"
 
 class MasterHandler {
 public:
-    SceneHandler sceneHandler;
+    tmine::Scene scene;
     tmine::Gui gui{};
+    Player player;
 
     explicit MasterHandler(tmine::Window* window);
     

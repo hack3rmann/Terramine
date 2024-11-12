@@ -1,12 +1,13 @@
 #include "../objects.hpp"
 #include "../graphics.hpp"
 #include "../loaders.hpp"
+#include "../window.hpp"
 
 namespace tmine {
 
 LineBox::LineBox()
 : shader{load_shader("lines_vertex.glsl", "lines_fragment.glsl")}
-, mesh{{}, Primitive::Lines} {}
+, mesh{Primitive::Lines} {}
 
 auto LineBox::line(
     this LineBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color
@@ -18,13 +19,19 @@ auto LineBox::line(
 }
 
 auto LineBox::render(
-    this LineBox const& self, Camera const& cam, f32 aspect_ratio
+    Camera const& cam, SceneParameters const&, glm::uvec2 viewport_size
 ) -> void {
-    self.shader.bind();
-    self.shader.uniform_mat4(
+    auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
+
+    glEnable(GL_DEPTH_TEST);
+
+    this->shader.bind();
+    this->shader.uniform_mat4(
         "projView", cam.get_projection(aspect_ratio) * cam.get_view()
     );
-    self.mesh.draw();
+    this->mesh.draw();
+
+    glDisable(GL_DEPTH_TEST);
 }
 
 auto LineBox::box(

@@ -4,18 +4,33 @@
 
 #include "graphics.hpp"
 #include "controls.hpp"
+#include "graphics/FrameBuffer.h"
 #include "terrain.hpp"
 
 namespace tmine {
 
-class Skybox {
+struct SceneParameters {
+    glm::vec3 light_direction{glm::normalize(glm::vec3{0.2f, -0.5f, 1.0f})};
+};
+
+struct SceneObject {
+    virtual ~SceneObject() = default;
+
+    virtual auto render(
+        Camera const& camera, SceneParameters const& params,
+        glm::uvec2 viewport_size
+    ) -> void = 0;
+};
+
+class Skybox : public SceneObject {
     friend class SkyboxHandler;
 
 public:
     explicit Skybox(char const* texture_path);
     auto render(
-        this Skybox const& self, Camera const& cam, glm::uvec2 window_size
-    ) -> void;
+        Camera const& camera, SceneParameters const& params,
+        glm::uvec2 viewport_size
+    ) -> void override;
 
 private:
     struct Vertex {
@@ -31,7 +46,7 @@ private:
     Texture texture;
 };
 
-class LineBox {
+class LineBox : public SceneObject {
     friend class LineBatchHandler;
 
 public:
@@ -41,8 +56,10 @@ public:
         this LineBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
     ) -> void;
 
-    auto render(this LineBox const& self, Camera const& cam, f32 aspect_ratio)
-        -> void;
+    auto render(
+        Camera const& cam, SceneParameters const& params,
+        glm::uvec2 viewport_size
+    ) -> void override;
 
 private:
     auto line(this LineBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color)
@@ -67,16 +84,16 @@ enum class ChunkState : u8 {
     MeshUpdated,
 };
 
-class Terrain {
+class Terrain : public SceneObject {
     friend class TerrarianHandler;
 
 public:
     explicit Terrain(glm::uvec3 sizes);
 
     auto render(
-        this Terrain const& self, Camera const& cam, glm::uvec3 light_direction,
-        glm::uvec2 window_size
-    ) -> void;
+        Camera const& camera, SceneParameters const& params,
+        glm::uvec2 viewport_size
+    ) -> void override;
 
     inline auto get_array(this Terrain const& self) noexcept
         -> ChunkArray const& {
@@ -109,6 +126,23 @@ private:
     ShaderProgram shader;
     Texture texture_atlas;
     Texture normal_atlas;
+};
+
+class Scene {
+public:
+    explicit Scene(glm::uvec2 viewport_size);
+
+    auto render(
+        this Scene& self, Camera const& camera, glm::uvec2 viewport_size
+    ) -> void;
+
+    auto update_player(this Scene& self, void* player) -> void;
+
+private:
+    SceneParameters params{};
+    FrameBuffer frame_buffer;
+    glm::uvec2 viewport_size;
+    std::vector<std::unique_ptr<SceneObject>> objects;
 };
 
 }  // namespace tmine
