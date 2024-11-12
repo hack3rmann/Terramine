@@ -53,8 +53,9 @@ public:
     Texture(GLuint id, glm::uvec2 size);
     Texture() = default;
 
-    static auto from_image(Image const& image, TextureLoadFlags flags) noexcept
-        -> Texture;
+    static auto from_image(
+        Image const& image, TextureLoadFlags flags = TextureLoad::DEFAULT
+    ) noexcept -> Texture;
 
     auto bind(this Texture const& self, u32 slot) -> void;
     static auto unbind(u32 slot) -> void;

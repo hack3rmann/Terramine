@@ -4,7 +4,7 @@
 
 namespace tmine {
 
-Gui::Gui()
+GuiStage::GuiStage()
 : button_style{ButtonStyle{
       .textures =
           {
@@ -28,12 +28,12 @@ Gui::Gui()
 , font{load_font("assets/fonts/font.fnt")}
 , shader{load_shader("gui_vertex.glsl", "gui_fragment.glsl")} {}
 
-auto Gui::add_sprite(this Gui& self, Sprite sprite) -> void {
+auto GuiStage::add_sprite(this GuiStage& self, Sprite sprite) -> void {
     self.sprites.emplace_back(std::move(sprite));
 }
 
-auto Gui::add_button(
-    this Gui& self, std::string_view text, glm::vec2 pos, f32 size
+auto GuiStage::add_button(
+    this GuiStage& self, std::string_view text, glm::vec2 pos, f32 size
 ) -> void {
     self.buttons.insert(
         {text,
@@ -48,7 +48,7 @@ auto Gui::add_button(
     );
 }
 
-auto Gui::get_button(this Gui const& self, std::string_view name)
+auto GuiStage::get_button(this GuiStage const& self, std::string_view name)
     -> Button const& {
     if (!self.buttons.contains(name)) {
         throw Panic("there is no button with name '{}'", name);
@@ -57,17 +57,81 @@ auto Gui::get_button(this Gui const& self, std::string_view name)
     return self.buttons.at(name);
 }
 
-auto Gui::render(this Gui& self, glm::uvec2 viewport_size) -> void {
+auto GuiStage::render(this GuiStage& self, glm::uvec2 viewport_size) -> void {
     for (auto& sprite : self.sprites) {
         sprite.render(self.shader, viewport_size);
     }
 
     for (auto& elem : self.buttons) {
-        // C++ just can't use reference structural binding without copying
+        // C++ just can't use structural binding by reference without copying
         // so we can manually unpack button reference
         auto& button = elem.second;
 
         button.render(self.shader, viewport_size);
+    }
+}
+
+Gui::Gui(GuiState initial_state)
+: state{initial_state} {
+    auto background_texture =
+        Texture::from_image(load_png("assets/images/startScreenBackground.png")
+        );
+    auto black_texture =
+        Texture::from_image(load_png("assets/images/darker.png"));
+
+    this->guis[(usize) GuiState::StartMenu].add_sprite(
+        {glm::vec2{0.0f, 0.0f}, 2.7f, background_texture}
+    );
+    this->guis[(usize) GuiState::StartMenu].add_button(
+        "Start", glm::vec2{0.0f, 0.0f}, 1.0f
+    );
+    this->guis[(usize) GuiState::StartMenu].add_button(
+        "Exit", glm::vec2{0.0f, -0.4f}, 1.0f
+    );
+
+    this->guis[(usize) GuiState::PauseMenu].add_sprite(
+        {glm::vec2{0.0f, 0.0f}, 100.0f, black_texture}
+    );
+    this->guis[(usize) GuiState::PauseMenu].add_button(
+        "Return", glm::vec2{0.0f, 0.2f}, 1.0f
+    );
+    this->guis[(usize) GuiState::PauseMenu].add_button(
+        "Exit", glm::vec2{0.0f, -0.2f}, 1.0f
+    );
+}
+
+auto Gui::render(this Gui& self, glm::uvec2 window_size) -> void {
+    self.guis[(usize) self.state].render(window_size);
+}
+
+auto Gui::update(this Gui& self, Window* window) -> void {
+    auto& stage = self.guis[(usize) self.state];
+
+    switch (self.state) {
+    case GuiState::None: {
+    } break;
+    case GuiState::StartMenu: {
+        if (stage.get_button("Start").clicked()) {
+            window->capture_cursor();
+            self.state = GuiState::None;
+        }
+
+        if (stage.get_button("Exit").clicked()) {
+            window->release_cursor();
+            window->schedule_close();
+        }
+    } break;
+    case GuiState::PauseMenu: {
+        if (stage.get_button("Return").clicked()) {
+            self.state = GuiState::None;
+            window->capture_cursor();
+        }
+
+        if (stage.get_button("Exit").clicked()) {
+            window->release_cursor();
+            self.state = GuiState::StartMenu;
+        }
+    } break;
     }
 }
 

@@ -31,8 +31,8 @@ auto main() -> int {
         }
 
         if (io.just_pressed(Key::Escape)) {
-            master.gui.current = PauseMenu;
-            window.toggle_cursor_visibility();
+            master.gui.set_state(GuiState::PauseMenu);
+            window.release_cursor();
         }
 
         master.render(window.get_size());

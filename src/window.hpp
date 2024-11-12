@@ -79,6 +79,8 @@ public:
     auto toggle_cursor_visibility(this Window& self) -> void;
     auto set_cursor_mode(this Window const& self, CursorMode mode) noexcept
         -> void;
+    auto release_cursor(this Window const& self) noexcept -> void;
+    auto capture_cursor(this Window const& self) noexcept -> void;
     auto poll_events(this Window const& self) noexcept -> void;
 
 public:
