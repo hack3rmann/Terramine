@@ -5,34 +5,34 @@
 using namespace tmine;
 
 MasterHandler::MasterHandler(Window* window)
-: sceneHandler(window->get_size())
-, gui(StartMenu) {}
+: sceneHandler(window->get_size()) {}
 
-void MasterHandler::render(glm::uvec2 window_size) {
-    if (0 != window_size.x + window_size.y) {
+void MasterHandler::render(glm::uvec2 viewport_size) {
+    if (0 != viewport_size.x + viewport_size.y) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if (gui.current == StartMenu) {
-            gui.render(window_size);
-        } else if (gui.current == PauseMenu) {
-            sceneHandler.render(window_size);
-            gui.render(window_size);
+
+        if (gui.current() == GuiState::StartMenu) {
+            gui.render(viewport_size);
+        } else if (gui.current() == GuiState::PauseMenu) {
+            sceneHandler.render(viewport_size);
+            gui.render(viewport_size);
         } else {
-            sceneHandler.render(window_size);
+            sceneHandler.render(viewport_size);
         }
     } else {
-        if (gui.current == PauseMenu || gui.current == Nothing) {
-            gui.current = PauseMenu;
+        if (gui.current() == GuiState::PauseMenu || gui.current() == GuiState::None) {
+            gui.set_state(GuiState::PauseMenu);
         } else {
-            gui.current = StartMenu;
+            gui.set_state(GuiState::StartMenu);
         }
     }
 }
 
 void MasterHandler::updateAll(Window* window) {
-    auto const window_size = window->get_size();
+    auto const viewport_size = window->get_size();
 
-    if (0 != window_size.x + window_size.y && !gui.current) {
-        sceneHandler.updateAll(window_size);
+    if (0 != viewport_size.x + viewport_size.y && gui.current() == GuiState::None) {
+        sceneHandler.updateAll(viewport_size);
     }
 
     this->gui.update(window);

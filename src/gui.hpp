@@ -4,6 +4,7 @@
 
 #include "types.hpp"
 #include "graphics.hpp"
+#include "window.hpp"
 
 namespace tmine {
 
@@ -110,18 +111,19 @@ private:
     f32 size;
 };
 
-class Gui {
+class GuiStage {
 public:
-    Gui();
+    GuiStage();
 
-    auto add_sprite(this Gui& self, Sprite sprite) -> void;
+    auto add_sprite(this GuiStage& self, Sprite sprite) -> void;
     auto add_button(
-        this Gui& self, std::string_view text, glm::vec2 pos, f32 size
+        this GuiStage& self, std::string_view text, glm::vec2 pos, f32 size
     ) -> void;
 
-    auto get_button(this Gui const& self, std::string_view name) -> Button const&;
+    auto get_button(this GuiStage const& self, std::string_view name)
+        -> Button const&;
 
-    auto render(this Gui& self, glm::uvec2 viewport_size) -> void;
+    auto render(this GuiStage& self, glm::uvec2 viewport_size) -> void;
 
 private:
     std::unordered_map<std::string_view, Button> buttons{};
@@ -129,6 +131,37 @@ private:
     ButtonStyle button_style;
     Font font;
     ShaderProgram shader;
+};
+
+enum class GuiState {
+    None = 0,
+    StartMenu,
+    PauseMenu,
+};
+
+class Gui {
+public:
+    inline Gui()
+    : Gui(GuiState::StartMenu) {}
+
+    explicit Gui(GuiState initial_state);
+
+    inline auto current(this Gui const& self) -> GuiState {
+        return self.state;
+    }
+
+    inline auto set_state(this Gui& self, GuiState state) -> void {
+        self.state = state;
+    }
+
+    auto render(this Gui& self, glm::uvec2 viewport_size) -> void;
+    auto update(this Gui& self, Window* window) -> void;
+
+private:
+    static auto constexpr N_GUIS = usize{3};
+
+    GuiState state{GuiState::StartMenu};
+    std::array<GuiStage, Gui::N_GUIS> guis{};
 };
 
 }  // namespace tmine

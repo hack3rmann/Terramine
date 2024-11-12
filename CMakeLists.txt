@@ -42,7 +42,6 @@ set(TERRAMINE_SOURCE_FILES
     src/gui/text.cpp
     src/gui/button.cpp
     src/gui/gui.cpp
-    src/GUI/GUIHandler.cpp
     src/controls/camera.cpp
     src/events/io.cpp
     src/loaders/font.cpp

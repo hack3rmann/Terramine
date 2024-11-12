@@ -2,14 +2,14 @@
 
 #include <glad/gl.h>
 
-#include "../GUI/GUIHandler.h"
 #include "SceneHandler.h"
+#include "../gui.hpp"
 #include "../window.hpp"
 
 class MasterHandler {
 public:
     SceneHandler sceneHandler;
-    GUIHandler gui;
+    tmine::Gui gui{};
 
     explicit MasterHandler(tmine::Window* window);
     

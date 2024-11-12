@@ -93,6 +93,16 @@ auto Window::set_cursor_mode(this Window const& self, CursorMode mode) noexcept
     glfwSetInputMode(self.glfw_window, GLFW_CURSOR, (u32) mode);
 }
 
+auto Window::release_cursor(this Window const& self) noexcept -> void {
+    self.data->is_cursor_locked = false;
+    self.set_cursor_mode(CursorMode::Normal);
+}
+
+auto Window::capture_cursor(this Window const& self) noexcept -> void {
+    self.data->is_cursor_locked = true;
+    self.set_cursor_mode(CursorMode::Disabled);
+}
+
 auto Window::poll_events([[maybe_unused]] this Window const& self) noexcept
     -> void {
     glfwPollEvents();
