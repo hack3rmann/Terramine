@@ -1,6 +1,5 @@
 #include "../objects.hpp"
 #include "../panic.hpp"
-#include "../Player.h"
 
 namespace tmine {
 
@@ -11,12 +10,9 @@ Scene::Scene(glm::uvec2 viewport_size)
 : frame_buffer{FRAMEBUFFER_VERTEX_SHADER_NAME, FRAMEBUFFER_FRAGMENT_SHADER_NAME, viewport_size}
 , viewport_size{viewport_size}
 , objects{} {
-    this->objects.emplace_back(
-        std::make_unique<Skybox>("assets/images/Skybox4.png")
-    );
-    this->objects.emplace_back(std::make_unique<Terrain>(glm::uvec3{16, 4, 16})
-    );
-    this->objects.emplace_back(std::make_unique<LineBox>());
+    this->add(Skybox{"assets/images/Skybox4.png"});
+    this->add_unique(Terrain{glm::uvec3{16, 4, 16}});
+    this->add_unique(LineBox{});
 }
 
 auto Scene::render(
@@ -47,26 +43,6 @@ auto Scene::render(
 
     // Deferred render
     self.frame_buffer.draw();
-}
-
-auto Scene::update_player(this Scene& self, void* player) -> void {
-    auto terrain = (Terrain*) nullptr;
-
-    if (terrain = dynamic_cast<Terrain*>(self.objects[1].get());
-        nullptr == terrain)
-    {
-        throw Panic("terrain is not found");
-    }
-
-    auto line_box = (LineBox*) nullptr;
-
-    if (line_box = dynamic_cast<LineBox*>(self.objects[2].get());
-        nullptr == line_box)
-    {
-        throw Panic("line box is not found");
-    }
-
-    ((Player*) player)->update(terrain, line_box, self.viewport_size);
 }
 
 }  // namespace tmine

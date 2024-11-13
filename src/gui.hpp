@@ -134,7 +134,7 @@ private:
 };
 
 enum class GuiState {
-    None = 0,
+    InGame = 0,
     StartMenu,
     PauseMenu,
 };
