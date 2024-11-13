@@ -37,6 +37,10 @@ public:
 
     static auto aspect_ratio_of(glm::uvec2 size) noexcept -> f32;
 
+    inline static auto is_visible(glm::uvec2 viewport_size) noexcept -> bool {
+        return 0 != viewport_size.x && 0 != viewport_size.y;
+    }
+
     inline auto get_glfw_window(this Window& self) noexcept -> GLFWwindow* {
         return self.glfw_window;
     }

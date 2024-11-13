@@ -1,11 +1,13 @@
 #pragma once
 
 #include <memory>
+#include <concepts>
 
 #include "graphics.hpp"
 #include "controls.hpp"
 #include "graphics/FrameBuffer.h"
 #include "terrain.hpp"
+#include "panic.hpp"
 
 namespace tmine {
 
@@ -136,13 +138,38 @@ public:
         this Scene& self, Camera const& camera, glm::uvec2 viewport_size
     ) -> void;
 
-    auto update_player(this Scene& self, void* player) -> void;
+    template <std::derived_from<SceneObject> T>
+    auto add_unique(this Scene& self, T value) -> void {
+        auto index = self.objects.size();
+        self.object_indices.insert({typeid(T).hash_code(), index});
+        self.objects.emplace_back(std::make_unique<T>(std::move(value)));
+    }
+
+    template <std::derived_from<SceneObject> T>
+    auto add(this Scene& self, T value) -> void {
+        self.objects.emplace_back(std::make_unique<T>(std::move(value)));
+    }
+
+    template <std::derived_from<SceneObject> T>
+    auto get(this Scene& self) -> T& {
+        if (!self.object_indices.contains(typeid(T).hash_code())) {
+            throw Panic(
+                "scene contains no objects of type {}", typeid(T).name()
+            );
+        }
+
+        auto index = self.object_indices.at(typeid(T).hash_code());
+        auto& scene_object = self.objects[index];
+
+        return *dynamic_cast<T*>(scene_object.get());
+    }
 
 private:
     SceneParameters params{};
     FrameBuffer frame_buffer;
     glm::uvec2 viewport_size;
-    std::vector<std::unique_ptr<SceneObject>> objects;
+    std::unordered_map<usize, usize> object_indices{};
+    std::vector<std::unique_ptr<SceneObject>> objects{};
 };
 
 }  // namespace tmine

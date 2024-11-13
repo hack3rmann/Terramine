@@ -8,55 +8,52 @@
 using namespace tmine;
 
 Skybox::Skybox(char const* texture_path)
-: mesh{{}, Primitive::Triangles}
+: mesh{Primitive::Triangles}
 , shader{load_shader("skybox_vertex.glsl", "skybox_fragment.glsl")}
 , texture{Texture::from_image(
       load_png(std::move(texture_path)), TextureLoad::DEFAULT
   )} {
+    auto constexpr VERTICES = std::array{
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{0.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{0.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 0.5f}},
+        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f, 0.0f}},
+        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 0.5f}},
+    };
+
     auto& buffer = this->mesh.get_buffer();
-
-    auto constexpr N_VERTICES = usize{36};
-    auto constexpr VERTEX_SIZE =
-        std::ranges::fold_left(Skybox::Vertex::ATTRIBUTE_SIZES, 0, std::plus{});
-
-    buffer.reserve(VERTEX_SIZE * N_VERTICES);
-
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{0.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{0.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 0.5f});
-    buffer.emplace_back(glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f, 0.0f});
-    buffer.emplace_back(glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 0.5f});
+    buffer.insert(buffer.end(), VERTICES.begin(), VERTICES.end());
 
     this->mesh.reload_buffer();
 }

@@ -108,12 +108,12 @@ auto Gui::update(this Gui& self, Window* window) -> void {
     auto& stage = self.guis[(usize) self.state];
 
     switch (self.state) {
-    case GuiState::None: {
+    case GuiState::InGame: {
     } break;
     case GuiState::StartMenu: {
         if (stage.get_button("Start").clicked()) {
             window->capture_cursor();
-            self.state = GuiState::None;
+            self.state = GuiState::InGame;
         }
 
         if (stage.get_button("Exit").clicked()) {
@@ -123,7 +123,7 @@ auto Gui::update(this Gui& self, Window* window) -> void {
     } break;
     case GuiState::PauseMenu: {
         if (stage.get_button("Return").clicked()) {
-            self.state = GuiState::None;
+            self.state = GuiState::InGame;
             window->capture_cursor();
         }
 
