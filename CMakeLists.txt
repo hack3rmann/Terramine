@@ -34,7 +34,6 @@ set(TERRAMINE_SOURCE_FILES
     ${DEPS_DIR}/glad/src/gl.c
     src/Player.cpp
     src/graphics/FrameBuffer.cpp
-    src/graphics/MasterHandler.cpp
     src/graphics/shader.cpp
     src/graphics/texture.cpp
     src/gui/sprite.cpp
@@ -43,6 +42,7 @@ set(TERRAMINE_SOURCE_FILES
     src/gui/gui.cpp
     src/controls/camera.cpp
     src/events/io.cpp
+    src/game/game.cpp
     src/loaders/font.cpp
     src/loaders/png.cpp
     src/loaders/shader.cpp

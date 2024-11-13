@@ -131,7 +131,7 @@ private:
 
     auto render(
         this TerrainRenderer const& self, ChunkArray const& chunks,
-        glm::uvec3 pos, Mesh<Vertex>* result_mesh,
+        glm::uvec3 pos, RefMut<Mesh<Vertex>> result_mesh,
         TerrainRenderUploadMesh upload = TerrainRenderUploadMesh::DoUpload
     ) -> void;
 

@@ -26,7 +26,7 @@ public:
     };
 
     static auto add_gui_rect(
-        std::vector<Vertex>* buffer, glm::vec2 pos, glm::vec2 size
+        RefMut<std::vector<Vertex>> buffer, glm::vec2 pos, glm::vec2 size
     ) -> void;
 };
 
@@ -155,7 +155,7 @@ public:
     }
 
     auto render(this Gui& self, glm::uvec2 viewport_size) -> void;
-    auto update(this Gui& self, Window* window) -> void;
+    auto update(this Gui& self, RefMut<Window> window) -> void;
 
 private:
     static auto constexpr N_GUIS = usize{3};

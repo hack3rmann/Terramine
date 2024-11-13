@@ -62,12 +62,9 @@ TerrainRenderer::TerrainRenderer(GameBlocksData data) noexcept
 
 auto TerrainRenderer::render(
     this TerrainRenderer const& self, ChunkArray const& chunks, glm::uvec3 pos,
-    Mesh<TerrainRenderer::Vertex>* result_mesh, TerrainRenderUploadMesh upload
+    RefMut<Mesh<TerrainRenderer::Vertex>> result_mesh,
+    TerrainRenderUploadMesh upload
 ) -> void {
-    if (nullptr == result_mesh) {
-        return;
-    }
-
     auto chunk = chunks.chunk(pos);
 
     if (nullptr == chunk) {

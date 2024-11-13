@@ -63,6 +63,8 @@ public:
     auto capture_cursor(this Window const& self) noexcept -> void;
     auto poll_events(this Window const& self) noexcept -> void;
 
+    auto finish_frame(this Window& self) noexcept -> void;
+
 public:
     static auto constexpr DEFAULT_WIDTH = u32{640};
     static auto constexpr DEFAULT_HEIGHT = u32{480};
