@@ -49,30 +49,6 @@ public:
         return Window::aspect_ratio_of(self.get_size());
     }
 
-    inline auto get_window_close_function(this Window& self) noexcept {
-        auto glfw_window = self.get_glfw_window();
-
-        return [glfw_window]() { glfwSetWindowShouldClose(glfw_window, true); };
-    }
-
-    inline auto get_window_toggle_cursor_function(this Window& self) noexcept {
-        auto glfw_window = self.get_glfw_window();
-
-        return [glfw_window]() {
-            auto const data = reinterpret_cast<WindowData*>(
-                glfwGetWindowUserPointer(glfw_window)
-            );
-
-            data->is_cursor_locked = !data->is_cursor_locked;
-
-            glfwSetInputMode(
-                glfw_window, GLFW_CURSOR,
-                data->is_cursor_locked ? (u32) CursorMode::Disabled
-                                       : (u32) CursorMode::Normal
-            );
-        };
-    }
-
     auto is_open(this Window const& self) noexcept -> bool;
     auto schedule_close(this Window const& self) noexcept -> void;
     auto swap_buffers(this Window const& self) noexcept -> void;
