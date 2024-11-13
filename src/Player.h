@@ -23,6 +23,9 @@ public:
 
     Player();
     Player(float lastTime, float gravity, vec3 speed);
-    void update(tmine::Terrain* terrain, tmine::LineBox* lineBatch, glm::uvec2 window_size);
+    void update(
+        tmine::RefMut<tmine::Terrain> terrain,
+        tmine::RefMut<tmine::LineBox> lineBatch, glm::uvec2 window_size
+    );
     void updateTime();
 };

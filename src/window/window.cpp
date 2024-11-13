@@ -1,7 +1,8 @@
-#include <stdexcept>
 #include <fmt/format.h>
 
 #include "../window.hpp"
+#include "../events.hpp"
+#include "../panic.hpp"
 
 namespace tmine {
 
@@ -15,14 +16,14 @@ static void window_size_callback(GLFWwindow* window, i32 width, i32 height) {
 
 [[noreturn]] static auto error_callback(int id, char const* description)
     -> void {
-    throw std::runtime_error(fmt::format("GLFW error {}: {}", id, description));
+    throw Panic("GLFW error {}: {}", id, description);
 }
 
 Window::Window(char const* title, u32 width, u32 height)
 : glfw_window{nullptr}
 , data{std::make_unique<WindowData>(glm::uvec2{width, height}, false)} {
     if (!glfwInit()) {
-        throw std::runtime_error("failed to initialize GLFW");
+        throw Panic("failed to initialize GLFW");
     }
 
     glfwSetErrorCallback(error_callback);
@@ -40,7 +41,7 @@ Window::Window(char const* title, u32 width, u32 height)
     if (nullptr == this->glfw_window) {
         glfwTerminate();
 
-        throw std::runtime_error("Failed to create GLFW window");
+        throw Panic("Failed to create GLFW window");
     }
 
     glfwMakeContextCurrent(this->glfw_window);
@@ -50,6 +51,8 @@ Window::Window(char const* title, u32 width, u32 height)
     glViewport(0, 0, width, height);
 
     glfwSetWindowSizeCallback(glfw_window, window_size_callback);
+
+    Input::set_io_callbacks(glfw_window);
 }
 
 Window::~Window() {
@@ -116,5 +119,10 @@ auto Window::toggle_cursor_visibility(this Window& self) -> void {
     );
 }
 
+auto Window::finish_frame(this Window& self) noexcept -> void {
+    io.update();
+    self.swap_buffers();
+    self.poll_events();
+}
 
 }  // namespace tmine

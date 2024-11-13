@@ -1,43 +1,16 @@
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
-
-#include <glm/ext.hpp>
-#include <fmt/printf.h>
-
-#include "graphics/MasterHandler.h"
 #include "window.hpp"
-
-#include "events.hpp"
+#include "game.hpp"
 
 using namespace tmine;
 
 auto main() -> int {
     auto window = Window{"Terramine"};
-
-    Input::set_io_callbacks(window.get_glfw_window());
-    auto master = MasterHandler{&window};
-
-    glClearColor(27.0 / 255.0, 26.0 / 255.0, 33.0 / 255.0, 1.0f);
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glLineWidth(2.0f);
+    auto game = Game{window.get_size()};
 
     while (window.is_open()) {
-        if (io.just_pressed(Key::T)) {
-            window.toggle_cursor_visibility();
-        }
+        game.render(window.get_size());
+        game.update(&window);
 
-        if (io.just_pressed(Key::Escape)) {
-            master.gui.set_state(GuiState::PauseMenu);
-            window.release_cursor();
-        }
-
-        master.render(window.get_size());
-        master.updateAll(&window);
-
-        io.update();
-        window.swap_buffers();
-        window.poll_events();
+        window.finish_frame();
     }
 }
