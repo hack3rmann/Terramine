@@ -11,6 +11,16 @@
         }                                                                     \
     })
 
+#define tmine_assert_msg(expr, msg...)                                      \
+    ({                                                                      \
+        if (!(expr)) {                                                      \
+            throw std::runtime_error(fmt::format(                           \
+                "test '{}' failed: assetion '{}' failed: {}", __FUNCTION__, \
+                #expr, fmt::format(msg)                                     \
+            ));                                                             \
+        }                                                                   \
+    })
+
 #define tmine_assert_eq(left, right)                                   \
     ({                                                                 \
         auto const left_result = (left);                               \

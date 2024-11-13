@@ -65,6 +65,7 @@ add_executable(terramine
 add_executable(test
     tests/main.cpp
     tests/parse/fnt.cpp
+    tests/vec.cpp
     ${TERRAMINE_SOURCE_FILES})
 
 target_include_directories(test PRIVATE src)
