@@ -50,6 +50,18 @@ auto test_vec_append() -> void {
     auto read = vec.lock();
 
     tmine_assert_eq(read.as_span().size(), 200);
+
+    auto nums = read.as_span();
+
+    for (usize i = 0; i < read.size(); i += 10) {
+        auto start = nums[i];
+
+        for (usize j = 0; j < 10; ++j) {
+            tmine_assert_eq(start + j, nums[i + j]);
+        }
+    }
+
+    fmt::print(stderr, "capacity={}\n", read.capacity());
 }
 
 auto test_vec_append_single_thread() -> void {

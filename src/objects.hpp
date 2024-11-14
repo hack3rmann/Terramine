@@ -119,6 +119,11 @@ private:
         glm::uvec2 viewport_size
     ) -> void;
 
+    auto setup_render_resources(
+        this Terrain& self, ShaderProgram const& shader, Camera const& camera,
+        SceneParameters const& params, glm::uvec2 viewport_size
+    ) -> void;
+
 public:
     static char constexpr TEXTURE_ATLAS_PATH[] =
         "assets/images/texture_atlas.png";
@@ -128,8 +133,7 @@ public:
         "opaque_terrain_vertex.glsl";
     static char constexpr TRANSPARENT_VERTEX_SHADER_NAME[] =
         "transparent_terrain_vertex.glsl";
-    static char constexpr FRAGMENT_SHADER_NAME[] =
-        "terrain_fragment.glsl";
+    static char constexpr FRAGMENT_SHADER_NAME[] = "terrain_fragment.glsl";
     static char constexpr BLOCK_DATA_PATH[] = "assets/data/blocks.json";
     static char constexpr BLOCK_TEXTURE_DATA_PATH[] =
         "assets/data/block_textures.json";
@@ -139,6 +143,7 @@ private:
     std::unique_ptr<Mesh<TerrainRenderer::Vertex>[]> meshes;
     TerrainRenderer::TransparentMesh transparent_mesh{};
     std::vector<usize> chunks_to_update;
+    std::vector<usize> chunks_with_transparency;
     TerrainRenderer renderer;
     ShaderProgram opaque_shader;
     ShaderProgram transparent_shader;

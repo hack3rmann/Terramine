@@ -68,9 +68,9 @@
         "translucent": true
     },
     {
-        "name": "white_glass",
+        "name": "red_glass",
         "id": 10,
         "translucent": true,
-        "texture": "translucent_white"
+        "texture": "red_glass"
     }
 ]
