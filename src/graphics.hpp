@@ -287,4 +287,93 @@ private:
 template <WithAttributes V>
 using Mesh = BufferedMesh<V, std::vector<V>>;
 
+struct GeometryBufferData {
+    GLuint frame_buffer_object_id{DUMMY_ID};
+    GLuint color_render_buffer_object_id{DUMMY_ID};
+    GLuint depth_render_buffer_object_id{DUMMY_ID};
+    GLuint color_attachment_id{DUMMY_ID};
+    GLuint depth_attachment_id{DUMMY_ID};
+
+    static auto constexpr DUMMY_ID = GLuint{0};
+
+    GeometryBufferData() = default;
+    ~GeometryBufferData();
+    GeometryBufferData(GeometryBufferData&) = delete;
+    GeometryBufferData(GeometryBufferData&& other) noexcept;
+
+    auto operator=(this GeometryBufferData&, GeometryBufferData&)
+        -> GeometryBufferData& = delete;
+
+    auto operator=(
+        this GeometryBufferData& self, GeometryBufferData&& other
+    ) noexcept -> GeometryBufferData&;
+};
+
+class GeometryBuffer {
+    friend class DeferredRenderer;
+
+public:
+    explicit GeometryBuffer(glm::uvec2 viewport_size, u32 msaa_level = 4);
+
+    ~GeometryBuffer() = default;
+    GeometryBuffer(GeometryBuffer const&) = default;
+    GeometryBuffer(GeometryBuffer&&) noexcept = default;
+    auto operator=(this GeometryBuffer&, GeometryBuffer const&)
+        -> GeometryBuffer& = default;
+    auto operator=(this GeometryBuffer&, GeometryBuffer&&) noexcept
+        -> GeometryBuffer& = default;
+
+    auto bind_frame_buffer(this GeometryBuffer const& self) -> void;
+
+    inline auto unbind_frame_buffer(
+        [[maybe_unused]] this GeometryBuffer const& self
+    ) -> void {
+        GeometryBuffer::unbind_all();
+    }
+
+    static auto unbind_all() -> void;
+
+    inline auto get_viewport_size(this GeometryBuffer const& self)
+        -> glm::uvec2 {
+        return self.viewport_size;
+    }
+
+private:
+    std::shared_ptr<GeometryBufferData> data;
+    u32 msaa_level;
+    glm::uvec2 viewport_size;
+};
+
+struct ScreenVertex {
+    glm::vec2 position;
+    glm::vec2 uv;
+
+    static auto constexpr ATTRIBUTE_SIZES = std::array<usize, 2>{2, 2};
+};
+
+auto constexpr SCREEN_QUAD = std::array<ScreenVertex, 6>{
+    ScreenVertex{glm::vec2{-1.0f, -1.0f}, glm::vec2{0.0f, 0.0f}},
+    ScreenVertex{glm::vec2{-1.0f, 1.0f}, glm::vec2{0.0f, 1.0f}},
+    ScreenVertex{glm::vec2{1.0f, 1.0f}, glm::vec2{1.0f, 1.0f}},
+    ScreenVertex{glm::vec2{-1.0f, -1.0f}, glm::vec2{0.0f, 0.0f}},
+    ScreenVertex{glm::vec2{1.0f, -1.0f}, glm::vec2{1.0f, 0.0f}},
+    ScreenVertex{glm::vec2{1.0f, 1.0f}, glm::vec2{1.0f, 1.0f}},
+};
+
+class DeferredRenderer {
+public:
+    DeferredRenderer(ShaderProgram shader, glm::uvec2 viewport_size);
+
+    auto bind_geometry_buffer(this DeferredRenderer& self) -> void;
+    auto unbind_geometry_buffer(this DeferredRenderer& self) -> void;
+    auto draw_screen_pass(this DeferredRenderer const& self) -> void;
+    auto clear(this DeferredRenderer const& self) -> void;
+
+private:
+    GeometryBuffer geometry_buffer;
+    ShaderProgram shader;
+    Mesh<ScreenVertex> mesh;
+    bool is_bound{false};
+};
+
 }  // namespace tmine

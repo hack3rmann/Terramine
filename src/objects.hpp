@@ -5,7 +5,6 @@
 
 #include "graphics.hpp"
 #include "controls.hpp"
-#include "graphics/FrameBuffer.h"
 #include "terrain.hpp"
 #include "panic.hpp"
 
@@ -187,7 +186,8 @@ public:
 
 private:
     SceneParameters params{};
-    FrameBuffer frame_buffer;
+    ShaderProgram deferred_shader;
+    DeferredRenderer deferred_renderer;
     glm::uvec2 viewport_size;
     std::unordered_map<usize, usize> object_indices{};
     std::vector<std::unique_ptr<SceneObject>> objects{};

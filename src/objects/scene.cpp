@@ -1,5 +1,5 @@
 #include "../objects.hpp"
-#include "../panic.hpp"
+#include "../loaders.hpp"
 
 namespace tmine {
 
@@ -7,7 +7,10 @@ char constexpr FRAMEBUFFER_VERTEX_SHADER_NAME[] = "postproc_vertex.glsl";
 char constexpr FRAMEBUFFER_FRAGMENT_SHADER_NAME[] = "postproc_fragment.glsl";
 
 Scene::Scene(glm::uvec2 viewport_size)
-: frame_buffer{FRAMEBUFFER_VERTEX_SHADER_NAME, FRAMEBUFFER_FRAGMENT_SHADER_NAME, viewport_size}
+: deferred_shader{load_shader(
+      FRAMEBUFFER_VERTEX_SHADER_NAME, FRAMEBUFFER_FRAGMENT_SHADER_NAME
+  )}
+, deferred_renderer{this->deferred_shader, viewport_size}
 , viewport_size{viewport_size}
 , objects{} {
     this->add(Skybox{"assets/images/Skybox4.png"});
@@ -21,28 +24,20 @@ auto Scene::render(
     // reload frame buffer if viewport size have been updated
     if (viewport_size != self.viewport_size) {
         self.viewport_size = viewport_size;
-        self.frame_buffer = FrameBuffer{
-            FRAMEBUFFER_VERTEX_SHADER_NAME, FRAMEBUFFER_FRAGMENT_SHADER_NAME,
-            viewport_size
-        };
+        self.deferred_renderer =
+            DeferredRenderer{self.deferred_shader, viewport_size};
     }
 
-    self.frame_buffer.bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // FIXME(hack3rmann): remove this check after `FrameBuffer` refactoring
-    if (!self.frame_buffer.check()) {
-        throw Panic("failed to render to incomplete frame buffer");
-    }
+    self.deferred_renderer.bind_geometry_buffer();
+    self.deferred_renderer.clear();
 
     for (auto& object : self.objects) {
         object->render(camera, self.params, viewport_size);
     }
 
-    self.frame_buffer.unbind();
+    self.deferred_renderer.unbind_geometry_buffer();
 
-    // Deferred render
-    self.frame_buffer.draw();
+    self.deferred_renderer.draw_screen_pass();
 }
 
 }  // namespace tmine
