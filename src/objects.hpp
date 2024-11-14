@@ -104,18 +104,32 @@ public:
 
     auto set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value) -> void;
 
-    auto update(this Terrain& self) -> void;
+    auto update(this Terrain& self, glm::vec3 camera_pos) -> void;
 
 private:
-    auto generate_meshes(this Terrain& self) -> void;
+    auto generate_meshes(this Terrain& self, glm::vec3 camera_pos) -> void;
+
+    auto render_opaque(
+        this Terrain& self, Camera const& camera, SceneParameters const& params,
+        glm::uvec2 viewport_size
+    ) -> void;
+
+    auto render_transparent(
+        this Terrain& self, Camera const& camera, SceneParameters const& params,
+        glm::uvec2 viewport_size
+    ) -> void;
 
 public:
     static char constexpr TEXTURE_ATLAS_PATH[] =
         "assets/images/texture_atlas.png";
     static char constexpr NORMAL_ATLAS_PATH[] =
         "assets/images/normal_atlas.png";
-    static char constexpr VERTEX_SHADER_NAME[] = "terrain_vertex.glsl";
-    static char constexpr FRAGMENT_SHADER_NAME[] = "terrain_fragment.glsl";
+    static char constexpr OPAQUE_VERTEX_SHADER_NAME[] =
+        "opaque_terrain_vertex.glsl";
+    static char constexpr TRANSPARENT_VERTEX_SHADER_NAME[] =
+        "transparent_terrain_vertex.glsl";
+    static char constexpr FRAGMENT_SHADER_NAME[] =
+        "terrain_fragment.glsl";
     static char constexpr BLOCK_DATA_PATH[] = "assets/data/blocks.json";
     static char constexpr BLOCK_TEXTURE_DATA_PATH[] =
         "assets/data/block_textures.json";
@@ -123,9 +137,11 @@ public:
 private:
     ChunkArray chunks;
     std::unique_ptr<Mesh<TerrainRenderer::Vertex>[]> meshes;
+    TerrainRenderer::TransparentMesh transparent_mesh{};
     std::vector<usize> chunks_to_update;
     TerrainRenderer renderer;
-    ShaderProgram shader;
+    ShaderProgram opaque_shader;
+    ShaderProgram transparent_shader;
     Texture texture_atlas;
     Texture normal_atlas;
 };

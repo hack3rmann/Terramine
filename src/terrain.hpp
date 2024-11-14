@@ -7,6 +7,7 @@
 #include "types.hpp"
 #include "graphics.hpp"
 #include "data.hpp"
+#include "collections.hpp"
 
 namespace tmine {
 
@@ -122,16 +123,27 @@ class TerrainRenderer {
 public:
     explicit TerrainRenderer(GameBlocksData data) noexcept;
 
-private:
+public:
     struct Vertex {
         f32 data;
 
         static auto constexpr ATTRIBUTE_SIZES = std::array<usize, 1>{1};
     };
 
+    struct TransparentVertex {
+        glm::vec3 pos;
+        f32 data;
+
+        static auto constexpr ATTRIBUTE_SIZES = std::array<usize, 2>{3, 1};
+    };
+
+    using TransparentMesh =
+        BufferedMesh<TransparentVertex, ThreadsafeVec<TransparentVertex>>;
+
     auto render(
         this TerrainRenderer const& self, ChunkArray const& chunks,
         glm::uvec3 pos, RefMut<Mesh<Vertex>> result_mesh,
+        RefMut<TransparentMesh> transparent_mesh,
         TerrainRenderUploadMesh upload = TerrainRenderUploadMesh::DoUpload
     ) -> void;
 

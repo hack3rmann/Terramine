@@ -64,7 +64,8 @@
     {
         "name": "oak_leaves",
         "id": 9,
-        "texture": "oak_leaves"
+        "texture": "oak_leaves",
+        "translucent": true
     },
     {
         "name": "white_glass",

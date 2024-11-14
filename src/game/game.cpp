@@ -5,7 +5,7 @@ namespace tmine {
 
 Game::Game(glm::uvec2 viewport_size)
 : scene{viewport_size}
-, gui{}
+, gui{GuiState::InGame}
 , player{(f32) glfwGetTime(), -30.0f, vec3(0.0f)} {
     glClearColor(27.0 / 255.0, 26.0 / 255.0, 33.0 / 255.0, 1.0f);
     glEnable(GL_MULTISAMPLE);

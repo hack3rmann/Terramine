@@ -15,12 +15,18 @@ execute_process(COMMAND ln -sfT ${BUILD_DIR}/compile_commands.json
 
 option(SANITIZE "Enable sanitizers" OFF)
 option(THREAD_SANITIZE "Enable thread sanitizer" OFF)
+option(OPTIMIZE "Enable compiler optimizarions" OFF)
 
 if(${SANITIZE})
     message(STATUS "Build with sanitizers")
     set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} -g -fsanitize={address,undefined,leak}"
     )
+endif()
+
+if(${OPTIMIZE})
+    message(STATUS "Optimized build")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 endif()
 
 if(${THREAD_SANITIZE})
