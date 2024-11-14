@@ -60,8 +60,6 @@ auto test_vec_append() -> void {
             tmine_assert_eq(start + j, nums[i + j]);
         }
     }
-
-    fmt::print(stderr, "capacity={}\n", read.capacity());
 }
 
 auto test_vec_append_single_thread() -> void {
