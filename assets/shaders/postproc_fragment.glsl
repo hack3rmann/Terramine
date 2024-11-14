@@ -67,6 +67,7 @@ void main() {
 
     color = vec4(HSLtoRGB(hslCol), 1.0);
     color = inputColor;
+    // color = vec4(a_TexCoord, 0.0, 1.0);
 
     if (gl_FragCoord.x >= resolution.x / 2 - 1 &&
             gl_FragCoord.x <= resolution.x / 2 + 1 &&

@@ -39,7 +39,8 @@ endif()
 set(TERRAMINE_SOURCE_FILES
     ${DEPS_DIR}/glad/src/gl.c
     src/Player.cpp
-    src/graphics/FrameBuffer.cpp
+    src/graphics/deferred_renderer.cpp
+    src/graphics/geometry_buffer.cpp
     src/graphics/shader.cpp
     src/graphics/texture.cpp
     src/gui/sprite.cpp
