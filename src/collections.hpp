@@ -141,11 +141,7 @@ public:
     static auto constexpr initial_capacity() -> usize { return 1; }
 
     static auto constexpr next_capacity(usize cap) -> usize {
-        if (cap <= 500) {
-            return 3 * (cap + 1) / 2;
-        } else {
-            return cap + cap / 5;
-        }
+        return 3 * (cap + 1) / 2;
     }
 
 private:
@@ -154,11 +150,13 @@ private:
     ) -> usize {
         {
             auto _shared_guard = std::shared_lock{self.mutex};
-            auto const len = self.len.load(std::memory_order_seq_cst);
-
-            if (len + additional_cap <= self.cap) {
+            auto const prev_len =
                 self.len.fetch_add(requested_len, std::memory_order_seq_cst);
-                return len;
+
+            if (prev_len + additional_cap <= self.cap) {
+                return prev_len;
+            } else {
+                self.len.fetch_sub(requested_len, std::memory_order_seq_cst);
             }
         }
 
@@ -172,7 +170,7 @@ private:
         if (0 == self.cap) {
             self.cap = additional_cap;
             self.ptr = (T*) std::malloc(sizeof(*self.ptr) * self.cap);
-        } else if (true || self.cap - self.len < additional_cap) {
+        } else if (self.cap - self.len < additional_cap) {
             self.cap += additional_cap;
             self.ptr =
                 (T*) std::realloc(self.ptr, sizeof(*self.ptr) * self.cap);
