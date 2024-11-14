@@ -13,7 +13,7 @@ namespace vs = std::ranges::views;
 // Idiomatic dedup algorithm taken from
 // <https://www.geeksforgeeks.org/remove-duplicates-from-vector-in-cpp/>
 template <class T>
-static auto dedup_vector(std::vector<T>* vec) -> void {
+static auto dedup_vector(RefMut<std::vector<T>> vec) -> void {
     rg::sort(*vec);
     auto it = std::unique(vec->begin(), vec->end());
     vec->erase(it, vec->end());
@@ -25,6 +25,7 @@ Terrain::Terrain(glm::uvec3 sizes)
       sizes.x * sizes.y * sizes.z
   )}
 , chunks_to_update(sizes.x * sizes.y * sizes.z)
+, chunks_with_transparency{}
 , renderer{load_game_blocks_data(
       Terrain::BLOCK_DATA_PATH, Terrain::BLOCK_TEXTURE_DATA_PATH
   )}
@@ -60,12 +61,6 @@ static auto sort_transparent_triangles(
 
     struct Triangle {
         std::array<TerrainRenderer::TransparentVertex, 3> vertices;
-
-        auto center(this Triangle const& self) -> glm::vec3 {
-            return (self.vertices[0].pos + self.vertices[1].pos +
-                    self.vertices[2].pos) /
-                   3.0f;
-        }
     };
 
     auto triangles = std::span<Triangle>{
@@ -92,30 +87,37 @@ static auto sort_transparent_triangles(
             return left_distance > right_distance;
         };
 
-    rg::stable_sort(triangles, manhattan_comparator);
+    rg::sort(triangles, manhattan_comparator);
 }
 
 auto Terrain::generate_meshes(this Terrain& self, glm::vec3 camera_pos)
     -> void {
-    // Remove duplicates to prevent data race
+    // remove duplicates from vector to prevent data race
     dedup_vector(&self.chunks_to_update);
+    dedup_vector(&self.chunks_with_transparency);
 
-    if (!self.chunks_to_update.empty()) {
-        self.transparent_mesh.get_buffer().clear();
-    }
+    self.transparent_mesh.get_buffer().clear();
 
 #pragma omp parallel for
     for (auto i : self.chunks_to_update) {
         auto const pos = self.chunks.index_to_pos(i);
 
         // Do not reload mesh buffer on multithread
-        self.renderer.render(
-            self.chunks, pos, &self.meshes[i], &self.transparent_mesh,
-            TerrainRenderUploadMesh::Skip
+        self.renderer.render_opaque(
+            self.chunks, pos, &self.meshes[i], TerrainRenderUploadMesh::Skip
         );
     }
 
+#pragma omp parallel for
+    for (auto i : self.chunks_with_transparency) {
+        auto const pos = self.chunks.index_to_pos(i);
+        auto const chunk = *self.chunks.chunk(pos);
+
+        self.renderer.render_transparent(chunk, &self.transparent_mesh);
+    }
+
     sort_transparent_triangles(&self.transparent_mesh, camera_pos);
+
     self.transparent_mesh.reload_buffer();
 
     // Reload buffers on main thread
@@ -147,50 +149,42 @@ auto Terrain::render(
     glDisable(GL_DEPTH_TEST);
 }
 
-auto Terrain::render_transparent(
-    this Terrain& self, Camera const& cam, SceneParameters const& params,
-    glm::uvec2 viewport_size
+auto Terrain::setup_render_resources(
+    this Terrain& self, ShaderProgram const& shader, Camera const& camera,
+    SceneParameters const& params, glm::uvec2 viewport_size
 ) -> void {
-    self.transparent_shader.bind();
-    self.transparent_shader.uniform_mat4(
-        "proj", cam.get_projection(Window::aspect_ratio_of(viewport_size))
+    shader.bind();
+    shader.uniform_mat4(
+        "proj", camera.get_projection(Window::aspect_ratio_of(viewport_size))
     );
-    self.transparent_shader.uniform_mat4("view", cam.get_view());
-    self.transparent_shader.uniform_vec2(
-        "resolution", glm::vec2{viewport_size}
-    );
-    self.transparent_shader.uniform_vec3("toLightVec", -params.light_direction);
-    self.transparent_shader.uniform_vec3(
-        "lightColor", glm::vec3(0.96f, 0.24f, 0.0f)
-    );
-    self.transparent_shader.uniform_int("u_Texture0", 0);
-    self.transparent_shader.uniform_int("u_Texture1", 1);
+    shader.uniform_mat4("view", camera.get_view());
+    shader.uniform_vec2("resolution", glm::vec2{viewport_size});
+    shader.uniform_vec3("toLightVec", -params.light_direction);
+    shader.uniform_vec3("lightColor", glm::vec3(0.96f, 0.24f, 0.0f));
+    shader.uniform_int("u_Texture0", 0);
+    shader.uniform_int("u_Texture1", 1);
 
     self.texture_atlas.bind(0);
     self.normal_atlas.bind(1);
+}
 
+auto Terrain::render_transparent(
+    this Terrain& self, Camera const& camera, SceneParameters const& params,
+    glm::uvec2 viewport_size
+) -> void {
+    self.setup_render_resources(
+        self.transparent_shader, camera, params, viewport_size
+    );
     self.transparent_mesh.draw();
 }
 
 auto Terrain::render_opaque(
-    this Terrain& self, Camera const& cam, SceneParameters const& params,
+    this Terrain& self, Camera const& camera, SceneParameters const& params,
     glm::uvec2 viewport_size
 ) -> void {
-    self.opaque_shader.bind();
-    self.opaque_shader.uniform_mat4(
-        "proj", cam.get_projection(Window::aspect_ratio_of(viewport_size))
+    self.setup_render_resources(
+        self.opaque_shader, camera, params, viewport_size
     );
-    self.opaque_shader.uniform_mat4("view", cam.get_view());
-    self.opaque_shader.uniform_vec2("resolution", glm::vec2{viewport_size});
-    self.opaque_shader.uniform_vec3("toLightVec", -params.light_direction);
-    self.opaque_shader.uniform_vec3(
-        "lightColor", glm::vec3(0.96f, 0.24f, 0.0f)
-    );
-    self.opaque_shader.uniform_int("u_Texture0", 0);
-    self.opaque_shader.uniform_int("u_Texture1", 1);
-
-    self.texture_atlas.bind(0);
-    self.normal_atlas.bind(1);
 
     auto const n_chunks = self.chunks.chunk_count();
     auto model = glm::mat4{1.0f};
@@ -215,6 +209,35 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
 
     if (!self.chunks.is_in_bounds(chunk_pos) || !Chunk::is_in_bounds(local_pos))
     {
+        return;
+    }
+
+    auto chunk_index = self.chunks.index_of(chunk_pos);
+    auto prev_voxel_id = self.chunks.get_voxel(pos).value();
+
+    self.chunks.set_voxel(pos, value);
+
+    // update `chunks_with_transparency` if user is removing transparent voxel
+    if (0 == value && self.renderer.data.blocks[prev_voxel_id].is_translucent())
+    {
+        auto& chunk = *self.chunks.chunk(chunk_pos);
+        bool contains_transparent =
+            rg::any_of(chunk.get_voxels(), [&self](auto id) {
+                return 0 != id && self.renderer.data.blocks[id].is_translucent();
+            });
+
+        // remove chunk which is transparent no more
+        if (!contains_transparent && !self.chunks_with_transparency.empty()) {
+            auto const iter =
+                rg::lower_bound(self.chunks_with_transparency, chunk_index);
+
+            rg::iter_swap(iter, self.chunks_with_transparency.end() - 1);
+            self.chunks_with_transparency.pop_back();
+        }
+    }
+
+    if (0 != value && self.renderer.data.blocks[value].is_translucent()) {
+        self.chunks_with_transparency.push_back(chunk_index);
         return;
     }
 
@@ -257,8 +280,6 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
         ));
     }
-
-    self.chunks.set_voxel(pos, value);
 }
 
 }  // namespace tmine

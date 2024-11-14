@@ -21,5 +21,7 @@ inline auto perform_test_impl(F test, std::string_view name) -> void {
         fmt::print(stderr, ":\n");
 
         fmt::print(stderr, "    {}\n", error.what());
+
+        exit(1);
     }
 }

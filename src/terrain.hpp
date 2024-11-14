@@ -28,6 +28,10 @@ public:
         return self.pos;
     }
 
+    inline auto get_voxels(this Chunk const& self) -> std::span<VoxelId const> {
+        return self.voxel_ids;
+    }
+
 public:
     static auto constexpr N_POSITION_BITS = usize{4};
     static auto constexpr WIDTH = usize{1 << N_POSITION_BITS};
@@ -140,11 +144,15 @@ public:
     using TransparentMesh =
         BufferedMesh<TransparentVertex, ThreadsafeVec<TransparentVertex>>;
 
-    auto render(
+    auto render_opaque(
         this TerrainRenderer const& self, ChunkArray const& chunks,
         glm::uvec3 pos, RefMut<Mesh<Vertex>> result_mesh,
-        RefMut<TransparentMesh> transparent_mesh,
         TerrainRenderUploadMesh upload = TerrainRenderUploadMesh::DoUpload
+    ) -> void;
+
+    auto render_transparent(
+        this TerrainRenderer const& self, Chunk const& chunk,
+        RefMut<TransparentMesh> transparent_mesh
     ) -> void;
 
     static auto make_empty_mesh() -> Mesh<Vertex>;

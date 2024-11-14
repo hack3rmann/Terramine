@@ -155,10 +155,9 @@ static auto is_opaque(
 TerrainRenderer::TerrainRenderer(GameBlocksData data) noexcept
 : data{std::move(data)} {}
 
-auto TerrainRenderer::render(
+auto TerrainRenderer::render_opaque(
     this TerrainRenderer const& self, ChunkArray const& chunks, glm::uvec3 pos,
     RefMut<Mesh<TerrainRenderer::Vertex>> result_mesh,
-    RefMut<TransparentMesh> transparent_mesh,
     TerrainRenderUploadMesh upload
 ) -> void {
     auto chunk = chunks.chunk(pos);
@@ -201,14 +200,6 @@ auto TerrainRenderer::render(
                     data.texture_ids[GameBlock::BACK_TEXTURE_INDEX];
 
                 if (data.is_translucent()) {
-                    auto& buffer = transparent_mesh->get_buffer();
-
-                    auto vertices = get_vertices(
-                        global_offset, {x, y, z}, data.texture_ids
-                    );
-
-                    buffer.append(vertices);
-
                     continue;
                 }
 
@@ -688,7 +679,38 @@ auto TerrainRenderer::render(
 
     if (TerrainRenderUploadMesh::DoUpload == upload) {
         result_mesh->reload_buffer();
-        transparent_mesh->reload_buffer();
+    }
+}
+
+auto TerrainRenderer::render_transparent(
+    this TerrainRenderer const& self, Chunk const& chunk,
+    RefMut<TransparentMesh> transparent_mesh
+) -> void {
+    auto& buffer = transparent_mesh->get_buffer();
+
+    for (u32 y = 0; y < Chunk::HEIGHT; y++) {
+        for (u32 z = 0; z < Chunk::DEPTH; z++) {
+            for (u32 x = 0; x < Chunk::WIDTH; x++) {
+                auto id = chunk.get_voxel({x, y, z}).value();
+
+                if (0 == id) {
+                    continue;
+                }
+
+                auto global_offset = glm::ivec3{Chunk::SIZES * chunk.get_pos()};
+
+                auto const& data = self.data.blocks[(usize) id];
+
+                if (!data.is_translucent()) {
+                    continue;
+                }
+
+                auto vertices =
+                    get_vertices(global_offset, {x, y, z}, data.texture_ids);
+
+                buffer.append(vertices);
+            }
+        }
     }
 }
 
