@@ -40,6 +40,7 @@ public:
 
     auto begin(this ThreadsafeVecLock& self) -> T*;
     auto end(this ThreadsafeVecLock& self) -> T*;
+    auto size(this ThreadsafeVecLock const& self) -> usize;
 
     auto capacity(this ThreadsafeVecLock const& self) -> usize;
 
@@ -76,12 +77,66 @@ public:
     }
 
     ThreadsafeVec(ThreadsafeVec&) = delete;
-    ThreadsafeVec(ThreadsafeVec&&) = delete;
+
+    ThreadsafeVec(ThreadsafeVec&& other) noexcept
+    : ptr{other.ptr}
+    , len{(usize) other.len}
+    , cap{other.cap}
+    , mutex{} {
+        other.ptr = nullptr;
+        other.len = 0;
+        other.cap = 0;
+    }
 
     auto operator=(this ThreadsafeVec& self, ThreadsafeVec const&)
         -> ThreadsafeVec& = delete;
-    auto operator=(this ThreadsafeVec& self, ThreadsafeVec&&)
-        -> ThreadsafeVec& = delete;
+
+    auto operator=(this ThreadsafeVec& self, ThreadsafeVec&& other) noexcept
+        -> ThreadsafeVec& {
+        self.ptr = other.ptr;
+        self.len = (usize) other.len;
+        self.cap = other.cap;
+
+        other.ptr = nullptr;
+        other.len = 0;
+        other.cap = 0;
+    }
+
+    auto data(this ThreadsafeVec const& self) -> T* { return self.ptr; }
+
+    auto size(this ThreadsafeVec const& self) -> usize { return self.len; }
+
+    auto begin(this ThreadsafeVec const& self) -> T* { return self.ptr; }
+
+    auto end(this ThreadsafeVec const& self) -> T* {
+        return self.ptr + self.len;
+    }
+
+    auto empty(this ThreadsafeVec const& self) -> bool { return 0 == self.len; }
+
+    auto clear(this ThreadsafeVec& self) -> void
+        requires(!std::is_trivially_destructible_v<T>)
+    {
+        for (usize i = 0; i < self.len; ++i) {
+            self.ptr[i].~T();
+        }
+
+        self.len = 0;
+    }
+
+    auto clear(this ThreadsafeVec& self) -> void
+        requires std::is_trivially_destructible_v<T>
+    {
+        self.len = 0;
+    }
+
+    auto operator[](this ThreadsafeVec& self, usize index) -> T& {
+        return self.ptr[index];
+    }
+
+    auto operator[](this ThreadsafeVec const& self, usize index) -> T const& {
+        return self.ptr[index];
+    }
 
     static auto constexpr initial_capacity() -> usize { return 1; }
 
@@ -172,7 +227,7 @@ public:
         new (self.ptr + prev_len) T{std::move(value)};
     }
 
-    auto read(this ThreadsafeVec& self) -> ThreadsafeVecLock<T> {
+    auto lock(this ThreadsafeVec& self) -> ThreadsafeVecLock<T> {
         return ThreadsafeVecLock<T>{&self};
     }
 
@@ -227,6 +282,11 @@ template <class T>
 auto ThreadsafeVecLock<T>::capacity(this ThreadsafeVecLock const& self)
     -> usize {
     return self.parent->cap;
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::size(this ThreadsafeVecLock const& self) -> usize {
+    return self.parent->len;
 }
 
 }  // namespace tmine

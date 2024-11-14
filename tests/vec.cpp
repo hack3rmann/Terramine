@@ -47,7 +47,7 @@ auto test_vec_append() -> void {
         auto thread20 = std::jthread(append_vec, 190, 200);
     }
 
-    auto read = vec.read();
+    auto read = vec.lock();
 
     tmine_assert_eq(read.as_span().size(), 200);
 }

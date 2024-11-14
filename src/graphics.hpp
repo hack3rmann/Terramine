@@ -145,11 +145,32 @@ concept WithAttributes = requires(T value) {
     } -> std::convertible_to<std::span<usize const>>;
 };
 
-template <WithAttributes V>
-class Mesh {
+template <class T, class V>
+concept MeshBuffer = requires(T buffer, V vertex) {
+    requires std::is_move_constructible_v<T>;
+    requires std::is_move_assignable_v<T>;
+    requires std::is_default_constructible_v<T>;
+
+    {
+        buffer.data()
+    } -> std::same_as<V*>;
+    {
+        buffer.size()
+    } -> std::convertible_to<usize>;
+    {
+        buffer.empty()
+    } -> std::same_as<bool>;
+    buffer.clear();
+    {
+        buffer[0]
+    } -> std::convertible_to<V&>;
+};
+
+template <WithAttributes V, MeshBuffer<V> Buffer = std::vector<V>>
+class BufferedMesh {
 public:
     // TODO(hack3rmann): make span of attribute descriptors
-    Mesh(std::vector<V> vertices, Primitive primitive)
+    BufferedMesh(Buffer vertices, Primitive primitive)
     : vertices{std::move(vertices)}
     , primitive{primitive} {
         namespace vs = std::ranges::views;
@@ -180,15 +201,15 @@ public:
         glBindVertexArray(0);
     }
 
-    Mesh(Primitive primitive)
-    : Mesh{{}, primitive} {}
+    BufferedMesh(Primitive primitive)
+    : BufferedMesh{{}, primitive} {}
 
-    Mesh()
-    : Mesh{Primitive::Triangles} {}
+    BufferedMesh()
+    : BufferedMesh{Primitive::Triangles} {}
 
-    ~Mesh() {
-        if (this->vertex_buffer_object_id == Mesh::DUMMY_ID ||
-            this->vertex_array_object_id == Mesh::DUMMY_ID)
+    ~BufferedMesh() {
+        if (this->vertex_buffer_object_id == BufferedMesh::DUMMY_ID ||
+            this->vertex_array_object_id == BufferedMesh::DUMMY_ID)
         {
             return;
         }
@@ -197,31 +218,34 @@ public:
         glDeleteVertexArrays(1, &vertex_array_object_id);
     }
 
-    Mesh(Mesh const& other)
-    : Mesh(other.vertices, other.primitive) {}
+    BufferedMesh(BufferedMesh const& other)
+    : BufferedMesh(other.vertices, other.primitive) {}
 
-    Mesh(Mesh&& other) noexcept
+    BufferedMesh(BufferedMesh&& other) noexcept
     : vertex_array_object_id{other.vertex_array_object_id}
     , vertex_buffer_object_id{other.vertex_buffer_object_id}
     , vertices{std::move(other.vertices)}
     , primitive{other.primitive} {
-        other.vertex_array_object_id = Mesh::DUMMY_ID;
-        other.vertex_buffer_object_id = Mesh::DUMMY_ID;
+        other.vertex_array_object_id = BufferedMesh::DUMMY_ID;
+        other.vertex_buffer_object_id = BufferedMesh::DUMMY_ID;
     }
 
-    auto operator=(this Mesh& self, Mesh const& other) -> Mesh& {
+    auto operator=(this BufferedMesh& self, BufferedMesh const& other)
+        -> BufferedMesh& {
         auto clone = other;
         self = std::move(clone);
+        return self;
     }
 
-    auto operator=(this Mesh& self, Mesh&& other) noexcept -> Mesh& {
+    auto operator=(this BufferedMesh& self, BufferedMesh&& other) noexcept
+        -> BufferedMesh& {
         self.vertex_array_object_id = other.vertex_array_object_id;
         self.vertex_buffer_object_id = other.vertex_buffer_object_id;
         self.vertices = std::move(other.vertices);
         self.primitive = other.primitive;
 
-        other.vertex_array_object_id = Mesh::DUMMY_ID;
-        other.vertex_buffer_object_id = Mesh::DUMMY_ID;
+        other.vertex_array_object_id = BufferedMesh::DUMMY_ID;
+        other.vertex_buffer_object_id = BufferedMesh::DUMMY_ID;
         other.primitive = Primitive::Points;
 
         return self;
@@ -232,7 +256,7 @@ public:
         return std::forward<Self>(self).vertices;
     }
 
-    auto reload_buffer(this Mesh const& self) noexcept -> void {
+    auto reload_buffer(this BufferedMesh const& self) noexcept -> void {
         glBindVertexArray(self.vertex_array_object_id);
         glBindBuffer(GL_ARRAY_BUFFER, self.vertex_buffer_object_id);
         glBufferData(
@@ -241,21 +265,26 @@ public:
         );
     }
 
-    auto draw(this Mesh const& self) -> void {
-        if (!self.vertices.empty()) {
-            glBindVertexArray(self.vertex_array_object_id);
-            glDrawArrays(
-                (GLuint) self.primitive, 0, sizeof(V) * self.vertices.size()
-            );
+    auto draw(this BufferedMesh const& self) -> void {
+        if (self.vertices.empty()) {
+            return;
         }
+
+        glBindVertexArray(self.vertex_array_object_id);
+        glDrawArrays(
+            (GLuint) self.primitive, 0, sizeof(V) * self.vertices.size()
+        );
     }
 
 private:
     GLuint vertex_array_object_id{DUMMY_ID};
     GLuint vertex_buffer_object_id{DUMMY_ID};
-    std::vector<V> vertices{};
+    Buffer vertices{};
     Primitive primitive{Primitive::Points};
     static auto constexpr DUMMY_ID = ~GLuint{0};
 };
+
+template <WithAttributes V>
+using Mesh = BufferedMesh<V, std::vector<V>>;
 
 }  // namespace tmine
