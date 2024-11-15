@@ -105,6 +105,10 @@ public:
 
     auto update(this Terrain& self, glm::vec3 camera_pos) -> void;
 
+    inline auto get_data(this Terrain const& self) -> GameBlocksData const& {
+        return self.renderer.data;
+    }
+
 private:
     auto generate_meshes(this Terrain& self, glm::vec3 camera_pos) -> void;
 
