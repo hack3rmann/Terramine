@@ -291,18 +291,60 @@ auto TerrainCollider::get_collidable_bounding_box() const -> Aabb {
     };
 }
 
-auto TerrainCollider::collide(Collidable const& other) const
-    -> std::optional<Collision> {
+auto TerrainCollider::collide(Collidable const& other) const -> Collision {
     if (auto other_box = dynamic_cast<BoxCollider const*>(&other)) {
         return this->collide_box(*other_box);
     } else {
-        return std::nullopt;
+        return Collision{};
     }
+}
+
+static auto displacement_along(
+    ChunkArray const& terrain, glm::uvec3 start, glm::uvec3 end,
+    BoxCollider const& collider
+) -> glm::vec3 {
+    auto maybe_box = std::optional<Aabb>{};
+
+    for (u32 x = start.x; x < end.x; ++x) {
+        for (u32 y = start.y; y < end.y; ++y) {
+            for (u32 z = start.z; z < end.z; ++z) {
+                auto maybe_id = terrain.get_voxel({x, y, z});
+
+                if (!maybe_id.has_value() || 0 == maybe_id.value()) {
+                    continue;
+                }
+
+                auto const lo = glm::vec3{x, y, z} - glm::vec3{0.5f};
+                auto const current_box = Aabb{lo, lo + glm::vec3{1.0f}};
+
+                if (!maybe_box.has_value()) {
+                    maybe_box.emplace(current_box);
+                } else {
+                    maybe_box.emplace(maybe_box->combination(current_box));
+                }
+            }
+        }
+    }
+
+    if (!maybe_box.has_value()) {
+        return glm::vec3{0.0f};
+    }
+
+    auto const box = std::move(maybe_box).value();
+
+    auto const wall_collider = BoxCollider{
+        box,
+        glm::vec3{0.0f},
+        ABSOLUTELY_ELASTIC_ELASTICITY,
+        false,
+    };
+
+    return collider.collide(wall_collider).self_displacement;
 }
 
 auto TerrainCollider::collide_box(
     this TerrainCollider const& self, BoxCollider const& other
-) -> std::optional<Collision> {
+) -> Collision {
     auto const other_box = other.get_collidable_bounding_box();
     auto const position_corrected_box = Aabb{
         other_box.lo + glm::vec3{0.5f},
@@ -317,15 +359,18 @@ auto TerrainCollider::collide_box(
         glm::max(glm::vec3{0.0f}, glm::ceil(position_corrected_box.hi))
     };
 
-    for (u32 x = lo.x; x <= hi.x; ++x) {
-        for (u32 y = lo.y; y <= hi.y; ++y) {
-            for (u32 z = lo.z; z <= hi.z; ++z) {
-                // TODO: find proper displacement
-            }
-        }
-    }
+    auto const displacement =
+        displacement_along(*self.chunks, lo, {hi.x, lo.y, lo.z}, other) +
+        displacement_along(*self.chunks, lo, {lo.x, hi.y, lo.z}, other) +
+        displacement_along(*self.chunks, lo, {lo.x, lo.y, hi.z}, other) +
+        displacement_along(*self.chunks, {hi.x, lo.y, lo.z}, hi, other) +
+        displacement_along(*self.chunks, {lo.x, hi.y, lo.z}, hi, other) +
+        displacement_along(*self.chunks, {lo.x, lo.y, hi.z}, hi, other);
 
-    throw Unimplemented();
+    return Collision{
+        .self_displacement = glm::vec3{0.0f},
+        .other_displacement = displacement,
+    };
 }
 
 }  // namespace tmine

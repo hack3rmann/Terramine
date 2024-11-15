@@ -62,13 +62,12 @@ static auto static_binary_displace(
     RefMut<Collidable> static_collider, RefMut<Collidable> dynamic_collider,
     f32 accuracy
 ) -> bool {
-    auto maybe_collision = dynamic_collider->collide(*static_collider);
+    auto const collision = dynamic_collider->collide(*static_collider);
 
-    if (!maybe_collision.has_value()) {
+    if (!collision.exist()) {
         return false;
     }
 
-    auto const collision = std::move(maybe_collision).value();
     auto const displacement = collision.self_displacement;
 
     auto overlapping_displacement_amount = 0.0f;
@@ -113,9 +112,9 @@ static auto static_binary_displace(
         static_collider->collidable_elasticity()
     );
     auto const velocity = dynamic_collider->get_collider_velocity();
-    auto const normal_velocity = project(velocity, displacement);
+    auto const parallel_velocity = project(velocity, displacement);
     auto const new_velocity =
-        velocity - (1.0f + 1.0f / elacticity) * normal_velocity;
+        velocity - (1.0f + 1.0f / elacticity) * parallel_velocity;
 
     dynamic_collider->set_collider_velocity(new_velocity);
 
@@ -198,8 +197,8 @@ auto BoxCollider::collides(Collidable const& other) const -> bool {
     }
 }
 
-auto BoxCollider::collide(Collidable const& other) const
-    -> std::optional<Collision> {
+// FIXME(hack3rmann): handle static collisions
+auto BoxCollider::collide(Collidable const& other) const -> Collision {
     auto other_collider = dynamic_cast<BoxCollider const*>(&other);
 
     if (nullptr == other_collider) {
@@ -209,7 +208,7 @@ auto BoxCollider::collide(Collidable const& other) const
     auto const intersection = this->box.intersection(other_collider->box);
 
     if (intersection.is_empty()) {
-        return std::nullopt;
+        return Collision{};
     }
 
     auto const size = intersection.hi - intersection.lo;
@@ -222,23 +221,23 @@ auto BoxCollider::collide(Collidable const& other) const
     auto const signs = glm::sign(to_other_center);
 
     if (size.x >= size.y && size.x >= size.z) {
-        return std::make_optional<Collision>(
+        return Collision{
             -signs.x *
                 glm::vec3(size.x * other_volume / total_volume, 0.0f, 0.0f),
             signs.x * glm::vec3(size.x * self_volume / total_volume, 0.0f, 0.0f)
-        );
+        };
     } else if (size.y >= size.x && size.y >= size.z) {
-        return std::make_optional<Collision>(
+        return Collision{
             -signs.y *
                 glm::vec3(0.0f, size.y * other_volume / total_volume, 0.0f),
             signs.y * glm::vec3(0.0f, size.y * self_volume / total_volume, 0.0f)
-        );
+        };
     } else {
-        return std::make_optional<Collision>(
+        return Collision{
             -signs.z *
                 glm::vec3(0.0f, 0.0f, size.z * other_volume / total_volume),
             signs.z * glm::vec3(0.0f, 0.0f, size.z * self_volume / total_volume)
-        );
+        };
     }
 }
 

@@ -173,15 +173,12 @@ public:
         return ABSOLUTELY_ELASTIC_ELASTICITY;
     }
 
-    auto collide(Collidable const& other) const
-        -> std::optional<Collision> override;
+    auto collide(Collidable const& other) const -> Collision override;
 
     auto collide_box(this TerrainCollider const& self, BoxCollider const& other)
-        -> std::optional<Collision>;
+        -> Collision;
 
-    auto collides(Collidable const& other) const -> bool override {
-        return this->collide(other).has_value();
-    }
+    // TODO: implement `collides` function
 
 private:
     std::shared_ptr<ChunkArray> chunks;
