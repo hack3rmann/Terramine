@@ -7,6 +7,7 @@
 #include "controls.hpp"
 #include "terrain.hpp"
 #include "panic.hpp"
+#include "physics.hpp"
 
 namespace tmine {
 
@@ -98,7 +99,7 @@ public:
 
     inline auto get_array(this Terrain const& self) noexcept
         -> ChunkArray const& {
-        return self.chunks;
+        return *self.chunks;
     }
 
     auto set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value) -> void;
@@ -142,7 +143,7 @@ public:
         "assets/data/block_textures.json";
 
 private:
-    ChunkArray chunks;
+    std::shared_ptr<ChunkArray> chunks;
     std::unique_ptr<Mesh<TerrainRenderer::Vertex>[]> meshes;
     TerrainRenderer::TransparentMesh transparent_mesh{};
     std::vector<usize> chunks_to_update;
@@ -152,6 +153,38 @@ private:
     ShaderProgram transparent_shader;
     Texture texture_atlas;
     Texture normal_atlas;
+};
+
+class TerrainCollider : public Collidable {
+public:
+    auto get_collidable_bounding_box() const -> Aabb override;
+
+    inline auto get_collider_velocity() const -> glm::vec3 override {
+        return glm::vec3{0.0f};
+    }
+
+    inline auto set_collider_velocity(glm::vec3) -> void override {}
+
+    inline auto displace_collidable(glm::vec3) -> void override {}
+
+    inline auto is_collidable_dynamic() const -> bool override { return false; }
+
+    inline auto collidable_elasticity() const -> f32 override {
+        return ABSOLUTELY_ELASTIC_ELASTICITY;
+    }
+
+    auto collide(Collidable const& other) const
+        -> std::optional<Collision> override;
+
+    auto collide_box(this TerrainCollider const& self, BoxCollider const& other)
+        -> std::optional<Collision>;
+
+    auto collides(Collidable const& other) const -> bool override {
+        return this->collide(other).has_value();
+    }
+
+private:
+    std::shared_ptr<ChunkArray> chunks;
 };
 
 class Scene {

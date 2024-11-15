@@ -37,7 +37,7 @@ public:
     static auto constexpr WIDTH = usize{1 << N_POSITION_BITS};
     static auto constexpr HEIGHT = usize{1 << N_POSITION_BITS};
     static auto constexpr DEPTH = usize{1 << N_POSITION_BITS};
-    static auto constexpr SIZES = glm::uvec3{WIDTH, HEIGHT, DEPTH};
+    static auto constexpr SIZE = glm::uvec3{WIDTH, HEIGHT, DEPTH};
     static auto constexpr VOLUME = WIDTH * HEIGHT * DEPTH;
 
 private:
@@ -84,7 +84,7 @@ public:
         f32 max_distance
     ) -> RayCastResult;
 
-    inline auto get_sizes(this ChunkArray const& self) noexcept -> glm::uvec3 {
+    inline auto size(this ChunkArray const& self) noexcept -> glm::uvec3 {
         return self.sizes;
     }
 

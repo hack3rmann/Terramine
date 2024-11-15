@@ -218,7 +218,7 @@ void Player::update(
 
     if (io.is_pressed(Key::P)) {
         auto const sizes =
-            glm::vec3{Chunk::SIZES * terrain->get_array().get_sizes()};
+            glm::vec3{Chunk::SIZE * terrain->get_array().size()};
 
         cam.set_pos({0.5f * sizes.x, sizes.y, 0.5f * sizes.z});
         speed = vec3(0.0f);

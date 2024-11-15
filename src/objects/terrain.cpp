@@ -20,7 +20,7 @@ static auto dedup_vector(RefMut<std::vector<T>> vec) -> void {
 }
 
 Terrain::Terrain(glm::uvec3 sizes)
-: chunks{sizes}
+: chunks{std::make_shared<ChunkArray>(sizes)}
 , meshes{std::make_unique<Mesh<TerrainRenderer::Vertex>[]>(
       sizes.x * sizes.y * sizes.z
   )}
@@ -100,18 +100,18 @@ auto Terrain::generate_meshes(this Terrain& self, glm::vec3 camera_pos)
 
 #pragma omp parallel for
     for (auto i : self.chunks_to_update) {
-        auto const pos = self.chunks.index_to_pos(i);
+        auto const pos = self.chunks->index_to_pos(i);
 
         // Do not reload mesh buffer on multithread
         self.renderer.render_opaque(
-            self.chunks, pos, &self.meshes[i], TerrainRenderUploadMesh::Skip
+            *self.chunks, pos, &self.meshes[i], TerrainRenderUploadMesh::Skip
         );
     }
 
 #pragma omp parallel for
     for (auto i : self.chunks_with_transparency) {
-        auto const pos = self.chunks.index_to_pos(i);
-        auto const chunk = *self.chunks.chunk(pos);
+        auto const pos = self.chunks->index_to_pos(i);
+        auto const chunk = *self.chunks->chunk(pos);
 
         self.renderer.render_transparent(chunk, &self.transparent_mesh);
     }
@@ -186,14 +186,14 @@ auto Terrain::render_opaque(
         self.opaque_shader, camera, params, viewport_size
     );
 
-    auto const n_chunks = self.chunks.chunk_count();
+    auto const n_chunks = self.chunks->chunk_count();
     auto model = glm::mat4{1.0f};
     auto meshes = std::span{self.meshes.get(), self.meshes.get() + n_chunks};
 
-    for (auto [chunk, mesh] : vs::zip(self.chunks.as_span(), meshes)) {
+    for (auto [chunk, mesh] : vs::zip(self.chunks->as_span(), meshes)) {
         auto const pos = chunk.get_pos();
         auto const offset =
-            glm::vec3{pos} * glm::vec3{Chunk::SIZES} + glm::vec3{0.5f};
+            glm::vec3{pos} * glm::vec3{Chunk::SIZE} + glm::vec3{0.5f};
 
         model = glm::translate(glm::mat4{1.0f}, offset);
 
@@ -204,26 +204,28 @@ auto Terrain::render_opaque(
 
 auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
     -> void {
-    auto const chunk_pos = pos / Chunk::SIZES;
-    auto const local_pos = pos % Chunk::SIZES;
+    auto const chunk_pos = pos / Chunk::SIZE;
+    auto const local_pos = pos % Chunk::SIZE;
 
-    if (!self.chunks.is_in_bounds(chunk_pos) || !Chunk::is_in_bounds(local_pos))
+    if (!self.chunks->is_in_bounds(chunk_pos) ||
+        !Chunk::is_in_bounds(local_pos))
     {
         return;
     }
 
-    auto chunk_index = self.chunks.index_of(chunk_pos);
-    auto prev_voxel_id = self.chunks.get_voxel(pos).value();
+    auto chunk_index = self.chunks->index_of(chunk_pos);
+    auto prev_voxel_id = self.chunks->get_voxel(pos).value();
 
-    self.chunks.set_voxel(pos, value);
+    self.chunks->set_voxel(pos, value);
 
     // update `chunks_with_transparency` if user is removing transparent voxel
     if (0 == value && self.renderer.data.blocks[prev_voxel_id].is_translucent())
     {
-        auto& chunk = *self.chunks.chunk(chunk_pos);
+        auto& chunk = *self.chunks->chunk(chunk_pos);
         bool contains_transparent =
             rg::any_of(chunk.get_voxels(), [&self](auto id) {
-                return 0 != id && self.renderer.data.blocks[id].is_translucent();
+                return 0 != id &&
+                       self.renderer.data.blocks[id].is_translucent();
             });
 
         // remove chunk which is transparent no more
@@ -241,45 +243,89 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         return;
     }
 
-    auto const sizes = self.chunks.get_sizes();
+    auto const sizes = self.chunks->size();
 
-    self.chunks_to_update.push_back(self.chunks.index_of(chunk_pos));
+    self.chunks_to_update.push_back(self.chunks->index_of(chunk_pos));
 
     if (0 == local_pos.x && 0 != chunk_pos.x) {
-        self.chunks_to_update.push_back(self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks->index_of(
             glm::uvec3(chunk_pos.x - 1, chunk_pos.y, chunk_pos.z)
         ));
     }
 
     if (Chunk::WIDTH == local_pos.x + 1 && sizes.x != chunk_pos.x + 1) {
-        self.chunks_to_update.push_back(self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks->index_of(
             glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z)
         ));
     }
 
     if (0 == local_pos.y && 0 != chunk_pos.y) {
-        self.chunks_to_update.push_back(self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks->index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y - 1, chunk_pos.z)
         ));
     }
 
     if (Chunk::HEIGHT == local_pos.y + 1 && sizes.y != chunk_pos.y + 1) {
-        self.chunks_to_update.push_back(self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks->index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z)
         ));
     }
 
     if (0 == local_pos.z && 0 != chunk_pos.z) {
-        self.chunks_to_update.push_back(self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks->index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z - 1)
         ));
     }
 
     if (Chunk::DEPTH == local_pos.z + 1 && sizes.z != chunk_pos.z + 1) {
-        self.chunks_to_update.push_back(self.chunks.index_of(
+        self.chunks_to_update.push_back(self.chunks->index_of(
             glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
         ));
     }
+}
+
+auto TerrainCollider::get_collidable_bounding_box() const -> Aabb {
+    return Aabb{
+        glm::vec3{-0.5f},
+        glm::vec3{this->chunks->size() * Chunk::SIZE} - 0.5f,
+    };
+}
+
+auto TerrainCollider::collide(Collidable const& other) const
+    -> std::optional<Collision> {
+    if (auto other_box = dynamic_cast<BoxCollider const*>(&other)) {
+        return this->collide_box(*other_box);
+    } else {
+        return std::nullopt;
+    }
+}
+
+auto TerrainCollider::collide_box(
+    this TerrainCollider const& self, BoxCollider const& other
+) -> std::optional<Collision> {
+    auto const other_box = other.get_collidable_bounding_box();
+    auto const position_corrected_box = Aabb{
+        other_box.lo + glm::vec3{0.5f},
+        other_box.hi + glm::vec3{0.5f},
+    };
+
+    auto const lo = glm::uvec3{
+        glm::max(glm::vec3{0.0f}, glm::floor(position_corrected_box.lo))
+    };
+
+    auto const hi = glm::uvec3{
+        glm::max(glm::vec3{0.0f}, glm::ceil(position_corrected_box.hi))
+    };
+
+    for (u32 x = lo.x; x <= hi.x; ++x) {
+        for (u32 y = lo.y; y <= hi.y; ++y) {
+            for (u32 z = lo.z; z <= hi.z; ++z) {
+                // TODO: find proper displacement
+            }
+        }
+    }
+
+    throw Unimplemented();
 }
 
 }  // namespace tmine
