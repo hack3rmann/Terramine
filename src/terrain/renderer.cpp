@@ -108,12 +108,12 @@ static auto get_vertices(
         V{encode(global_offset, {x, y, z}, 0b000, POS_Y_NORMAL, texture_ids[TOP], 0b01)},
         V{encode(global_offset, {x, y, z}, 0b001, POS_Y_NORMAL, texture_ids[TOP], 0b00)},
 
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b110, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b011, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b11)},
+        V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b10)},
+        V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b01)},
+        V{encode(global_offset, {x, y, z}, 0b110, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b11)},
+        V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b10)},
+        V{encode(global_offset, {x, y, z}, 0b011, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b00)},
+        V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b01)},
 
         V{encode(global_offset, {x, y, z}, 0b011, POS_X_NORMAL, texture_ids[RIGHT], 0b10)},
         V{encode(global_offset, {x, y, z}, 0b001, POS_X_NORMAL, texture_ids[RIGHT], 0b11)},
@@ -122,12 +122,12 @@ static auto get_vertices(
         V{encode(global_offset, {x, y, z}, 0b000, POS_X_NORMAL, texture_ids[RIGHT], 0b01)},
         V{encode(global_offset, {x, y, z}, 0b010, POS_X_NORMAL, texture_ids[RIGHT], 0b00)},
 
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, texture_ids[LEFT], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, texture_ids[LEFT], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b101, NEG_X_NORMAL, texture_ids[LEFT], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, texture_ids[LEFT], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b110, NEG_X_NORMAL, texture_ids[LEFT], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, texture_ids[LEFT], 0b11)},
+        V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, texture_ids[LEFT], 0b10)},
+        V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, texture_ids[LEFT], 0b01)},
+        V{encode(global_offset, {x, y, z}, 0b101, NEG_X_NORMAL, texture_ids[LEFT], 0b11)},
+        V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, texture_ids[LEFT], 0b10)},
+        V{encode(global_offset, {x, y, z}, 0b110, NEG_X_NORMAL, texture_ids[LEFT], 0b00)},
+        V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, texture_ids[LEFT], 0b01)},
 
         V{encode(global_offset, {x, y, z}, 0b110, POS_Z_NORMAL, texture_ids[BACK], 0b00)},
         V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, texture_ids[BACK], 0b11)},
@@ -136,12 +136,12 @@ static auto get_vertices(
         V{encode(global_offset, {x, y, z}, 0b010, POS_Z_NORMAL, texture_ids[BACK], 0b10)},
         V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, texture_ids[BACK], 0b11)},
 
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, texture_ids[FRONT], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b101, NEG_Z_NORMAL, texture_ids[FRONT], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, texture_ids[FRONT], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, texture_ids[FRONT], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, texture_ids[FRONT], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b011, NEG_Z_NORMAL, texture_ids[FRONT], 0b00)},
+        V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, texture_ids[FRONT], 0b00)},
+        V{encode(global_offset, {x, y, z}, 0b101, NEG_Z_NORMAL, texture_ids[FRONT], 0b01)},
+        V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, texture_ids[FRONT], 0b11)},
+        V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, texture_ids[FRONT], 0b00)},
+        V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, texture_ids[FRONT], 0b11)},
+        V{encode(global_offset, {x, y, z}, 0b011, NEG_Z_NORMAL, texture_ids[FRONT], 0b10)},
     };
 }
 
