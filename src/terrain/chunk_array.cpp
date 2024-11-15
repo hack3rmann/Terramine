@@ -60,8 +60,8 @@ auto ChunkArray::chunk(this ChunkArray& self, glm::uvec3 pos) noexcept
 auto ChunkArray::get_voxel(
     this ChunkArray const& self, glm::uvec3 voxel_pos
 ) noexcept -> std::optional<VoxelId> {
-    auto const chunk_pos = voxel_pos / Chunk::SIZES;
-    auto const local_pos = voxel_pos % Chunk::SIZES;
+    auto const chunk_pos = voxel_pos / Chunk::SIZE;
+    auto const local_pos = voxel_pos % Chunk::SIZE;
 
     auto chunk = self.chunk(chunk_pos);
 
@@ -75,8 +75,8 @@ auto ChunkArray::get_voxel(
 auto ChunkArray::set_voxel(
     this ChunkArray& self, glm::uvec3 voxel_pos, VoxelId value
 ) noexcept -> void {
-    auto const chunk_pos = voxel_pos / Chunk::SIZES;
-    auto const local_pos = voxel_pos % Chunk::SIZES;
+    auto const chunk_pos = voxel_pos / Chunk::SIZE;
+    auto const local_pos = voxel_pos % Chunk::SIZE;
 
     auto chunk = self.chunk(chunk_pos);
 

@@ -182,7 +182,7 @@ auto TerrainRenderer::render_opaque(
                 }
 
                 auto global_offset =
-                    glm::ivec3{Chunk::SIZES * chunk->get_pos()};
+                    glm::ivec3{Chunk::SIZE * chunk->get_pos()};
 
                 auto const& data = self.data.blocks[(usize) id];
 
@@ -697,7 +697,7 @@ auto TerrainRenderer::render_transparent(
                     continue;
                 }
 
-                auto global_offset = glm::ivec3{Chunk::SIZES * chunk.get_pos()};
+                auto global_offset = glm::ivec3{Chunk::SIZE * chunk.get_pos()};
 
                 auto const& data = self.data.blocks[(usize) id];
 

@@ -3,6 +3,13 @@
 
 namespace tmine {
 
+static auto project(glm::vec3 source, glm::vec3 direction) -> glm::vec3 {
+    auto const factor =
+        glm::dot(source, direction) / glm::dot(direction, direction);
+
+    return factor * direction;
+}
+
 auto Aabb::intersection(this Aabb self, Aabb other) -> Aabb {
     return Aabb{
         .lo = glm::max(self.lo, other.lo),
@@ -101,6 +108,17 @@ static auto static_binary_displace(
         );
     }
 
+    auto const elacticity = glm::max(
+        dynamic_collider->collidable_elasticity(),
+        static_collider->collidable_elasticity()
+    );
+    auto const velocity = dynamic_collider->get_collider_velocity();
+    auto const normal_velocity = project(velocity, displacement);
+    auto const new_velocity =
+        velocity - (1.0f + 1.0f / elacticity) * normal_velocity;
+
+    dynamic_collider->set_collider_velocity(new_velocity);
+
     return true;
 }
 
@@ -159,20 +177,12 @@ static auto handle_collisions(
 auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
     for (auto& collider : self.data) {
         auto const displacement =
-            self.time_step * collider->collider_velocity();
+            self.time_step * collider->get_collider_velocity();
         collider->displace_collidable(displacement);
     }
 
     while (handle_collisions(self.data, self.accuracy)) {
     }
-}
-
-auto BoxCollider::get_collidable_bounding_box() const -> Aabb {
-    return this->box;
-}
-
-auto BoxCollider::collider_velocity() const -> glm::vec3 {
-    return this->velocity;
 }
 
 auto BoxCollider::displace_collidable(glm::vec3 displacement) -> void {
@@ -203,24 +213,31 @@ auto BoxCollider::collide(Collidable const& other) const
     }
 
     auto const size = intersection.hi - intersection.lo;
+    auto const self_center = this->box.center();
+    auto const other_center = other_collider->box.center();
+    auto const to_other_center = other_center - self_center;
     auto const self_volume = this->box.volume();
     auto const other_volume = other_collider->box.volume();
     auto const total_volume = self_volume + other_volume;
+    auto const signs = glm::sign(to_other_center);
 
     if (size.x >= size.y && size.x >= size.z) {
         return std::make_optional<Collision>(
-            glm::vec3(size.x * other_volume / total_volume, 0.0f, 0.0f),
-            glm::vec3(size.x * self_volume / total_volume, 0.0f, 0.0f)
+            -signs.x *
+                glm::vec3(size.x * other_volume / total_volume, 0.0f, 0.0f),
+            signs.x * glm::vec3(size.x * self_volume / total_volume, 0.0f, 0.0f)
         );
     } else if (size.y >= size.x && size.y >= size.z) {
         return std::make_optional<Collision>(
-            glm::vec3(0.0f, size.y * other_volume / total_volume, 0.0f),
-            glm::vec3(0.0f, size.y * self_volume / total_volume, 0.0f)
+            -signs.y *
+                glm::vec3(0.0f, size.y * other_volume / total_volume, 0.0f),
+            signs.y * glm::vec3(0.0f, size.y * self_volume / total_volume, 0.0f)
         );
     } else {
         return std::make_optional<Collision>(
-            glm::vec3(0.0f, 0.0f, size.z * other_volume / total_volume),
-            glm::vec3(0.0f, 0.0f, size.z * self_volume / total_volume)
+            -signs.z *
+                glm::vec3(0.0f, 0.0f, size.z * other_volume / total_volume),
+            signs.z * glm::vec3(0.0f, 0.0f, size.z * self_volume / total_volume)
         );
     }
 }
