@@ -254,7 +254,7 @@ void Player::update(
                 terrain->set_voxel(result.voxel_pos, 0);
             }
 
-            if (io.is_clicked(MouseButton::Right)) {
+            if (io.just_clicked(MouseButton::Right)) {
                 auto const pos = result.voxel_pos + glm::uvec3{result.normal};
                 terrain->set_voxel(pos, (VoxelId) this->currentBlock);
             }

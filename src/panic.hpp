@@ -11,6 +11,8 @@
         )                                                               \
     }
 
+#define Unimplemented() Panic("unimplemented")
+
 namespace tmine {
 
 struct PanicException : public std::runtime_error {

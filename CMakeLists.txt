@@ -60,6 +60,7 @@ set(TERRAMINE_SOURCE_FILES
     src/objects/line_batch.cpp
     src/objects/terrain.cpp
     src/parser/fnt.cpp
+    src/physics/physics.cpp
     src/terrain/chunk.cpp
     src/terrain/chunk_array.cpp
     src/terrain/renderer.cpp
