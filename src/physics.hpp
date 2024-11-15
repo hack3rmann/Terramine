@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <memory>
-#include <optional>
 #include <glm/glm.hpp>
 
 #include "types.hpp"
@@ -27,8 +26,13 @@ struct CollidableId {
 };
 
 struct Collision {
-    glm::vec3 self_displacement;
-    glm::vec3 other_displacement;
+    glm::vec3 self_displacement{0.0f};
+    glm::vec3 other_displacement{0.0f};
+
+    inline auto exist(this Collision const& self) -> bool {
+        return self.self_displacement != glm::vec3{0.0f} ||
+               self.other_displacement != glm::vec3{0.0f};
+    }
 };
 
 inline auto constexpr ABSOLUTELY_ELASTIC_ELASTICITY = 1.0f;
@@ -41,16 +45,15 @@ struct Collidable {
     virtual auto get_collider_velocity() const -> glm::vec3 = 0;
     virtual auto set_collider_velocity(glm::vec3 velocity) -> void = 0;
     virtual auto displace_collidable(glm::vec3 displacement) -> void = 0;
-    virtual auto collide(Collidable const& other) const
-        -> std::optional<Collision> = 0;
+    virtual auto collide(Collidable const& other) const -> Collision = 0;
 
-    virtual auto collides(Collidable const& other) const -> bool {
-        return this->collide(other).has_value();
+    inline virtual auto collides(Collidable const& other) const -> bool {
+        return this->collide(other).exist();
     }
 
-    virtual auto is_collidable_dynamic() const -> bool { return true; }
+    inline virtual auto is_collidable_dynamic() const -> bool { return true; }
 
-    virtual auto collidable_elasticity() const -> f32 {
+    inline virtual auto collidable_elasticity() const -> f32 {
         return ABSOLUTELY_ELASTIC_ELASTICITY;
     }
 };
@@ -93,6 +96,20 @@ struct BoxCollider : public Collidable {
     Aabb box;
     glm::vec3 velocity;
     f32 elasticity;
+    bool is_dynamic;
+
+    inline BoxCollider(
+        Aabb box = Aabb{}, glm::vec3 velocity = glm::vec3{0.0f},
+        f32 elasticity = ABSOLUTELY_ELASTIC_ELASTICITY, bool is_dynamic = true
+    )
+    : box{box}
+    , velocity{velocity}
+    , elasticity{elasticity}
+    , is_dynamic{is_dynamic} {}
+
+    inline auto is_collidable_dynamic() const -> bool override {
+        return this->is_dynamic;
+    }
 
     inline auto get_collidable_bounding_box() const -> Aabb override {
         return this->box;
@@ -112,8 +129,7 @@ struct BoxCollider : public Collidable {
 
     auto displace_collidable(glm::vec3 displacement) -> void override;
     auto collides(Collidable const& other) const -> bool override;
-    auto collide(Collidable const& other) const
-        -> std::optional<Collision> override;
+    auto collide(Collidable const& other) const -> Collision override;
 };
 
 }  // namespace tmine
