@@ -197,26 +197,21 @@ auto BoxCollider::collides(Collidable const& other) const -> bool {
     }
 }
 
-// FIXME(hack3rmann): handle static collisions
-auto BoxCollider::collide(Collidable const& other) const -> Collision {
-    auto other_collider = dynamic_cast<BoxCollider const*>(&other);
-
-    if (nullptr == other_collider) {
-        return other.collide(*this);
-    }
-
-    auto const intersection = this->box.intersection(other_collider->box);
+static auto collide_dynamic_box(
+    BoxCollider const& self, BoxCollider const& other
+) -> Collision {
+    auto const intersection = self.box.intersection(other.box);
 
     if (intersection.is_empty()) {
         return Collision{};
     }
 
     auto const size = intersection.hi - intersection.lo;
-    auto const self_center = this->box.center();
-    auto const other_center = other_collider->box.center();
+    auto const self_center = self.box.center();
+    auto const other_center = other.box.center();
     auto const to_other_center = other_center - self_center;
-    auto const self_volume = this->box.volume();
-    auto const other_volume = other_collider->box.volume();
+    auto const self_volume = self.box.volume();
+    auto const other_volume = other.box.volume();
     auto const total_volume = self_volume + other_volume;
     auto const signs = glm::sign(to_other_center);
 
@@ -239,6 +234,56 @@ auto BoxCollider::collide(Collidable const& other) const -> Collision {
             signs.z * glm::vec3(0.0f, 0.0f, size.z * self_volume / total_volume)
         };
     }
+}
+
+static auto collide_static_box(
+    BoxCollider const& static_box, BoxCollider const& dynamic_box
+) -> Collision {
+    auto const intersection = static_box.box.intersection(dynamic_box.box);
+
+    if (intersection.is_empty()) {
+        return Collision{};
+    }
+
+    auto const size = intersection.hi - intersection.lo;
+    auto const static_center = static_box.box.center();
+    auto const dynamic_center = dynamic_box.box.center();
+    auto const signs = glm::sign(static_center - dynamic_center);
+
+    auto displacement = glm::vec3{0.0f};
+
+    if (size.x >= size.y && size.x >= size.z) {
+        displacement.x = signs.x * size.x;
+    } else if (size.y >= size.x && size.y >= size.z) {
+        displacement.y = signs.y * size.y;
+    } else {
+        displacement.z = signs.z * size.z;
+    }
+
+    return Collision{glm::vec3{0.0f}, displacement};
+}
+
+auto BoxCollider::collide(Collidable const& other_collider) const -> Collision {
+    auto other = dynamic_cast<BoxCollider const*>(&other_collider);
+
+    if (nullptr == other) {
+        return other_collider.collide(*this);
+    }
+
+    auto const self_is_dynamic = this->is_collidable_dynamic();
+    auto const other_is_dynamic = other->is_collidable_dynamic();
+
+    auto collision = Collision{};
+
+    if (self_is_dynamic && other_is_dynamic) {
+        collision = collide_dynamic_box(*this, *other);
+    } else if (!self_is_dynamic && other_is_dynamic) {
+        collision = collide_static_box(*this, *other);
+    } else if (self_is_dynamic && !other_is_dynamic) {
+        collision = collide_static_box(*other, *this);
+    }
+
+    return collision;
 }
 
 }  // namespace tmine
