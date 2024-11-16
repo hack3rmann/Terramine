@@ -1,7 +1,5 @@
 #include "../panic.hpp"
 #include "../physics.hpp"
-#include "../log.hpp"
-#include "../debug.hpp"
 
 namespace tmine {
 
@@ -37,10 +35,6 @@ static auto static_binary_displace(
     bool displaced_towards_overlap = false;
 
     do {
-        tmine_log(
-            "displacing by [{}, {}, {}]\n", displacement.x, displacement.y,
-            displacement.z
-        );
         dynamic_collider->displace_collidable(displacement);
         free_displacement_amount += 1.0f;
     } while (dynamic_collider->collides(*static_collider));
@@ -154,7 +148,7 @@ auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
         collider->displace_collidable(displacement);
     }
 
-    static auto constexpr MAX_N_STEPS = usize{10};
+    static auto constexpr MAX_N_STEPS = usize{20};
 
     for (usize i = 0; i < MAX_N_STEPS; ++i) {
         if (!handle_collisions(self.data, self.accuracy)) {
@@ -250,14 +244,6 @@ static auto collide_static_box(
     } else {
         displacement.z = signs.z * size.z;
     }
-
-    debug::lines()->box(static_box.box);
-    debug::lines()->box(dynamic_box.box);
-
-    tmine_log(
-        "displacement=[{}, {}, {}]\n", displacement.x, displacement.y,
-        displacement.z
-    );
 
     return Collision{glm::vec3{0.0f}, displacement};
 }

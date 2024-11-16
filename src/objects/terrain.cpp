@@ -5,7 +5,6 @@
 #include "../loaders.hpp"
 #include "../window.hpp"
 #include "../debug.hpp"
-#include "../log.hpp"
 
 namespace tmine {
 
@@ -288,8 +287,8 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
 
 auto TerrainCollider::get_collidable_bounding_box() const -> Aabb {
     return Aabb{
-        glm::vec3{-0.5f},
-        glm::vec3{this->chunks->size() * Chunk::SIZE} - 0.5f,
+        glm::vec3{0.0f},
+        glm::vec3{this->chunks->size() * Chunk::SIZE},
     };
 }
 
@@ -301,58 +300,13 @@ auto TerrainCollider::collide(Collidable const& other) const -> Collision {
     }
 }
 
-static auto displacement_along(
-    ChunkArray const& terrain, glm::uvec3 lo, glm::uvec3 hi,
-    BoxCollider const& collider
-) -> glm::vec3 {
-    auto maybe_box = std::optional<Aabb>{};
-
-    for (u32 x = lo.x; x <= hi.x; ++x) {
-        for (u32 y = lo.y; y <= hi.y; ++y) {
-            for (u32 z = lo.z; z <= hi.z; ++z) {
-                auto maybe_id = terrain.get_voxel({x, y, z});
-
-                if (!maybe_id.has_value() || 0 == maybe_id.value()) {
-                    continue;
-                }
-
-                auto const lo = glm::vec3{x, y, z} - glm::vec3{0.5f};
-                auto const current_box = Aabb{lo, lo + glm::vec3{1.0f}};
-
-                if (!maybe_box.has_value()) {
-                    maybe_box.emplace(current_box);
-                } else {
-                    maybe_box.emplace(maybe_box->combination(current_box));
-                }
-            }
-        }
-    }
-
-    if (!maybe_box.has_value()) {
-        return glm::vec3{0.0f};
-    }
-
-    auto const box = std::move(maybe_box).value();
-
-    auto const wall_collider = BoxCollider{
-        box,
-        glm::vec3{0.0f},
-        ABSOLUTELY_ELASTIC_ELASTICITY,
-        false,
-    };
-
-    auto displacement = collider.collide(wall_collider).self_displacement;
-
-    return displacement;
-}
-
 auto TerrainCollider::collide_box(
     this TerrainCollider const& self, BoxCollider const& other
 ) -> Collision {
     auto const other_box = other.get_collidable_bounding_box();
     auto const position_corrected_box = Aabb{
-        other_box.lo + glm::vec3{0.5f},
-        other_box.hi + glm::vec3{0.5f},
+        other_box.lo - glm::vec3{0.5f},
+        other_box.hi - glm::vec3{0.5f},
     };
 
     auto const lo = glm::uvec3{
@@ -363,13 +317,44 @@ auto TerrainCollider::collide_box(
         glm::max(glm::vec3{0.0f}, glm::ceil(position_corrected_box.hi))
     };
 
-    auto displacement =
-        displacement_along(*self.chunks, lo, {hi.x, hi.y, lo.z}, other) +
-        displacement_along(*self.chunks, lo, {hi.x, lo.y, hi.z}, other) +
-        displacement_along(*self.chunks, lo, {lo.x, hi.y, hi.z}, other) +
-        displacement_along(*self.chunks, {lo.x, lo.y, hi.z}, hi, other) +
-        displacement_along(*self.chunks, {lo.x, hi.y, lo.z}, hi, other) +
-        displacement_along(*self.chunks, {hi.x, lo.y, lo.z}, hi, other);
+    auto displacement = glm::vec3{0.0f};
+    auto directional_counts = glm::ivec3{0};
+
+    debug::lines()->box(other_box, 0.8f * DebugColor::GREEN);
+
+    for (u32 x = lo.x; x <= hi.x; ++x) {
+        for (u32 y = lo.y; y <= hi.y; ++y) {
+            for (u32 z = lo.z; z <= hi.z; ++z) {
+                auto maybe_id = self.chunks->get_voxel({x, y, z});
+
+                if (!maybe_id.has_value() || 0 == maybe_id.value()) {
+                    continue;
+                }
+
+                auto const lo = glm::vec3{x, y, z};
+                auto const box = Aabb{lo, lo + glm::vec3{1.0f}};
+
+                debug::lines()->box(box, 0.8f * DebugColor::BLUE);
+
+                auto const wall_collider = BoxCollider{
+                    box,
+                    glm::vec3{0.0f},
+                    ABSOLUTELY_ELASTIC_ELASTICITY,
+                    false,
+                };
+
+                auto cur_displacement =
+                    other.collide(wall_collider).self_displacement;
+
+                directional_counts += glm::abs(glm::ivec3{glm::sign(cur_displacement)});
+
+                displacement += cur_displacement;
+            }
+        }
+    }
+
+    directional_counts = glm::max(glm::ivec3{1}, directional_counts);
+    displacement /= glm::vec3{directional_counts};
 
     return Collision{
         .self_displacement = glm::vec3{0.0f},

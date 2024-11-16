@@ -7,8 +7,6 @@
 #include "controls.hpp"
 #include "graphics.hpp"
 #include "geometry.hpp"
-#include "log.hpp"
-#include "panic.hpp"
 
 namespace tmine {
 
@@ -33,8 +31,9 @@ public:
         glm::vec4 color = DebugColor::BLUE
     ) -> void;
 
-    auto box(this DebugLines& self, Aabb box, glm::vec4 color = DebugColor::BLUE)
-        -> void;
+    auto box(
+        this DebugLines& self, Aabb box, glm::vec4 color = DebugColor::BLUE
+    ) -> void;
 
     auto render(
         this DebugLines& self, Camera const& cam, glm::uvec2 viewport_size
@@ -92,15 +91,9 @@ namespace debug {
 
     inline constinit auto DEBUG_LINES = std::optional<DebugLines>{};
 
-    inline auto initialize() -> void {
-        tmine_log("debug::initialize()\n");
-        DEBUG_LINES.emplace();
-    }
+    inline auto initialize() -> void { DEBUG_LINES.emplace(); }
 
-    inline auto deinitialize() -> void {
-        tmine_log("debug::deinitialize()\n");
-        DEBUG_LINES.reset();
-    }
+    inline auto deinitialize() -> void { DEBUG_LINES.reset(); }
 
     inline auto lines() -> Lock<DebugLines> {
         return Lock{DEBUG_LINES.value()};
