@@ -242,11 +242,11 @@ void Player::update(
     auto velocity_direction = glm::vec3{0.0f};
 
     if (io.is_pressed(Key::W)) {
-        velocity_direction += cam.get_front_direction();
+        velocity_direction += cam.get_move_direction();
     }
 
     if (io.is_pressed(Key::S)) {
-        velocity_direction -= cam.get_front_direction();
+        velocity_direction -= cam.get_move_direction();
     }
 
     if (io.is_pressed(Key::D)) {
@@ -277,10 +277,17 @@ void Player::update(
         (collider_box.hi +
          glm::vec3{collider_box.lo.x, collider_box.hi.y, collider_box.lo.z});
 
+    static auto GRAVITY_IS_ENABLED = true;
+
+    if (io.just_pressed(Key::G)) {
+        GRAVITY_IS_ENABLED = !GRAVITY_IS_ENABLED;
+    }
+
+    auto const gravity_speed =
+        GRAVITY_IS_ENABLED ? glm::vec3(0.0f, -5.0f, 0.0f) : glm::vec3{0.0f};
+
     cam.set_pos(camera_pos);
-    collider->set_collider_velocity(
-        glm::vec3(0.0f, -5.0f, 0.0f) + speed * velocity_direction
-    );
+    collider->set_collider_velocity(gravity_speed + speed * velocity_direction);
 
     {
         auto result = terrain->get_array().ray_cast(
@@ -293,11 +300,11 @@ void Player::update(
                 glm::vec4(glm::vec3(60.0f / 255.0f), 0.5f)
             );
 
-            if (io.just_clicked(MouseButton::Left)) {
+            if (io.is_clicked(MouseButton::Left)) {
                 terrain->set_voxel(result.voxel_pos, 0);
             }
 
-            if (io.just_clicked(MouseButton::Right)) {
+            if (io.is_clicked(MouseButton::Right)) {
                 auto const pos = result.voxel_pos + glm::uvec3{result.normal};
                 terrain->set_voxel(pos, (VoxelId) this->currentBlock);
             }

@@ -18,7 +18,7 @@ Game::Game(glm::uvec2 viewport_size)
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glLineWidth(5.0f);
+    glLineWidth(3.0f);
 
     // It is okay if no terrain is found
     try {
@@ -34,7 +34,7 @@ Game::Game(glm::uvec2 viewport_size)
     auto const lo = glm::vec3{60.0f};
     this->player_collidable_id =
         this->physics_solver.register_collidable<BoxCollider>(
-            Aabb{lo, lo + glm::vec3{1.0f}}, glm::vec3{0.0f},
+            Aabb{lo, lo + glm::vec3{2.0f}}, glm::vec3{0.0f},
             ABSOLUTELY_INELASTIC_ELASTICITY
         );
 }

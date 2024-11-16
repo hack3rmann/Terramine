@@ -5,7 +5,7 @@
 namespace tmine {
 
 static auto compactify_color(glm::vec4 color) -> u32 {
-    auto compatable_color = glm::uvec4(glm::clamp(255.0f * color, 0.0f, 1.0f));
+    auto compatable_color = glm::uvec4(glm::clamp(255.0f * color, 0.0f, 255.0f));
     auto result = u32{0};
 
     result |= compatable_color.r << 0;
