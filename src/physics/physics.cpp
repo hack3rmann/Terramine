@@ -1,5 +1,7 @@
 #include "../panic.hpp"
 #include "../physics.hpp"
+#include "../log.hpp"
+#include "../debug.hpp"
 
 namespace tmine {
 
@@ -8,46 +10,6 @@ static auto project(glm::vec3 source, glm::vec3 direction) -> glm::vec3 {
         glm::dot(source, direction) / glm::dot(direction, direction);
 
     return factor * direction;
-}
-
-auto Aabb::intersection(this Aabb self, Aabb other) -> Aabb {
-    return Aabb{
-        .lo = glm::max(self.lo, other.lo),
-        .hi = glm::min(self.hi, other.hi),
-    };
-}
-
-auto Aabb::combination(this Aabb self, Aabb other) -> Aabb {
-    return Aabb{
-        .lo = glm::min(self.lo, other.lo),
-        .hi = glm::max(self.hi, other.hi),
-    };
-}
-
-auto Aabb::is_empty(this Aabb self) -> bool {
-    return self.lo.x >= self.hi.x || self.lo.y >= self.hi.y ||
-           self.lo.z >= self.hi.z;
-}
-
-auto Aabb::center(this Aabb self) -> glm::vec3 {
-    return 0.5f * (self.lo + self.hi);
-}
-
-auto Aabb::volume(this Aabb self) -> f32 {
-    auto const difference = self.hi - self.lo;
-    return difference.x * difference.y * difference.z;
-}
-
-auto PhysicsSolver::update(this PhysicsSolver& self, f32 frame_duration)
-    -> void {
-    auto duration = self.previous_frame_reminder + frame_duration;
-
-    while (self.time_step < duration) {
-        duration -= self.time_step;
-        self.fixed_update();
-    }
-
-    self.previous_frame_reminder = duration;
 }
 
 static auto binary_displace(
@@ -75,13 +37,23 @@ static auto static_binary_displace(
     bool displaced_towards_overlap = false;
 
     do {
+        tmine_log(
+            "displacing by [{}, {}, {}]\n", displacement.x, displacement.y,
+            displacement.z
+        );
         dynamic_collider->displace_collidable(displacement);
         free_displacement_amount += 1.0f;
     } while (dynamic_collider->collides(*static_collider));
 
-    while (free_displacement_amount - overlapping_displacement_amount >=
-           accuracy)
-    {
+    static auto constexpr MAX_N_STEPS = usize{20};
+
+    for (usize i = 0; i < MAX_N_STEPS; ++i) {
+        if (free_displacement_amount - overlapping_displacement_amount <
+            accuracy)
+        {
+            break;
+        }
+
         auto const mid =
             0.5f * (overlapping_displacement_amount + free_displacement_amount);
 
@@ -94,8 +66,10 @@ static auto static_binary_displace(
         );
 
         if (dynamic_collider->collides(*static_collider)) {
+            displaced_towards_overlap = true;
             overlapping_displacement_amount = mid;
         } else {
+            displaced_towards_overlap = false;
             free_displacement_amount = mid;
         }
     }
@@ -125,7 +99,10 @@ static auto handle_collision(
     RefMut<Collidable> first, RefMut<Collidable> second, Aabb first_box,
     Aabb second_box, f32 accuracy
 ) -> bool {
-    if (!first->is_collidable_dynamic() && !second->is_collidable_dynamic()) {
+    auto first_is_dynamic = first->is_collidable_dynamic();
+    auto second_is_dynamic = second->is_collidable_dynamic();
+
+    if (!first_is_dynamic && !second_is_dynamic) {
         return false;
     }
 
@@ -134,9 +111,6 @@ static auto handle_collision(
     if (intersection_box.is_empty()) {
         return false;
     }
-
-    auto first_is_dynamic = first->is_collidable_dynamic();
-    auto second_is_dynamic = second->is_collidable_dynamic();
 
     if (first_is_dynamic && second_is_dynamic) {
         return binary_displace(first, second, accuracy);
@@ -180,8 +154,25 @@ auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
         collider->displace_collidable(displacement);
     }
 
-    while (handle_collisions(self.data, self.accuracy)) {
+    static auto constexpr MAX_N_STEPS = usize{10};
+
+    for (usize i = 0; i < MAX_N_STEPS; ++i) {
+        if (!handle_collisions(self.data, self.accuracy)) {
+            break;
+        }
     }
+}
+
+auto PhysicsSolver::update(this PhysicsSolver& self, f32 frame_duration)
+    -> void {
+    auto duration = self.previous_frame_reminder + frame_duration;
+
+    while (self.time_step < duration) {
+        duration -= self.time_step;
+        self.fixed_update();
+    }
+
+    self.previous_frame_reminder = duration;
 }
 
 auto BoxCollider::displace_collidable(glm::vec3 displacement) -> void {
@@ -248,17 +239,25 @@ static auto collide_static_box(
     auto const size = intersection.hi - intersection.lo;
     auto const static_center = static_box.box.center();
     auto const dynamic_center = dynamic_box.box.center();
-    auto const signs = glm::sign(static_center - dynamic_center);
+    auto const signs = glm::sign(dynamic_center - static_center);
 
     auto displacement = glm::vec3{0.0f};
 
-    if (size.x >= size.y && size.x >= size.z) {
+    if (size.x <= size.y && size.x <= size.z) {
         displacement.x = signs.x * size.x;
-    } else if (size.y >= size.x && size.y >= size.z) {
+    } else if (size.y <= size.x && size.y <= size.z) {
         displacement.y = signs.y * size.y;
     } else {
         displacement.z = signs.z * size.z;
     }
+
+    debug::lines()->box(static_box.box);
+    debug::lines()->box(dynamic_box.box);
+
+    tmine_log(
+        "displacement=[{}, {}, {}]\n", displacement.x, displacement.y,
+        displacement.z
+    );
 
     return Collision{glm::vec3{0.0f}, displacement};
 }
@@ -267,7 +266,9 @@ auto BoxCollider::collide(Collidable const& other_collider) const -> Collision {
     auto other = dynamic_cast<BoxCollider const*>(&other_collider);
 
     if (nullptr == other) {
-        return other_collider.collide(*this);
+        auto collision = other_collider.collide(*this);
+        std::swap(collision.self_displacement, collision.other_displacement);
+        return collision;
     }
 
     auto const self_is_dynamic = this->is_collidable_dynamic();
@@ -279,8 +280,17 @@ auto BoxCollider::collide(Collidable const& other_collider) const -> Collision {
         collision = collide_dynamic_box(*this, *other);
     } else if (!self_is_dynamic && other_is_dynamic) {
         collision = collide_static_box(*this, *other);
+
+        if (collision.self_displacement != glm::vec3(0.0f)) {
+            throw Panic("invalid displacement");
+        }
     } else if (self_is_dynamic && !other_is_dynamic) {
         collision = collide_static_box(*other, *this);
+        std::swap(collision.self_displacement, collision.other_displacement);
+
+        if (collision.other_displacement != glm::vec3(0.0f)) {
+            throw Panic("invalid displacement");
+        }
     }
 
     return collision;

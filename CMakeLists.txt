@@ -48,8 +48,10 @@ set(TERRAMINE_SOURCE_FILES
     src/gui/button.cpp
     src/gui/gui.cpp
     src/controls/camera.cpp
+    src/debug/lines.cpp
     src/events/io.cpp
     src/game/game.cpp
+    src/geometry/aabb.cpp
     src/loaders/font.cpp
     src/loaders/png.cpp
     src/loaders/shader.cpp

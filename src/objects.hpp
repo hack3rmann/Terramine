@@ -102,6 +102,11 @@ public:
         return *self.chunks;
     }
 
+    inline auto borrow_array(this Terrain& self) noexcept
+        -> std::shared_ptr<ChunkArray> {
+        return self.chunks;
+    }
+
     auto set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value) -> void;
 
     auto update(this Terrain& self, glm::vec3 camera_pos) -> void;
@@ -157,6 +162,9 @@ private:
 
 class TerrainCollider : public Collidable {
 public:
+    inline explicit TerrainCollider(std::shared_ptr<ChunkArray> chunks)
+    : chunks{chunks} {}
+
     auto get_collidable_bounding_box() const -> Aabb override;
 
     inline auto get_collider_velocity() const -> glm::vec3 override {
