@@ -25,7 +25,8 @@ void Player::updateTime() {
 }
 
 void Player::update(
-    Terrain* terrain, LineBox* lineBatch, glm::uvec2 window_size
+    RefMut<BoxCollider> collider, RefMut<Terrain> terrain,
+    RefMut<LineBox> lineBatch, glm::uvec2 window_size
 ) {
     updateTime();
     if (io.just_pressed(Key::F)) {
@@ -217,8 +218,7 @@ void Player::update(
     }
 
     if (io.is_pressed(Key::P)) {
-        auto const sizes =
-            glm::vec3{Chunk::SIZE * terrain->get_array().size()};
+        auto const sizes = glm::vec3{Chunk::SIZE * terrain->get_array().size()};
 
         cam.set_pos({0.5f * sizes.x, sizes.y, 0.5f * sizes.z});
         speed = vec3(0.0f);
@@ -238,6 +238,49 @@ void Player::update(
         camX = radians(-89.9f);
     }
     cam.rotate({camX, camY, 0.0f});
+
+    auto velocity_direction = glm::vec3{0.0f};
+
+    if (io.is_pressed(Key::W)) {
+        velocity_direction += cam.get_front_direction();
+    }
+
+    if (io.is_pressed(Key::S)) {
+        velocity_direction -= cam.get_front_direction();
+    }
+
+    if (io.is_pressed(Key::D)) {
+        velocity_direction += cam.get_right_direction();
+    }
+
+    if (io.is_pressed(Key::A)) {
+        velocity_direction -= cam.get_right_direction();
+    }
+
+    if (io.is_pressed(Key::Space)) {
+        velocity_direction.y = 1.0;
+    }
+
+    if (io.is_pressed(Key::LeftShift)) {
+        velocity_direction.y = -1.0;
+    }
+
+    if (velocity_direction != glm::vec3{0.0f}) {
+        velocity_direction = glm::normalize(velocity_direction);
+    }
+
+    auto const speed = 10.0f;
+
+    auto const collider_box = collider->get_collidable_bounding_box();
+    auto const camera_pos =
+        0.5f *
+        (collider_box.hi +
+         glm::vec3{collider_box.lo.x, collider_box.hi.y, collider_box.lo.z});
+
+    cam.set_pos(camera_pos);
+    collider->set_collider_velocity(
+        glm::vec3(0.0f, -5.0f, 0.0f) + speed * velocity_direction
+    );
 
     {
         auto result = terrain->get_array().ray_cast(

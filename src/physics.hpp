@@ -5,19 +5,10 @@
 #include <glm/glm.hpp>
 
 #include "types.hpp"
+#include "panic.hpp"
+#include "geometry.hpp"
 
 namespace tmine {
-
-struct Aabb {
-    glm::vec3 lo{0.0f};
-    glm::vec3 hi{1.0f};
-
-    auto intersection(this Aabb self, Aabb other) -> Aabb;
-    auto combination(this Aabb self, Aabb other) -> Aabb;
-    auto is_empty(this Aabb self) -> bool;
-    auto center(this Aabb self) -> glm::vec3;
-    auto volume(this Aabb self) -> f32;
-};
 
 struct CollidableId {
     u32 value{~u32{0}};
@@ -60,7 +51,9 @@ struct Collidable {
 
 class PhysicsSolver {
 public:
-    inline PhysicsSolver(f32 time_step, f32 accuracy = 0.001f) noexcept
+    inline PhysicsSolver(
+        f32 time_step = 1.0f / 60.0f / 20.0f, f32 accuracy = 0.0001f
+    ) noexcept
     : time_step{time_step}
     , accuracy{accuracy} {}
 
@@ -78,6 +71,25 @@ public:
     inline auto register_collidable(this PhysicsSolver& self, T collider)
         -> CollidableId {
         return self.register_collidable(std::move(collider));
+    }
+
+    template <std::derived_from<Collidable> T, class Self>
+    inline auto get_collidable(this Self&& self, CollidableId id)
+        -> decltype(auto) {
+        if (id >= self.data.size()) {
+            throw Panic("invalid collidable id {}", id.value);
+        }
+
+        auto result = dynamic_cast<T*>(self.data[(usize) id.value].get());
+
+        if (nullptr == result) {
+            throw Panic(
+                "invalid type `{}` for collidable id {}", typeid(T).name(),
+                id.value
+            );
+        }
+
+        return std::forward_like<Self>(*result);
     }
 
     auto update(this PhysicsSolver& self, f32 frame_duration) -> void;

@@ -4,6 +4,8 @@
 #include "../objects.hpp"
 #include "../loaders.hpp"
 #include "../window.hpp"
+#include "../debug.hpp"
+#include "../log.hpp"
 
 namespace tmine {
 
@@ -300,14 +302,14 @@ auto TerrainCollider::collide(Collidable const& other) const -> Collision {
 }
 
 static auto displacement_along(
-    ChunkArray const& terrain, glm::uvec3 start, glm::uvec3 end,
+    ChunkArray const& terrain, glm::uvec3 lo, glm::uvec3 hi,
     BoxCollider const& collider
 ) -> glm::vec3 {
     auto maybe_box = std::optional<Aabb>{};
 
-    for (u32 x = start.x; x < end.x; ++x) {
-        for (u32 y = start.y; y < end.y; ++y) {
-            for (u32 z = start.z; z < end.z; ++z) {
+    for (u32 x = lo.x; x <= hi.x; ++x) {
+        for (u32 y = lo.y; y <= hi.y; ++y) {
+            for (u32 z = lo.z; z <= hi.z; ++z) {
                 auto maybe_id = terrain.get_voxel({x, y, z});
 
                 if (!maybe_id.has_value() || 0 == maybe_id.value()) {
@@ -339,7 +341,9 @@ static auto displacement_along(
         false,
     };
 
-    return collider.collide(wall_collider).self_displacement;
+    auto displacement = collider.collide(wall_collider).self_displacement;
+
+    return displacement;
 }
 
 auto TerrainCollider::collide_box(
@@ -359,13 +363,13 @@ auto TerrainCollider::collide_box(
         glm::max(glm::vec3{0.0f}, glm::ceil(position_corrected_box.hi))
     };
 
-    auto const displacement =
-        displacement_along(*self.chunks, lo, {hi.x, lo.y, lo.z}, other) +
-        displacement_along(*self.chunks, lo, {lo.x, hi.y, lo.z}, other) +
-        displacement_along(*self.chunks, lo, {lo.x, lo.y, hi.z}, other) +
-        displacement_along(*self.chunks, {hi.x, lo.y, lo.z}, hi, other) +
+    auto displacement =
+        displacement_along(*self.chunks, lo, {hi.x, hi.y, lo.z}, other) +
+        displacement_along(*self.chunks, lo, {hi.x, lo.y, hi.z}, other) +
+        displacement_along(*self.chunks, lo, {lo.x, hi.y, hi.z}, other) +
+        displacement_along(*self.chunks, {lo.x, lo.y, hi.z}, hi, other) +
         displacement_along(*self.chunks, {lo.x, hi.y, lo.z}, hi, other) +
-        displacement_along(*self.chunks, {lo.x, lo.y, hi.z}, hi, other);
+        displacement_along(*self.chunks, {hi.x, lo.y, lo.z}, hi, other);
 
     return Collision{
         .self_displacement = glm::vec3{0.0f},
