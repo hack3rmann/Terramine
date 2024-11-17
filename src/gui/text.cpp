@@ -70,7 +70,7 @@ static auto add_glyph(
 }
 
 Text::Text(
-    Font const& font, Texture glyph_texture, std::string text, glm::vec2 pos,
+    Font const& font, Texture glyph_texture, std::string_view text, glm::vec2 pos,
     f32 size
 )
 : mesh{Primitive::Triangles}

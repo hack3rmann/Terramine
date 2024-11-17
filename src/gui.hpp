@@ -49,7 +49,7 @@ private:
 class Text : public GuiObject {
 public:
     Text(
-        Font const& font, Texture glyph_texture, std::string text,
+        Font const& font, Texture glyph_texture, std::string_view text,
         glm::vec2 pos, f32 size
     );
 
@@ -61,7 +61,7 @@ public:
 private:
     Mesh<GuiObject::Vertex> mesh;
     Texture glyph_texture;
-    std::string text;
+    std::string_view text;
     glm::vec2 pos;
     f32 size;
 };
