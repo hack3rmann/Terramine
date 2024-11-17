@@ -40,7 +40,7 @@ auto GuiStage::add_button(
          Button{
              self.button_style,
              Text{
-                 self.font, self.button_style.glyph_texture, std::string{text},
+                 self.font, self.button_style.glyph_texture, text,
                  pos, size
              },
              pos, size
