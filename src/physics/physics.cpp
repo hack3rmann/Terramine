@@ -39,6 +39,7 @@ static auto static_binary_displace(
         free_displacement_amount += 1.0f;
     } while (dynamic_collider->collides(*static_collider));
 
+    // TODO(hack3rmann): turn this constant into a class member
     static auto constexpr MAX_N_STEPS = usize{20};
 
     for (usize i = 0; i < MAX_N_STEPS; ++i) {
@@ -142,7 +143,7 @@ static auto handle_collisions(
 }
 
 auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
-    for (auto& collider : self.data) {
+    for (auto& collider : self.colliders) {
         if (!collider->is_collidable_dynamic()) {
             continue;
         }
@@ -156,10 +157,11 @@ auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
         collider->set_collider_velocity(velocity);
     }
 
+    // TODO(hack3rmann): turn this constant to a class member
     static auto constexpr MAX_N_STEPS = usize{20};
 
     for (usize i = 0; i < MAX_N_STEPS; ++i) {
-        if (!handle_collisions(self.data, self.accuracy)) {
+        if (!handle_collisions(self.colliders, self.accuracy)) {
             break;
         }
     }
@@ -245,10 +247,10 @@ static auto collide_static_box(
 
     auto displacement = glm::vec3{0.0f};
 
-    if (size.x <= size.y && size.x <= size.z) {
-        displacement.x = signs.x * size.x;
-    } else if (size.y <= size.x && size.y <= size.z) {
+    if (size.y <= size.x && size.y <= size.z) {
         displacement.y = signs.y * size.y;
+    } else if (size.x <= size.y && size.x <= size.z) {
+        displacement.x = signs.x * size.x;
     } else {
         displacement.z = signs.z * size.z;
     }

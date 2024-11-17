@@ -1,7 +1,6 @@
 #include "../gui.hpp"
 #include "../loaders.hpp"
 #include "../panic.hpp"
-#include "../log.hpp"
 
 namespace tmine {
 
@@ -136,7 +135,6 @@ auto Gui::update(this Gui& self, Window* window) -> void {
     } break;
     case GuiState::PauseMenu: {
         if (stage.get_button("Return").clicked()) {
-            tmine_log("Return pressed\n");
             self.set_state(GuiState::InGame);
             window->capture_cursor();
         }
