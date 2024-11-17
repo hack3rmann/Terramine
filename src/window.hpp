@@ -45,12 +45,12 @@ public:
         return self.glfw_window;
     }
 
-    inline auto get_size(this Window const& self) noexcept -> glm::uvec2 {
+    inline auto size(this Window const& self) noexcept -> glm::uvec2 {
         return self.data->size;
     }
 
     inline auto get_aspect_ratio(this Window const& self) noexcept -> f32 {
-        return Window::aspect_ratio_of(self.get_size());
+        return Window::aspect_ratio_of(self.size());
     }
 
     auto is_open(this Window const& self) noexcept -> bool;

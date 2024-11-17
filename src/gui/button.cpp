@@ -31,8 +31,6 @@ auto Button::get_size(this Button const& self) -> glm::vec2 {
 
 auto Button::render(ShaderProgram const& shader, glm::uvec2 viewport_size)
     -> void {
-    this->update_state(viewport_size);
-
     this->style.textures[(usize) this->state].bind(0);
 
     auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
