@@ -97,7 +97,7 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET NO)
 
 
-set(COMB_VERSION 0.1.0)
+set(COMB_VERSION 0.2.1)
 FetchContent_Declare(
     comb
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
