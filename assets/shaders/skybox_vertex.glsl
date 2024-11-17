@@ -1,16 +1,14 @@
-#version 330 core
+#version 450 core
 
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 v_TexCoord;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 uv;
 
-out vec4 vColor;
-out vec2 a_TexCoord;
+out vec2 v_uv;
 
-uniform mat4 projView;
-uniform vec3 camPos;
+uniform mat4 projection_view;
+uniform vec3 camera_position;
 
 void main() {
-	vColor = vec4(1.0);
-	a_TexCoord = vec2(v_TexCoord.x, 1 - v_TexCoord.y);
-	gl_Position = projView * vec4((position + camPos) * 1.0f, 1.0);
+    v_uv = vec2(uv.x, 1.0 - uv.y);
+    gl_Position = projection_view * vec4(position + camera_position, 1.0);
 }

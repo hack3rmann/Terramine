@@ -65,11 +65,11 @@ void Skybox::render(
     this->shader.bind();
 
     this->shader.uniform_mat4(
-        "projView", cam.get_projection(Window::aspect_ratio_of(window_size)) *
-                        cam.get_view()
+        "projection_view",
+        cam.get_projection(Window::aspect_ratio_of(window_size)) *
+            cam.get_view()
     );
-    this->shader.uniform_vec3("camPos", cam.get_pos());
-    this->shader.uniform_vec2("resolution", glm::vec2{window_size});
+    this->shader.uniform_vec3("camera_position", cam.get_pos());
 
     this->mesh.draw();
 }

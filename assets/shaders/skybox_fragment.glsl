@@ -1,13 +1,10 @@
-#version 330 core
+#version 450 core
 
-in vec4 vColor;
-in vec2 a_TexCoord;
-out vec4 color;
+in vec2 v_uv;
+out vec4 result_color;
 
-uniform sampler2D u_Texture0;
-uniform vec2 resolution;
+uniform sampler2D skybox_texture;
 
 void main() {
-    vec4 texColor = vColor * texture(u_Texture0, a_TexCoord);
-    color = texColor;
+    result_color = texture(skybox_texture, v_uv);
 }
