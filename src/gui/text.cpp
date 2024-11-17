@@ -114,7 +114,7 @@ auto Text::render(ShaderProgram const& shader, glm::uvec2 viewport_size)
     auto const model =
         glm::translate(glm::mat4{1.0f}, glm::vec3(this->pos, 0.0f));
 
-    shader.uniform_mat4("modelProj", proj * model);
+    shader.uniform_mat4("model_projection", proj * model);
 
     mesh.draw();
 }
