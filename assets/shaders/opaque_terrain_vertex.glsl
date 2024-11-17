@@ -1,19 +1,17 @@
-#version 330 core
+#version 450 core
 
 layout(location = 0) in float position_pack;
 
-out float a_light;
-out vec2 a_TexCoord;
-out vec3 norm;
-out vec3 toCam;
-out vec3 v_toLightVec;
-out vec2 texture_index;
+out float v_light;
+out vec2 v_uv;
+out vec3 v_normal;
+out vec3 v_to_camera;
+out vec3 v_to_light;
 
 uniform mat4 model;
 uniform mat4 view;
-uniform mat4 proj;
-uniform vec3 toLightVec;
-uniform mat4 toLightSpace;
+uniform mat4 projection;
+uniform vec3 to_light;
 
 vec3 normals[] = vec3[](
         vec3(1.0, 0.0, 0.0),
@@ -24,18 +22,9 @@ vec3 normals[] = vec3[](
         vec3(0.0, 0.0, -1.0)
     );
 
-vec3 tangents[] = vec3[](
-        vec3(0.0, 0.0, -1.0),
-        vec3(0.0, 0.0, 1.0),
-        vec3(1.0, 0.0, 0.0),
-        vec3(1.0, 0.0, 0.0),
-        vec3(1.0, 0.0, 0.0),
-        vec3(-1.0, 0.0, 0.0)
-    );
-
 void unpack_data(
     uint pack,
-    out vec3 position, out vec3 normal, out vec3 tangent,
+    out vec3 position, out vec3 normal,
     out float light, out vec2 uv
 ) {
     uint n_pos_bits = 4u;
@@ -70,26 +59,21 @@ void unpack_data(
         );
 
     normal = normals[normal_index];
-    tangent = tangents[normal_index];
     light = float(light_bits) / float(light_mask);
     uv = 0.0625 * vec2(
-        float(u + 1u - (1u & (corner_index >> 1u))),
-        float(v + 1u - (1u & (corner_index >> 0u)))
-    );
+                float(u + 1u - (1u & (corner_index >> 1u))),
+                float(v + 1u - (1u & (corner_index >> 0u)))
+            );
 }
 
 void main() {
     vec3 position;
-    vec3 v_Tangent;
-    float v_light;
-    vec2 v_TexCoord;
-    unpack_data(floatBitsToUint(position_pack), position, norm, v_Tangent, v_light, v_TexCoord);
+    unpack_data(floatBitsToUint(position_pack), position, v_normal, v_light, v_uv);
 
-    vec4 worldPos = model * vec4(position, 1.0);
-    a_light = v_light;
-    a_TexCoord = vec2(v_TexCoord.x, v_TexCoord.y);
-    gl_Position = proj * view * worldPos;
+    vec4 world_position = model * vec4(position, 1.0);
 
-    toCam = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPos.xyz;
-    v_toLightVec = toLightVec;
+    v_to_camera = (inverse(view) * vec4(vec3(0.0), 1.0)).xyz - world_position.xyz;
+    v_to_light = to_light;
+
+    gl_Position = projection * view * world_position;
 }

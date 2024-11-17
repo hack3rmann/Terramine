@@ -1,19 +1,17 @@
-#version 330 core
+#version 450 core
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in float data_pack;
 
-out float a_light;
-out vec2 a_TexCoord;
-out vec3 norm;
-out vec3 toCam;
-out vec3 v_toLightVec;
-out vec2 texture_index;
+out float v_light;
+out vec2 v_uv;
+out vec3 v_normal;
+out vec3 v_to_camera;
+out vec3 v_to_light;
 
 uniform mat4 view;
-uniform mat4 proj;
-uniform vec3 toLightVec;
-uniform mat4 toLightSpace;
+uniform mat4 projection;
+uniform vec3 to_light;
 
 vec3 normals[] = vec3[](
         vec3(1.0, 0.0, 0.0),
@@ -48,15 +46,14 @@ void unpack_data(
 }
 
 void main() {
-    vec2 v_TexCoord;
-    unpack_data(floatBitsToUint(data_pack), norm, v_TexCoord);
+    unpack_data(floatBitsToUint(data_pack), v_normal, v_uv);
 
-    vec4 worldPos = vec4(position, 1.0);
-    float v_light = 1.0;
-    a_light = v_light;
-    a_TexCoord = vec2(v_TexCoord.x, v_TexCoord.y);
-    gl_Position = proj * view * worldPos;
+    vec4 world_position = vec4(position, 1.0);
 
-    toCam = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPos.xyz;
-    v_toLightVec = toLightVec;
+    v_light = 1.0;
+
+    v_to_camera = (inverse(view) * vec4(vec3(0.0), 1.0)).xyz - world_position.xyz;
+    v_to_light = to_light;
+
+    gl_Position = projection * view * world_position;
 }

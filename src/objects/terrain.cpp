@@ -156,14 +156,14 @@ auto Terrain::setup_render_resources(
 ) -> void {
     shader.bind();
     shader.uniform_mat4(
-        "proj", camera.get_projection(Window::aspect_ratio_of(viewport_size))
+        "projection", camera.get_projection(Window::aspect_ratio_of(viewport_size))
     );
     shader.uniform_mat4("view", camera.get_view());
     shader.uniform_vec2("resolution", glm::vec2{viewport_size});
-    shader.uniform_vec3("toLightVec", -params.light_direction);
-    shader.uniform_vec3("lightColor", glm::vec3(0.96f, 0.24f, 0.0f));
-    shader.uniform_int("u_Texture0", 0);
-    shader.uniform_int("u_Texture1", 1);
+    shader.uniform_vec3("to_light", -params.light_direction);
+    shader.uniform_vec3("light_color", glm::vec3(0.96f, 0.24f, 0.0f));
+    shader.uniform_int("albedo_texture", 0);
+    shader.uniform_int("normal_texture", 1);
 
     self.texture_atlas.bind(0);
     self.normal_atlas.bind(1);
