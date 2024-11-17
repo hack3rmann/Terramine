@@ -31,7 +31,7 @@ auto LineBox::render(
 
     this->shader.bind();
     this->shader.uniform_mat4(
-        "projView", cam.get_projection(aspect_ratio) * cam.get_view()
+        "projection_view", cam.get_projection(aspect_ratio) * cam.get_view()
     );
     this->mesh.draw();
 
