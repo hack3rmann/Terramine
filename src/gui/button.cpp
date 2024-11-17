@@ -38,7 +38,7 @@ auto Button::render(ShaderProgram const& shader, glm::uvec2 viewport_size)
         glm::ortho(-aspect_ratio, aspect_ratio, -1.0f, 1.0f, 0.0f, 100.0f);
 
     shader.bind();
-    shader.uniform_mat4("modelProj", proj);
+    shader.uniform_mat4("model_projection", proj);
 
     mesh.draw();
 

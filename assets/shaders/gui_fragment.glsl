@@ -1,12 +1,15 @@
-#version 330 core
+#version 450 core
 
-in vec2 a_gui_TexCoord;
-out vec4 color;
+in vec2 v_uv;
 
-uniform sampler2D u_Texture1;
+out vec4 result_color;
+
+uniform sampler2D gui_texture;
 
 void main() {
-	color = texture(u_Texture1, a_gui_TexCoord);
-	if (color.a == 0.0f)
-		discard;
+    result_color = texture(gui_texture, v_uv);
+
+    if (result_color.a == 0.0f) {
+        discard;
+    }
 }

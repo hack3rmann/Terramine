@@ -50,9 +50,8 @@ auto Sprite::render(ShaderProgram const& shader, glm::uvec2 viewport_size)
     this->texture.bind(0);
 
     shader.bind();
-    shader.uniform_mat4("modelProj", projection);
+    shader.uniform_mat4("model_projection", projection);
 
-    // this->mesh.reload_buffer();
     this->mesh.draw();
 }
 
