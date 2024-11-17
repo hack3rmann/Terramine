@@ -143,9 +143,17 @@ static auto handle_collisions(
 
 auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
     for (auto& collider : self.data) {
-        auto const displacement =
-            self.time_step * collider->get_collider_velocity();
+        if (!collider->is_collidable_dynamic()) {
+            continue;
+        }
+
+        auto const acceleration = collider->get_collider_acceleration();
+        auto const velocity =
+            self.time_step * acceleration + collider->get_collider_velocity();
+        auto const displacement = self.time_step * velocity;
+
         collider->displace_collidable(displacement);
+        collider->set_collider_velocity(velocity);
     }
 
     static auto constexpr MAX_N_STEPS = usize{20};

@@ -14,7 +14,7 @@ Scene::Scene(glm::uvec2 viewport_size)
 , viewport_size{viewport_size}
 , objects{} {
     this->add(Skybox{"assets/images/Skybox4.png"});
-    this->add_unique(Terrain{glm::uvec3{4, 4, 4}});
+    this->add_unique(Terrain{glm::uvec3{32, 4, 32}});
     this->add_unique(LineBox{});
 }
 

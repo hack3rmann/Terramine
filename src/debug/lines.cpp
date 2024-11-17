@@ -24,6 +24,10 @@ DebugLines::DebugLines()
 auto DebugLines::line(
     this DebugLines& self, glm::vec3 from, glm::vec3 to, glm::vec4 color
 ) -> void {
+    if (!DEBUG_IS_ENABLED) {
+        return;
+    }
+
     auto const compact_color = compactify_color(color);
     auto& buffer = self.mesh.get_buffer();
     buffer.reserve(2);
@@ -35,6 +39,10 @@ auto DebugLines::line(
 auto DebugLines::box(
     this DebugLines& self, glm::vec3 position, glm::vec3 size, glm::vec4 color
 ) -> void {
+    if (!DEBUG_IS_ENABLED) {
+        return;
+    }
+
     auto x = position.x;
     auto y = position.y;
     auto z = position.z;
@@ -69,6 +77,10 @@ auto DebugLines::box(this DebugLines& self, Aabb box, glm::vec4 color) -> void {
 auto DebugLines::render(
     this DebugLines& self, Camera const& cam, glm::uvec2 viewport_size
 ) -> void {
+    if (!DEBUG_IS_ENABLED) {
+        return;
+    }
+
     auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
 
     // Make sure that depth test is disabled

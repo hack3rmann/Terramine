@@ -310,11 +310,11 @@ auto TerrainCollider::collide_box(
     };
 
     auto const lo = glm::uvec3{
-        glm::max(glm::vec3{0.0f}, glm::floor(position_corrected_box.lo))
+        glm::max(glm::vec3{0.0f}, glm::round(position_corrected_box.lo))
     };
 
     auto const hi = glm::uvec3{
-        glm::max(glm::vec3{0.0f}, glm::ceil(position_corrected_box.hi))
+        glm::max(glm::vec3{0.0f}, glm::round(position_corrected_box.hi))
     };
 
     auto displacement = glm::vec3{0.0f};
@@ -338,6 +338,7 @@ auto TerrainCollider::collide_box(
 
                 auto const wall_collider = BoxCollider{
                     box,
+                    glm::vec3{0.0f},
                     glm::vec3{0.0f},
                     ABSOLUTELY_ELASTIC_ELASTICITY,
                     false,
