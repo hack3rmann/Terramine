@@ -1,6 +1,7 @@
 #include "../game.hpp"
 #include "../events.hpp"
 #include "../debug.hpp"
+#include "../log.hpp"
 
 namespace tmine {
 
@@ -78,6 +79,7 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
     }
 
     if (io.just_pressed(Key::Escape)) {
+        tmine_log("Escape pressed\n");
         self.gui.set_state(GuiState::PauseMenu);
         window->release_cursor();
     }
@@ -93,7 +95,7 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
             );
 
         self.player.update(
-            &player_collidable, &terrain, &line_box, window->get_size()
+            &player_collidable, &terrain, &line_box, window->size()
         );
     }
 

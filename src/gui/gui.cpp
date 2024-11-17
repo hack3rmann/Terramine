@@ -1,6 +1,7 @@
 #include "../gui.hpp"
 #include "../loaders.hpp"
 #include "../panic.hpp"
+#include "../log.hpp"
 
 namespace tmine {
 
@@ -71,6 +72,14 @@ auto GuiStage::render(this GuiStage& self, glm::uvec2 viewport_size) -> void {
     }
 }
 
+auto GuiStage::update(this GuiStage& self, glm::uvec2 viewport_size) -> void {
+    for (auto& elem : self.buttons) {
+        auto& button = elem.second;
+
+        button.update_state(viewport_size);
+    }
+}
+
 Gui::Gui(GuiState initial_state)
 : state{initial_state} {
     auto background_texture =
@@ -105,6 +114,10 @@ auto Gui::render(this Gui& self, glm::uvec2 window_size) -> void {
 }
 
 auto Gui::update(this Gui& self, Window* window) -> void {
+    for (auto& gui : self.guis) {
+        gui.update(window->size());
+    }
+
     auto& stage = self.guis[(usize) self.state];
 
     switch (self.state) {
@@ -123,13 +136,14 @@ auto Gui::update(this Gui& self, Window* window) -> void {
     } break;
     case GuiState::PauseMenu: {
         if (stage.get_button("Return").clicked()) {
-            self.state = GuiState::InGame;
+            tmine_log("Return pressed\n");
+            self.set_state(GuiState::InGame);
             window->capture_cursor();
         }
 
         if (stage.get_button("Exit").clicked()) {
+            self.set_state(GuiState::StartMenu);
             window->release_cursor();
-            self.state = GuiState::StartMenu;
         }
     } break;
     }

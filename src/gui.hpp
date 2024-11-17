@@ -125,6 +125,8 @@ public:
 
     auto render(this GuiStage& self, glm::uvec2 viewport_size) -> void;
 
+    auto update(this GuiStage& self, glm::uvec2 viewport_size) -> void;
+
 private:
     std::unordered_map<std::string_view, Button> buttons{};
     std::vector<Sprite> sprites{};
