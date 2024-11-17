@@ -257,10 +257,6 @@ void Player::update(
         velocity_direction -= cam.get_right_direction();
     }
 
-    if (io.is_pressed(Key::Space)) {
-        velocity_direction.y = 1.0;
-    }
-
     if (io.is_pressed(Key::LeftShift)) {
         velocity_direction.y = -1.0;
     }
@@ -269,25 +265,28 @@ void Player::update(
         velocity_direction = glm::normalize(velocity_direction);
     }
 
-    auto const speed = 10.0f;
+    auto prev_velocity = collider->get_collider_velocity();
+    auto is_grounded = glm::abs(prev_velocity.y) < 0.01;
+
+    if (is_grounded && io.is_pressed(Key::Space)) {
+        velocity_direction.y = 1.0f;
+    }
+
+    auto speed = 10.0f;
+
+    if (io.is_pressed(Key::LeftControl)) {
+        speed *= 3.0f;
+    }
 
     auto const collider_box = collider->get_collidable_bounding_box();
     auto const camera_pos =
         0.5f *
         (collider_box.hi +
-         glm::vec3{collider_box.lo.x, collider_box.hi.y, collider_box.lo.z});
-
-    static auto GRAVITY_IS_ENABLED = true;
-
-    if (io.just_pressed(Key::G)) {
-        GRAVITY_IS_ENABLED = !GRAVITY_IS_ENABLED;
-    }
-
-    auto const gravity_speed =
-        GRAVITY_IS_ENABLED ? glm::vec3(0.0f, -5.0f, 0.0f) : glm::vec3{0.0f};
+         glm::vec3{collider_box.lo.x, collider_box.hi.y - 0.25f, collider_box.lo.z});
 
     cam.set_pos(camera_pos);
-    collider->set_collider_velocity(gravity_speed + speed * velocity_direction);
+    prev_velocity.x = prev_velocity.z = 0.0f;
+    collider->set_collider_velocity(prev_velocity + speed * velocity_direction);
 
     {
         auto result = terrain->get_array().ray_cast(
@@ -300,11 +299,11 @@ void Player::update(
                 glm::vec4(glm::vec3(60.0f / 255.0f), 0.5f)
             );
 
-            if (io.is_clicked(MouseButton::Left)) {
+            if (io.just_clicked(MouseButton::Left)) {
                 terrain->set_voxel(result.voxel_pos, 0);
             }
 
-            if (io.is_clicked(MouseButton::Right)) {
+            if (io.just_clicked(MouseButton::Right)) {
                 auto const pos = result.voxel_pos + glm::uvec3{result.normal};
                 terrain->set_voxel(pos, (VoxelId) this->currentBlock);
             }

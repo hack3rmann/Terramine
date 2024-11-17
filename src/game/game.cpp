@@ -32,10 +32,11 @@ Game::Game(glm::uvec2 viewport_size)
     }
 
     auto const lo = glm::vec3{60.0f};
+    auto const box = Aabb{lo, lo + glm::vec3{0.6f, 1.75f, 0.6f}};
     this->player_collidable_id =
         this->physics_solver.register_collidable<BoxCollider>(
-            Aabb{lo, lo + glm::vec3{2.0f}}, glm::vec3{0.0f},
-            ABSOLUTELY_INELASTIC_ELASTICITY
+            box, glm::vec3{0.0f},
+            glm::vec3{0.0f, -20.0f, 0.0f}, ABSOLUTELY_INELASTIC_ELASTICITY
         );
 }
 
@@ -70,9 +71,7 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
     auto const duration = chrono::duration<f32>{now - self.prev_time};
     self.prev_time = now;
 
-    if (duration.count() < 1.0f) {
-        self.physics_solver.update(duration.count());
-    }
+    debug::update();
 
     if (io.just_pressed(Key::T)) {
         window->toggle_cursor_visibility();
@@ -84,6 +83,8 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
     }
 
     if (GuiState::InGame == self.gui.current()) {
+        self.physics_solver.update(duration.count());
+
         auto& terrain = self.scene.get<Terrain>();
         auto& line_box = self.scene.get<LineBox>();
         auto& player_collidable =

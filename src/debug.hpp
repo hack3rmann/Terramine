@@ -3,12 +3,15 @@
 #include <glm/glm.hpp>
 #include <optional>
 #include <mutex>
+#include <atomic>
 
 #include "controls.hpp"
 #include "graphics.hpp"
 #include "geometry.hpp"
 
 namespace tmine {
+
+inline constinit auto DEBUG_IS_ENABLED = std::atomic<bool>{false};
 
 struct DebugColor {
     inline static auto constexpr BLACK = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f};
@@ -98,6 +101,8 @@ namespace debug {
     inline auto lines() -> Lock<DebugLines> {
         return Lock{DEBUG_LINES.value()};
     }
+
+    auto update() -> void;
 
 }  // namespace debug
 
