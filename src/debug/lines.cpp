@@ -5,7 +5,8 @@
 namespace tmine {
 
 static auto compactify_color(glm::vec4 color) -> u32 {
-    auto compatable_color = glm::uvec4(glm::clamp(255.0f * color, 0.0f, 255.0f));
+    auto compatable_color =
+        glm::uvec4(glm::clamp(255.0f * color, 0.0f, 255.0f));
     auto result = u32{0};
 
     result |= compatable_color.r << 0;
@@ -88,7 +89,7 @@ auto DebugLines::render(
 
     self.shader.bind();
     self.shader.uniform_mat4(
-        "projView", cam.get_projection(aspect_ratio) * cam.get_view()
+        "projection_view", cam.get_projection(aspect_ratio) * cam.get_view()
     );
     self.mesh.reload_buffer();
     self.mesh.draw();
