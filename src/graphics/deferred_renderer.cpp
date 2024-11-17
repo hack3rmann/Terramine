@@ -31,11 +31,13 @@ auto DeferredRenderer::draw_screen_pass(this DeferredRenderer const& self)
     -> void {
     self.shader.bind();
 
-    self.shader.uniform_int("screenDepth", 0);
-    self.shader.uniform_int("screenColor", 1);
+    self.shader.uniform_int("depth_color_texture", 0);
+    self.shader.uniform_int("screen_color_texture", 1);
     self.shader.uniform_vec2(
         "resolution", glm::vec2{self.geometry_buffer.get_viewport_size()}
     );
+    // TODO(hack3rmann): define global scaling
+    self.shader.uniform_float("scaling", 1.25f);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(

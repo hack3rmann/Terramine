@@ -118,6 +118,9 @@ public:
     ) -> void;
     auto uniform_int(this ShaderProgram const& self, char const* name, i32 num)
         -> void;
+    auto uniform_float(
+        this ShaderProgram const& self, char const* name, f32 value
+    ) -> void;
 
 private:
     std::shared_ptr<ShaderData> data;

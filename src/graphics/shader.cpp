@@ -52,6 +52,13 @@ auto ShaderProgram::uniform_int(
     glUniform1i(location, num);
 }
 
+auto ShaderProgram::uniform_float(
+    this ShaderProgram const& self, char const* name, f32 value
+) -> void {
+    auto const location = glGetUniformLocation(self.data->id, name);
+    glUniform1f(location, value);
+}
+
 auto ShaderProgram::from_source(ShaderSource const& source) -> ShaderProgram {
     auto success = (int) true;
     char error_message[512];
