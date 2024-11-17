@@ -18,6 +18,10 @@ auto LineBox::line(
     buffer.emplace_back(to, color);
 }
 
+auto LineBox::clear(this LineBox& self) -> void {
+    self.mesh.get_buffer().clear();
+}
+
 auto LineBox::render(
     Camera const& cam, SceneParameters const&, glm::uvec2 viewport_size
 ) -> void {
@@ -52,7 +56,7 @@ auto LineBox::box(
     h *= 0.5f;
     d *= 0.5f;
 
-    self.mesh.get_buffer().resize(0);
+    self.clear();
 
     self.line({x - w, y - h, z - d}, {x + w, y - h, z - d}, {r, g, b, a});
     self.line({x - w, y + h, z - d}, {x + w, y + h, z - d}, {r, g, b, a});

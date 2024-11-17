@@ -3,6 +3,8 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
+#include "data.hpp"
+#include "physics.hpp"
 #include "types.hpp"
 
 namespace tmine {
@@ -27,7 +29,7 @@ public:
         self.pos = pos;
     }
 
-    inline auto offset(this Camera& self, glm::vec3 offset) -> void {
+    inline auto displace(this Camera& self, glm::vec3 offset) -> void {
         self.pos += offset;
     }
 
@@ -56,6 +58,30 @@ private:
     glm::vec3 right{DEFAULT_RIGHT};
     glm::mat4 rotation{1.0f};
     f32 fov;
+};
+
+class Terrain;
+class LineBox;
+
+class Player {
+public:
+    explicit Player(RefMut<PhysicsSolver> solver);
+
+    auto update(
+        this Player& self, RefMut<PhysicsSolver> solver,
+        RefMut<Terrain> terrain, RefMut<LineBox> selection_box,
+        glm::uvec2 window_size
+    ) -> void;
+
+    inline auto get_camera(this Player const& self) -> Camera const& {
+        return self.camera;
+    }
+
+private:
+    Camera camera;
+    glm::vec2 camera_mouse_angles;
+    VoxelId held_voxel_id;
+    ColliderId collider_id;
 };
 
 }  // namespace tmine

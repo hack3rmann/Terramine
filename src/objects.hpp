@@ -58,6 +58,8 @@ public:
         this LineBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
     ) -> void;
 
+    auto clear(this LineBox& self) -> void;
+
     auto render(
         Camera const& cam, SceneParameters const& params,
         glm::uvec2 viewport_size

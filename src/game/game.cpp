@@ -1,25 +1,28 @@
 #include "../game.hpp"
 #include "../events.hpp"
 #include "../debug.hpp"
-#include "../log.hpp"
 
 namespace tmine {
 
 namespace chrono = std::chrono;
 using namespace std::literals;
 
-Game::Game(glm::uvec2 viewport_size)
-: physics_solver{}
-, scene{viewport_size}
-, gui{GuiState::InGame}
-, player{(f32) glfwGetTime(), -30.0f, vec3(0.0f)}
-, debug{}
-, prev_time{chrono::high_resolution_clock::now()} {
+static auto setup_opengl() -> void {
     glClearColor(27.0 / 255.0, 26.0 / 255.0, 33.0 / 255.0, 1.0f);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glLineWidth(3.0f);
+}
+
+Game::Game(glm::uvec2 viewport_size)
+: physics_solver{}
+, scene{viewport_size}
+, gui{GuiState::InGame}
+, player{&this->physics_solver}
+, debug{}
+, prev_time{chrono::high_resolution_clock::now()} {
+    setup_opengl();
 
     // It is okay if no terrain is found
     try {
@@ -31,14 +34,6 @@ Game::Game(glm::uvec2 viewport_size)
             stderr, "warning: no terrain in the scene: {}", panic.what()
         );
     }
-
-    auto const lo = glm::vec3{60.0f};
-    auto const box = Aabb{lo, lo + glm::vec3{0.6f, 1.75f, 0.6f}};
-    this->player_collidable_id =
-        this->physics_solver.register_collidable<BoxCollider>(
-            box, glm::vec3{0.0f},
-            glm::vec3{0.0f, -20.0f, 0.0f}, ABSOLUTELY_INELASTIC_ELASTICITY
-        );
 }
 
 auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
@@ -55,7 +50,7 @@ auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
     if (self.gui.current() == GuiState::PauseMenu ||
         self.gui.current() == GuiState::InGame)
     {
-        self.scene.render(self.player.cam, viewport_size);
+        self.scene.render(self.player.get_camera(), viewport_size);
     }
 
     if (self.gui.current() == GuiState::StartMenu ||
@@ -64,7 +59,7 @@ auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
         self.gui.render(viewport_size);
     }
 
-    debug::lines()->render(self.player.cam, viewport_size);
+    debug::lines()->render(self.player.get_camera(), viewport_size);
 }
 
 auto Game::update(this Game& self, RefMut<Window> window) -> void {
@@ -79,7 +74,6 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
     }
 
     if (io.just_pressed(Key::Escape)) {
-        tmine_log("Escape pressed\n");
         self.gui.set_state(GuiState::PauseMenu);
         window->release_cursor();
     }
@@ -89,13 +83,9 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
 
         auto& terrain = self.scene.get<Terrain>();
         auto& line_box = self.scene.get<LineBox>();
-        auto& player_collidable =
-            self.physics_solver.get_collidable<BoxCollider>(
-                self.player_collidable_id
-            );
 
         self.player.update(
-            &player_collidable, &terrain, &line_box, window->size()
+            &self.physics_solver, &terrain, &line_box, window->size()
         );
     }
 

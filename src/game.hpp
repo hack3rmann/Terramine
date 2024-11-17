@@ -7,7 +7,6 @@
 #include "objects.hpp"
 #include "physics.hpp"
 #include "debug.hpp"
-#include "Player.h"
 
 namespace tmine {
 
@@ -23,7 +22,6 @@ private:
     Scene scene;
     Gui gui;
     Player player;
-    CollidableId player_collidable_id;
     DebugOwner debug{};
     std::chrono::time_point<std::chrono::high_resolution_clock> prev_time;
 };

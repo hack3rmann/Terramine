@@ -10,7 +10,7 @@
 
 namespace tmine {
 
-struct CollidableId {
+struct ColliderId {
     u32 value{~u32{0}};
 
     inline constexpr operator u32() { return value; }
@@ -64,9 +64,9 @@ public:
 
     template <std::derived_from<Collidable> T, typename... Args>
     inline auto register_collidable(this PhysicsSolver& self, Args&&... args)
-        -> CollidableId {
-        auto const id = CollidableId{(u32) self.data.size()};
-        self.data.emplace_back(std::make_unique<T>(std::forward<Args>(args)...)
+        -> ColliderId {
+        auto const id = ColliderId{(u32) self.colliders.size()};
+        self.colliders.emplace_back(std::make_unique<T>(std::forward<Args>(args)...)
         );
 
         return id;
@@ -74,18 +74,18 @@ public:
 
     template <std::derived_from<Collidable> T>
     inline auto register_collidable(this PhysicsSolver& self, T collider)
-        -> CollidableId {
+        -> ColliderId {
         return self.register_collidable(std::move(collider));
     }
 
     template <std::derived_from<Collidable> T, class Self>
-    inline auto get_collidable(this Self&& self, CollidableId id)
+    inline auto get_collidable(this Self&& self, ColliderId id)
         -> decltype(auto) {
-        if (id >= self.data.size()) {
+        if (id >= self.colliders.size()) {
             throw Panic("invalid collidable id {}", id.value);
         }
 
-        auto result = dynamic_cast<T*>(self.data[(usize) id.value].get());
+        auto result = dynamic_cast<T*>(self.colliders[(usize) id.value].get());
 
         if (nullptr == result) {
             throw Panic(
@@ -106,7 +106,7 @@ private:
     f32 time_step;
     f32 previous_frame_reminder{0.0f};
     f32 accuracy;
-    std::vector<std::unique_ptr<Collidable>> data{};
+    std::vector<std::unique_ptr<Collidable>> colliders{};
 };
 
 struct BoxCollider : public Collidable {
