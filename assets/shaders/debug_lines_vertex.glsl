@@ -4,7 +4,8 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in float float_color_pack;
 
 out vec4 v_color;
-uniform mat4 projView;
+
+uniform mat4 projection_view;
 
 void main() {
     uint color_pack = floatBitsToInt(float_color_pack);
@@ -16,5 +17,5 @@ void main() {
             (color_pack >> 24) & 255
         ) / 255.0;
 
-    gl_Position = projView * vec4(position, 1.0f);
+    gl_Position = projection_view * vec4(position, 1.0f);
 }
