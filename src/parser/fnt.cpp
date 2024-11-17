@@ -293,7 +293,7 @@ namespace fnt {
             execute_parser(tail, fnt_chars_header() << whitespace());
 
         auto const chars_unordered =
-            execute_parser(tail, (fnt_char_desc() << whitespace()).sequence());
+            execute_parser(tail, (fnt_char_desc() << whitespace()).repeat());
 
         auto chars_ordered = std::vector<FontCharDesc>(1 << CHAR_BIT);
 
@@ -305,7 +305,7 @@ namespace fnt {
             execute_parser(tail, fnt_kerning_header() << whitespace());
 
         auto const kernings =
-            execute_parser(tail, (fnt_kerning() << whitespace()).sequence());
+            execute_parser(tail, (fnt_kerning() << whitespace()).repeat());
 
         return comb::ParseResult<FontPage>{
             .value =
