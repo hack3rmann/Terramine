@@ -38,6 +38,11 @@ struct GameBlock {
     static auto constexpr META_EXTRA_TRANSPARENT = BlockMeta{0b01000000};
     static auto constexpr META_VARIATION = BlockMeta{0b00111111};
 
+    std::string name;
+    std::array<TextureId, N_TEXTURES> texture_ids;
+    VoxelId voxel_id;
+    BlockMeta meta;
+
     inline static auto constexpr meta_of(
         bool is_translucent, bool is_extra_transparent, u8 variation
     ) noexcept -> BlockMeta {
@@ -57,11 +62,6 @@ struct GameBlock {
         -> bool {
         return 0 != (self.meta & GameBlock::META_EXTRA_TRANSPARENT);
     }
-
-    std::string name;
-    std::array<TextureId, N_TEXTURES> texture_ids;
-    VoxelId voxel_id;
-    BlockMeta meta;
 };
 
 struct GameBlockTextureIdentifier {
