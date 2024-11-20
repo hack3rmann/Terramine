@@ -50,7 +50,7 @@ private:
     static auto constexpr DEFAULT_FRONT = glm::vec3{0.0f, 0.0f, -1.0f};
     static auto constexpr DEFAULT_UP = glm::vec3{0.0f, 1.0f, 0.0f};
     static auto constexpr DEFAULT_RIGHT = glm::vec3{1.0f, 0.0f, 0.0f};
-    static auto constexpr Z_NEAR = 0.15f;
+    static auto constexpr Z_NEAR = 0.01f;
     static auto constexpr Z_FAR = 1'000.0f;
 
     glm::vec3 pos;
