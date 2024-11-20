@@ -11,6 +11,6 @@ namespace debug {
         }
     }
 
-}
+}  // namespace debug
 
-}
+}  // namespace tmine

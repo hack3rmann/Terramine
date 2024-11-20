@@ -6,9 +6,7 @@
 
 using namespace tmine;
 
-TextureData::~TextureData() {
-    glDeleteTextures(1, &this->id);
-}
+TextureData::~TextureData() { glDeleteTextures(1, &this->id); }
 
 Texture::Texture(GLuint id, glm::uvec2 size)
 : data{std::make_shared<TextureData>(id, size)} {}

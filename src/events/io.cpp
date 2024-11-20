@@ -10,9 +10,7 @@ auto Input::update(this Input& self) noexcept -> void {
     self.mouse_delta = glm::vec2{0.0f};
 }
 
-auto Input::cursor_position_callback(
-    [[maybe_unused]] GLFWwindow* window, f64 x, f64 y
-) -> void {
+auto Input::cursor_position_callback(GLFWwindow* window, f64 x, f64 y) -> void {
     auto data = reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
     if (data->is_cursor_locked) {
