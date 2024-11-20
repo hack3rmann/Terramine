@@ -36,7 +36,13 @@ struct GameBlock {
     static auto constexpr N_TEXTURES = usize{6};
     static auto constexpr META_TRANSLUCENT = BlockMeta{0b10000000};
     static auto constexpr META_EXTRA_TRANSPARENT = BlockMeta{0b01000000};
-    static auto constexpr META_VARIATION = BlockMeta{0b00111111};
+    static auto constexpr META_ORIENTATION = BlockMeta{0b00000111};
+    static auto constexpr ORIENTATION_POS_X = BlockMeta{0};
+    static auto constexpr ORIENTATION_NEG_X = BlockMeta{1};
+    static auto constexpr ORIENTATION_POS_Y = BlockMeta{2};
+    static auto constexpr ORIENTATION_NEG_Y = BlockMeta{3};
+    static auto constexpr ORIENTATION_POS_Z = BlockMeta{4};
+    static auto constexpr ORIENTATION_NEG_Z = BlockMeta{5};
 
     std::string name;
     std::array<TextureId, N_TEXTURES> texture_ids;
@@ -44,14 +50,14 @@ struct GameBlock {
     BlockMeta meta;
 
     inline static auto constexpr meta_of(
-        bool is_translucent, bool is_extra_transparent, u8 variation
+        bool is_translucent, bool is_extra_transparent, u8 orientation
     ) noexcept -> BlockMeta {
-        return (variation & META_VARIATION) | (BlockMeta{is_translucent} << 7) |
+        return (orientation & META_ORIENTATION) | (BlockMeta{is_translucent} << 7) |
                (BlockMeta{is_extra_transparent} << 6);
     }
 
-    inline auto get_variation(this GameBlock const& self) noexcept -> u8 {
-        return self.meta & GameBlock::META_VARIATION;
+    inline auto get_orientation(this GameBlock const& self) noexcept -> u8 {
+        return self.meta & GameBlock::META_ORIENTATION;
     }
 
     inline auto is_translucent(this GameBlock const& self) noexcept -> bool {
@@ -70,7 +76,15 @@ struct GameBlockTextureIdentifier {
 };
 
 struct GameBlocksData {
-    std::vector<GameBlock> blocks;
+    static auto constexpr POS_X = usize{0};
+    static auto constexpr NEG_X = usize{1};
+    static auto constexpr POS_Y = usize{2};
+    static auto constexpr NEG_Y = usize{3};
+    static auto constexpr POS_Z = usize{4};
+    static auto constexpr NEG_Z = usize{5};
+    static auto constexpr N_ORIENTATIONS = usize{6};
+
+    std::vector<std::array<GameBlock, N_ORIENTATIONS>> blocks;
     std::vector<GameBlockTextureIdentifier> textures;
 };
 

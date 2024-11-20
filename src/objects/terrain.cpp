@@ -223,13 +223,14 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
     self.chunks->set_voxel(pos, value);
 
     // update `chunks_with_transparency` if user is removing transparent voxel
-    if (0 == value && self.renderer.data.blocks[prev_voxel_id].is_translucent())
+    if (0 == value &&
+        self.renderer.data.blocks[prev_voxel_id][0].is_translucent())
     {
         auto& chunk = *self.chunks->chunk(chunk_pos);
         bool contains_transparent =
             rg::any_of(chunk.get_voxels(), [&self](auto id) {
                 return 0 != id &&
-                       self.renderer.data.blocks[id].is_translucent();
+                       self.renderer.data.blocks[id][0].is_translucent();
             });
 
         // remove chunk which is transparent no more
@@ -242,7 +243,7 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         }
     }
 
-    if (0 != value && self.renderer.data.blocks[value].is_translucent()) {
+    if (0 != value && self.renderer.data.blocks[value][0].is_translucent()) {
         self.chunks_with_transparency.push_back(chunk_index);
         return;
     }
