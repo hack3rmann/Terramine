@@ -5,14 +5,14 @@
 namespace tmine {
 
 static auto compactify_color(glm::vec4 color) -> u32 {
-    auto compatable_color =
+    auto compactible_color =
         glm::uvec4(glm::clamp(255.0f * color, 0.0f, 255.0f));
     auto result = u32{0};
 
-    result |= compatable_color.r << 0;
-    result |= compatable_color.g << 8;
-    result |= compatable_color.b << 16;
-    result |= compatable_color.a << 24;
+    result |= compactible_color.r << 0;
+    result |= compactible_color.g << 8;
+    result |= compactible_color.b << 16;
+    result |= compactible_color.a << 24;
 
     return result;
 }

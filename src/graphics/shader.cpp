@@ -1,17 +1,13 @@
-#include <stdexcept>
-#include <fmt/format.h>
-
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../graphics.hpp"
+#include "../panic.hpp"
 
 namespace tmine {
 
-ShaderData::~ShaderData() {
-    glDeleteProgram(this->id);
-}
+ShaderData::~ShaderData() { glDeleteProgram(this->id); }
 
 ShaderProgram::ShaderProgram(GLuint id)
 : data{std::make_shared<ShaderData>(id)} {}
@@ -78,10 +74,10 @@ auto ShaderProgram::from_source(ShaderSource const& source) -> ShaderProgram {
 
         glDeleteShader(vertex_id);
 
-        throw std::runtime_error(fmt::format(
+        throw Panic(
             "failed to compile vertex shader '{}': {}",
             source.vertex_path.c_str(), error_message
-        ));
+        );
     }
 
     auto const fragment_id = glCreateShader(GL_FRAGMENT_SHADER);
@@ -100,10 +96,10 @@ auto ShaderProgram::from_source(ShaderSource const& source) -> ShaderProgram {
         glDeleteShader(vertex_id);
         glDeleteShader(fragment_id);
 
-        throw std::runtime_error(fmt::format(
+        throw Panic(
             "failed to compile fragment shader '{}': {}",
             source.fragment_path.c_str(), error_message
-        ));
+        );
     }
 
     auto const program_id = glCreateProgram();
@@ -122,12 +118,12 @@ auto ShaderProgram::from_source(ShaderSource const& source) -> ShaderProgram {
         glDeleteShader(fragment_id);
         glDeleteProgram(program_id);
 
-        throw std::runtime_error(fmt::format(
+        throw Panic(
             "failed to create shader program from vertex shader '{}' and "
             "fragment shader '{}': {}\n",
             source.vertex_path.c_str(), source.fragment_path.c_str(),
             error_message
-        ));
+        );
     }
 
     glDeleteShader(vertex_id);

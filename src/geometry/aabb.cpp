@@ -25,13 +25,11 @@ auto Aabb::center(this Aabb self) -> glm::vec3 {
     return 0.5f * (self.lo + self.hi);
 }
 
-auto Aabb::size(this Aabb self) -> glm::vec3 {
-    return self.hi - self.lo;
-}
+auto Aabb::size(this Aabb self) -> glm::vec3 { return self.hi - self.lo; }
 
 auto Aabb::volume(this Aabb self) -> f32 {
     auto const difference = self.hi - self.lo;
     return difference.x * difference.y * difference.z;
 }
 
-}
+}  // namespace tmine
