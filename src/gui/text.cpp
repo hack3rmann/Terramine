@@ -13,27 +13,12 @@ static auto add_quad(
     glm::vec2 uv, glm::vec2 uv_size
 ) -> void {
     auto const vertices = std::array{
-        GuiObject::Vertex{
-            glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}
-        },
-        GuiObject::Vertex{
-            glm::vec2{pos.x, pos.y}, glm::vec2{uv.x, uv.y - uv_size.y}
-        },
-        GuiObject::Vertex{
-            glm::vec2{pos.x + size.x, pos.y},
-            glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}
-        },
-        GuiObject::Vertex{
-            glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}
-        },
-        GuiObject::Vertex{
-            glm::vec2{pos.x + size.x, pos.y + size.y},
-            glm::vec2{uv.x + uv_size.x, uv.y}
-        },
-        GuiObject::Vertex{
-            glm::vec2{pos.x + size.x, pos.y},
-            glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}
-        },
+        GuiObject::Vertex{glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}},
+        GuiObject::Vertex{glm::vec2{pos.x, pos.y}, glm::vec2{uv.x, uv.y - uv_size.y}},
+        GuiObject::Vertex{glm::vec2{pos.x + size.x, pos.y}, glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}},
+        GuiObject::Vertex{glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}},
+        GuiObject::Vertex{glm::vec2{pos.x + size.x, pos.y + size.y}, glm::vec2{uv.x + uv_size.x, uv.y}},
+        GuiObject::Vertex{glm::vec2{pos.x + size.x, pos.y}, glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}},
     };
 
     buffer->insert(buffer->end(), vertices.begin(), vertices.end());
