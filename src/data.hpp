@@ -35,16 +35,14 @@ struct GameBlock {
     static auto constexpr BACK_TEXTURE_INDEX = usize{5};
     static auto constexpr N_TEXTURES = usize{6};
     static auto constexpr META_TRANSLUCENT = BlockMeta{0b10000000};
-    static auto constexpr META_VARIATION = BlockMeta{0b01111111};
+    static auto constexpr META_EXTRA_TRANSPARENT = BlockMeta{0b01000000};
+    static auto constexpr META_VARIATION = BlockMeta{0b00111111};
 
     inline static auto constexpr meta_of(
-        bool is_translucent, u8 variation
+        bool is_translucent, bool is_extra_transparent, u8 variation
     ) noexcept -> BlockMeta {
-        if (is_translucent) {
-            return (variation & META_VARIATION) | META_TRANSLUCENT;
-        } else {
-            return variation & META_VARIATION;
-        }
+        return (variation & META_VARIATION) | (BlockMeta{is_translucent} << 7) |
+               (BlockMeta{is_extra_transparent} << 6);
     }
 
     inline auto get_variation(this GameBlock const& self) noexcept -> u8 {
@@ -53,6 +51,11 @@ struct GameBlock {
 
     inline auto is_translucent(this GameBlock const& self) noexcept -> bool {
         return 0 != (self.meta & GameBlock::META_TRANSLUCENT);
+    }
+
+    inline auto is_extra_transparent(this GameBlock const& self) noexcept
+        -> bool {
+        return 0 != (self.meta & GameBlock::META_EXTRA_TRANSPARENT);
     }
 
     std::string name;

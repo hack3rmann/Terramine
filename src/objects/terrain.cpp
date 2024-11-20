@@ -114,7 +114,9 @@ auto Terrain::generate_meshes(this Terrain& self, glm::vec3 camera_pos)
         auto const pos = self.chunks->index_to_pos(i);
         auto const chunk = *self.chunks->chunk(pos);
 
-        self.renderer.render_transparent(chunk, &self.transparent_mesh);
+        self.renderer.render_transparent(
+            chunk, *self.chunks, &self.transparent_mesh
+        );
     }
 
     sort_transparent_triangles(&self.transparent_mesh, camera_pos);
@@ -156,7 +158,8 @@ auto Terrain::setup_render_resources(
 ) -> void {
     shader.bind();
     shader.uniform_mat4(
-        "projection", camera.get_projection(Window::aspect_ratio_of(viewport_size))
+        "projection",
+        camera.get_projection(Window::aspect_ratio_of(viewport_size))
     );
     shader.uniform_mat4("view", camera.get_view());
     shader.uniform_vec2("resolution", glm::vec2{viewport_size});
@@ -347,7 +350,8 @@ auto TerrainCollider::collide_box(
                 auto cur_displacement =
                     other.collide(wall_collider).self_displacement;
 
-                directional_counts += glm::abs(glm::ivec3{glm::sign(cur_displacement)});
+                directional_counts +=
+                    glm::abs(glm::ivec3{glm::sign(cur_displacement)});
 
                 displacement += cur_displacement;
             }

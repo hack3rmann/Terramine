@@ -80,11 +80,11 @@ static auto encode_transparent(
     };
 }
 
-static auto get_vertices(
-    glm::ivec3 global_offset,
-    glm::vec3 pos,
-    std::array<TextureId, 6> texture_ids
-) -> std::array<TerrainRenderer::TransparentVertex, 36> {
+static auto add_transparent_vertices(
+    RefMut<ThreadsafeVec<TerrainRenderer::TransparentVertex>> buffer,
+    glm::ivec3 global_offset, ChunkArray const& array, glm::ivec3 pos,
+    GameBlocksData const& data, VoxelId voxel_id
+) -> void {
     using V = TerrainRenderer::TransparentVertex;
 
     auto x = pos.x;
@@ -100,49 +100,97 @@ static auto get_vertices(
 
     auto constexpr encode = encode_transparent;
 
-    return {
-        V{encode(global_offset, {x, y, z}, 0b101, POS_Y_NORMAL, texture_ids[TOP], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b100, POS_Y_NORMAL, texture_ids[TOP], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b000, POS_Y_NORMAL, texture_ids[TOP], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b101, POS_Y_NORMAL, texture_ids[TOP], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b000, POS_Y_NORMAL, texture_ids[TOP], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b001, POS_Y_NORMAL, texture_ids[TOP], 0b00)},
+    auto const& ids = data.blocks[voxel_id].texture_ids;
 
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b110, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b011, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, texture_ids[BOTTOM], 0b01)},
+    auto can_omit_side = [&](glm::ivec3 local_offset) -> bool {
+        if (!data.blocks[voxel_id].is_extra_transparent()) {
+            return false;
+        }
 
-        V{encode(global_offset, {x, y, z}, 0b011, POS_X_NORMAL, texture_ids[RIGHT], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b001, POS_X_NORMAL, texture_ids[RIGHT], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b000, POS_X_NORMAL, texture_ids[RIGHT], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b011, POS_X_NORMAL, texture_ids[RIGHT], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b000, POS_X_NORMAL, texture_ids[RIGHT], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b010, POS_X_NORMAL, texture_ids[RIGHT], 0b00)},
+        auto const absolute_offset = glm::uvec3{global_offset + pos + local_offset};
 
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, texture_ids[LEFT], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, texture_ids[LEFT], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b101, NEG_X_NORMAL, texture_ids[LEFT], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, texture_ids[LEFT], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b110, NEG_X_NORMAL, texture_ids[LEFT], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, texture_ids[LEFT], 0b01)},
+        auto id = array.get_voxel(absolute_offset);
 
-        V{encode(global_offset, {x, y, z}, 0b110, POS_Z_NORMAL, texture_ids[BACK], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, texture_ids[BACK], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b100, POS_Z_NORMAL, texture_ids[BACK], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b110, POS_Z_NORMAL, texture_ids[BACK], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b010, POS_Z_NORMAL, texture_ids[BACK], 0b10)},
-        V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, texture_ids[BACK], 0b11)},
-
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, texture_ids[FRONT], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b101, NEG_Z_NORMAL, texture_ids[FRONT], 0b01)},
-        V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, texture_ids[FRONT], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, texture_ids[FRONT], 0b00)},
-        V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, texture_ids[FRONT], 0b11)},
-        V{encode(global_offset, {x, y, z}, 0b011, NEG_Z_NORMAL, texture_ids[FRONT], 0b10)},
+        return id.has_value() && id.value() == voxel_id;
     };
+
+    if (!can_omit_side({0, 1, 0})) {
+        auto vertices = std::array{
+            V{encode(global_offset, {x, y, z}, 0b101, POS_Y_NORMAL, ids[TOP], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b100, POS_Y_NORMAL, ids[TOP], 0b11)},
+            V{encode(global_offset, {x, y, z}, 0b000, POS_Y_NORMAL, ids[TOP], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b101, POS_Y_NORMAL, ids[TOP], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b000, POS_Y_NORMAL, ids[TOP], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b001, POS_Y_NORMAL, ids[TOP], 0b00)},
+        };
+
+        buffer->append(vertices);
+    }
+
+    if (!can_omit_side({0, -1, 0})) {
+        auto vertices = std::array{
+            V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, ids[BOTTOM], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, ids[BOTTOM], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b110, NEG_Y_NORMAL, ids[BOTTOM], 0b11)},
+            V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, ids[BOTTOM], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b011, NEG_Y_NORMAL, ids[BOTTOM], 0b00)},
+            V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, ids[BOTTOM], 0b01)},
+        };
+
+        buffer->append(vertices);
+    }
+
+    if (!can_omit_side({1, 0, 0})) {
+        auto vertices = std::array{
+            V{encode(global_offset, {x, y, z}, 0b011, POS_X_NORMAL, ids[RIGHT], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b001, POS_X_NORMAL, ids[RIGHT], 0b11)},
+            V{encode(global_offset, {x, y, z}, 0b000, POS_X_NORMAL, ids[RIGHT], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b011, POS_X_NORMAL, ids[RIGHT], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b000, POS_X_NORMAL, ids[RIGHT], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b010, POS_X_NORMAL, ids[RIGHT], 0b00)},
+        };
+
+        buffer->append(vertices);
+    }
+
+    if (!can_omit_side({-1, 0, 0})) {
+        auto vertices = std::array{
+            V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, ids[LEFT], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, ids[LEFT], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b101, NEG_X_NORMAL, ids[LEFT], 0b11)},
+            V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, ids[LEFT], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b110, NEG_X_NORMAL, ids[LEFT], 0b00)},
+            V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, ids[LEFT], 0b01)},
+        };
+
+        buffer->append(vertices);
+    }
+
+    if (!can_omit_side({0, 0, 1})) {
+        auto vertices = std::array{
+            V{encode(global_offset, {x, y, z}, 0b110, POS_Z_NORMAL, ids[BACK], 0b00)},
+            V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, ids[BACK], 0b11)},
+            V{encode(global_offset, {x, y, z}, 0b100, POS_Z_NORMAL, ids[BACK], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b110, POS_Z_NORMAL, ids[BACK], 0b00)},
+            V{encode(global_offset, {x, y, z}, 0b010, POS_Z_NORMAL, ids[BACK], 0b10)},
+            V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, ids[BACK], 0b11)},
+        };
+
+        buffer->append(vertices);
+    }
+
+    if (!can_omit_side({0, 0, -1})) {
+        auto vertices = std::array{
+            V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, ids[FRONT], 0b00)},
+            V{encode(global_offset, {x, y, z}, 0b101, NEG_Z_NORMAL, ids[FRONT], 0b01)},
+            V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, ids[FRONT], 0b11)},
+            V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, ids[FRONT], 0b00)},
+            V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, ids[FRONT], 0b11)},
+            V{encode(global_offset, {x, y, z}, 0b011, NEG_Z_NORMAL, ids[FRONT], 0b10)},
+        };
+
+        buffer->append(vertices);
+    }
 }
 
 static auto is_opaque(
@@ -684,7 +732,7 @@ auto TerrainRenderer::render_opaque(
 
 auto TerrainRenderer::render_transparent(
     this TerrainRenderer const& self, Chunk const& chunk,
-    RefMut<TransparentMesh> transparent_mesh
+    ChunkArray const& array, RefMut<TransparentMesh> transparent_mesh
 ) -> void {
     auto& buffer = transparent_mesh->get_buffer();
 
@@ -699,16 +747,13 @@ auto TerrainRenderer::render_transparent(
 
                 auto global_offset = glm::ivec3{Chunk::SIZE * chunk.get_pos()};
 
-                auto const& data = self.data.blocks[(usize) id];
+                auto const& data = self.data;
 
-                if (!data.is_translucent()) {
+                if (!data.blocks[(usize) id].is_translucent()) {
                     continue;
                 }
 
-                auto vertices =
-                    get_vertices(global_offset, {x, y, z}, data.texture_ids);
-
-                buffer.append(vertices);
+                add_transparent_vertices(&buffer, global_offset, array, {x, y, z}, data, id);
             }
         }
     }
