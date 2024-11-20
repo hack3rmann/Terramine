@@ -25,7 +25,7 @@ auto load_game_blocks(
     char const* path,
     std::unordered_map<std::string, GameBlockTextureIdentifier> const&
         texture_ids
-) -> std::vector<GameBlock>;
+) -> std::vector<std::array<GameBlock, 6>>;
 
 auto load_game_block_textures(char const* path
 ) -> std::unordered_map<std::string, GameBlockTextureIdentifier>;

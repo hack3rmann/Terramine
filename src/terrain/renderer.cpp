@@ -100,10 +100,11 @@ static auto add_transparent_vertices(
 
     auto constexpr encode = encode_transparent;
 
-    auto const& ids = data.blocks[voxel_id].texture_ids;
+    // FIXME(hack3rmann): make use of orientation
+    auto const& ids = data.blocks[voxel_id][0].texture_ids;
 
     auto can_omit_side = [&](glm::ivec3 local_offset) -> bool {
-        if (!data.blocks[voxel_id].is_extra_transparent()) {
+        if (!data.blocks[voxel_id][0].is_extra_transparent()) {
             return false;
         }
 
@@ -197,7 +198,7 @@ static auto is_opaque(
     ChunkArray const& chunks, GameBlocksData const& data, glm::uvec3 pos
 ) -> bool {
     auto id = chunks.get_voxel(pos);
-    return id.has_value() && !data.blocks[(usize) id.value()].is_translucent();
+    return id.has_value() && !data.blocks[(usize) id.value()][0].is_translucent();
 }
 
 TerrainRenderer::TerrainRenderer(GameBlocksData data) noexcept
@@ -232,7 +233,8 @@ auto TerrainRenderer::render_opaque(
                 auto global_offset =
                     glm::ivec3{Chunk::SIZE * chunk->get_pos()};
 
-                auto const& data = self.data.blocks[(usize) id];
+                // FIXME(hack3rmann): make use of orientation
+                auto const& data = self.data.blocks[(usize) id][0];
 
                 auto const top_texture_id =
                     data.texture_ids[GameBlock::TOP_TEXTURE_INDEX];
@@ -749,7 +751,7 @@ auto TerrainRenderer::render_transparent(
 
                 auto const& data = self.data;
 
-                if (!data.blocks[(usize) id].is_translucent()) {
+                if (!data.blocks[(usize) id][0].is_translucent()) {
                     continue;
                 }
 
