@@ -18,6 +18,10 @@ bool is_cross(float thickness, float size) {
     return is_vertical || is_horizontal;
 }
 
+float linearize_depth(float depth, float near, float far) {
+    return near * far / (far + depth * (near - far));
+}
+
 void main() {
     vec4 screen_color = texture(screen_color_texture, v_uv);
     result_color = screen_color;
