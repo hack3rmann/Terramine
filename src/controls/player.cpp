@@ -105,18 +105,28 @@ static auto interact_with_terrain(
     }
 
     selection_box->box(
-        glm::vec3{ray_cast_result.voxel_pos} + 0.5f, glm::vec3(1.001f),
-        glm::vec4(glm::vec3(60.0f / 255.0f), 0.5f)
+        glm::vec3{ray_cast_result.voxel_pos} + 0.5f, glm::vec3{1.001f},
+        glm::vec4{glm::vec3{60.0f / 255.0f}, 0.5f}
     );
 
     if (io.just_clicked(MouseButton::Left)) {
-        terrain->set_voxel(ray_cast_result.voxel_pos, 0);
+        terrain->set_voxel(ray_cast_result.voxel_pos, {});
+    }
+
+    auto orientation = u8{0};
+
+    if (ray_cast_result.normal.x != 0.0f) {
+        orientation = GameBlock::ORIENTATION_POS_X;
+    } else if (ray_cast_result.normal.y != 0.0f) {
+        orientation = GameBlock::ORIENTATION_POS_Y;
+    } else if (ray_cast_result.normal.z != 0.0f) {
+        orientation = GameBlock::ORIENTATION_POS_Z;
     }
 
     if (io.just_clicked(MouseButton::Right)) {
         auto const pos =
             ray_cast_result.voxel_pos + glm::uvec3{ray_cast_result.normal};
-        terrain->set_voxel(pos, held_voxel_id);
+        terrain->set_voxel(pos, {held_voxel_id, Voxel::make_meta(orientation)});
     }
 }
 

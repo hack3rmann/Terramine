@@ -100,7 +100,6 @@ static auto add_transparent_vertices(
 
     auto constexpr encode = encode_transparent;
 
-    // FIXME(hack3rmann): make use of orientation
     auto const& ids = data.blocks[voxel_id][0].texture_ids;
 
     auto can_omit_side = [&](glm::ivec3 local_offset) -> bool {
@@ -112,7 +111,7 @@ static auto add_transparent_vertices(
 
         auto id = array.get_voxel(absolute_offset);
 
-        return id.has_value() && id.value() == voxel_id;
+        return id.has_value() && id.value().id == voxel_id;
     };
 
     if (!can_omit_side({0, 1, 0})) {
@@ -198,7 +197,7 @@ static auto is_opaque(
     ChunkArray const& chunks, GameBlocksData const& data, glm::uvec3 pos
 ) -> bool {
     auto id = chunks.get_voxel(pos);
-    return id.has_value() && !data.blocks[(usize) id.value()][0].is_translucent();
+    return id.has_value() && !data.blocks[(usize) id.value().id][0].is_translucent();
 }
 
 TerrainRenderer::TerrainRenderer(GameBlocksData data) noexcept
@@ -224,17 +223,16 @@ auto TerrainRenderer::render_opaque(
         for (u32 z = 0; z < Chunk::DEPTH; z++) {
             for (u32 x = 0; x < Chunk::WIDTH; x++) {
                 // Chunk always has voxel with coordinates (x, y, z)
-                auto id = chunk->get_voxel({x, y, z}).value();
+                auto voxel = chunk->get_voxel({x, y, z}).value();
 
-                if (0 == id) {
+                if (0 == voxel.id) {
                     continue;
                 }
 
                 auto global_offset =
                     glm::ivec3{Chunk::SIZE * chunk->get_pos()};
 
-                // FIXME(hack3rmann): make use of orientation
-                auto const& data = self.data.blocks[(usize) id][0];
+                auto const& data = self.data.blocks[(usize) voxel.id][voxel.orientation()];
 
                 auto const top_texture_id =
                     data.texture_ids[GameBlock::TOP_TEXTURE_INDEX];
@@ -741,9 +739,9 @@ auto TerrainRenderer::render_transparent(
     for (u32 y = 0; y < Chunk::HEIGHT; y++) {
         for (u32 z = 0; z < Chunk::DEPTH; z++) {
             for (u32 x = 0; x < Chunk::WIDTH; x++) {
-                auto id = chunk.get_voxel({x, y, z}).value();
+                auto voxel = chunk.get_voxel({x, y, z}).value();
 
-                if (0 == id) {
+                if (0 == voxel.id) {
                     continue;
                 }
 
@@ -751,11 +749,11 @@ auto TerrainRenderer::render_transparent(
 
                 auto const& data = self.data;
 
-                if (!data.blocks[(usize) id][0].is_translucent()) {
+                if (!data.blocks[(usize) voxel.id][0].is_translucent()) {
                     continue;
                 }
 
-                add_transparent_vertices(&buffer, global_offset, array, {x, y, z}, data, id);
+                add_transparent_vertices(&buffer, global_offset, array, {x, y, z}, data, voxel.id);
             }
         }
     }
