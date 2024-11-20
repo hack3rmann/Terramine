@@ -71,6 +71,7 @@
         "name": "red_glass",
         "id": 10,
         "translucent": true,
-        "texture": "red_glass"
+        "texture": "red_glass",
+        "extra_transparency": true
     }
 ]

@@ -138,7 +138,7 @@ public:
         return self.ptr[index];
     }
 
-    static auto constexpr initial_capacity() -> usize { return 1; }
+    static auto consteval initial_capacity() -> usize { return 1; }
 
     static auto constexpr next_capacity(usize cap) -> usize {
         return 3 * (cap + 1) / 2;

@@ -34,7 +34,7 @@ auto load_game_blocks(
         .name = "air",
         .texture_ids = {0, 0, 0, 0, 0, 0},
         .voxel_id = 0,
-        .meta = GameBlock::meta_of(true, 0),
+        .meta = GameBlock::meta_of(true, true, 0),
     });
 
     for (auto [i, entry] : document.GetArray() | vs::enumerate) {
@@ -50,6 +50,7 @@ auto load_game_blocks(
         auto voxel_id = std::optional<VoxelId>{};
         auto variation = u8{0};
         auto is_translucent = false;
+        auto is_extra_transparent = false;
         auto top_texture_id = std::optional<TextureId>{};
         auto bottom_texture_id = std::optional<TextureId>{};
         auto left_texture_id = std::optional<TextureId>{};
@@ -109,6 +110,14 @@ auto load_game_blocks(
                 }
 
                 is_translucent = value.GetBool();
+            } else if (0 == std::strcmp("extra_transparency", property_string)) {
+                if (!value.IsBool()) {
+                    throw std::runtime_error(fmt::format(
+                        "property 'extra_transparent' should be a bool in '{}'", path
+                    ));
+                }
+
+                is_extra_transparent = value.GetBool();
             } else if (0 == std::strcmp("texture", property_string)) {
                 if (value.IsString()) {
                     auto const texture_name = value.GetString();
@@ -227,7 +236,7 @@ auto load_game_blocks(
                  left_texture_id.value(), right_texture_id.value(),
                  front_texture_id.value(), back_texture_id.value()},
             .voxel_id = voxel_id.value(),
-            .meta = GameBlock::meta_of(is_translucent, variation),
+            .meta = GameBlock::meta_of(is_translucent, is_extra_transparent, variation),
         });
     }
 

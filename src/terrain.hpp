@@ -152,7 +152,7 @@ public:
 
     auto render_transparent(
         this TerrainRenderer const& self, Chunk const& chunk,
-        RefMut<TransparentMesh> transparent_mesh
+        ChunkArray const& array, RefMut<TransparentMesh> transparent_mesh
     ) -> void;
 
     static auto make_empty_mesh() -> Mesh<Vertex>;
