@@ -38,12 +38,12 @@
         "id": 5,
         "orientations": ["+z", "-z"],
         "texture": {
-            "top": "oak_log_sides_horizontall",
-            "bottom": "oak_log_sides_horizontall",
-            "front": "oak_log_sides_horizontall",
-            "back": "oak_log_sides_horizontall",
-            "left": "oak_log_top",
-            "right": "oak_log_top"
+            "top": "oak_log_sides_verticall",
+            "bottom": "oak_log_sides_verticall",
+            "front": "oak_log_top",
+            "back": "oak_log_top",
+            "left": "oak_log_sides_horizontall",
+            "right": "oak_log_sides_horizontall"
         }
     },
     {
@@ -51,12 +51,12 @@
         "id": 5,
         "orientations": ["+x", "-x"],
         "texture": {
-            "top": "oak_log_sides_verticall",
-            "bottom": "oak_log_sides_verticall",
-            "front": "oak_log_top",
-            "back": "oak_log_top",
-            "left": "oak_log_sides_horizontall",
-            "right": "oak_log_sides_horizontall"
+            "top": "oak_log_sides_horizontall",
+            "bottom": "oak_log_sides_horizontall",
+            "front": "oak_log_sides_horizontall",
+            "back": "oak_log_sides_horizontall",
+            "left": "oak_log_top",
+            "right": "oak_log_top"
         }
     },
     {

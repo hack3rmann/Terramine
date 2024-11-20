@@ -11,6 +11,19 @@
 
 namespace tmine {
 
+struct Voxel {
+    VoxelId id;
+    BlockMeta meta;
+
+    inline static auto constexpr make_meta(u32 orientation) -> BlockMeta {
+        return (BlockMeta) orientation;
+    }
+
+    inline auto constexpr orientation(this Voxel const& self) -> u8 {
+        return self.meta & 7;
+    }
+};
+
 class Chunk {
 public:
     explicit Chunk(glm::uvec3 pos);
@@ -19,17 +32,17 @@ public:
     static auto is_in_bounds(glm::uvec3 pos) noexcept -> bool;
 
     auto get_voxel(this Chunk const& self, glm::uvec3 pos) noexcept
-        -> std::optional<VoxelId>;
+        -> std::optional<Voxel>;
 
-    auto set_voxel(this Chunk& self, glm::uvec3 pos, VoxelId id) noexcept
+    auto set_voxel(this Chunk& self, glm::uvec3 pos, Voxel id) noexcept
         -> void;
 
     inline auto get_pos(this Chunk const& self) noexcept -> glm::uvec3 {
         return self.pos;
     }
 
-    inline auto get_voxels(this Chunk const& self) -> std::span<VoxelId const> {
-        return self.voxel_ids;
+    inline auto get_voxels(this Chunk const& self) -> std::span<Voxel const> {
+        return self.voxels;
     }
 
 public:
@@ -42,11 +55,11 @@ public:
 
 private:
     glm::uvec3 pos;
-    std::array<VoxelId, VOLUME> voxel_ids;
+    std::array<Voxel, VOLUME> voxels;
 };
 
 struct RayCastResult {
-    VoxelId id{0};
+    Voxel voxel{};
     glm::uvec3 voxel_pos{0};
     glm::vec3 hit_pos{0.0f};
     glm::vec3 normal{0.0f};
@@ -73,10 +86,10 @@ public:
     auto chunk(this ChunkArray& self, glm::uvec3 chunk_pos) noexcept -> Chunk*;
 
     auto get_voxel(this ChunkArray const& self, glm::uvec3 voxel_pos) noexcept
-        -> std::optional<VoxelId>;
+        -> std::optional<Voxel>;
 
     auto set_voxel(
-        this ChunkArray& self, glm::uvec3 voxel_pos, VoxelId value
+        this ChunkArray& self, glm::uvec3 voxel_pos, Voxel value
     ) noexcept -> void;
 
     auto ray_cast(

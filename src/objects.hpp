@@ -109,7 +109,7 @@ public:
         return self.chunks;
     }
 
-    auto set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value) -> void;
+    auto set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value) -> void;
 
     auto update(this Terrain& self, glm::vec3 camera_pos) -> void;
 

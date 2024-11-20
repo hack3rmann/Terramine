@@ -7,7 +7,7 @@ namespace tmine {
 
 Chunk::Chunk(glm::uvec3 chunk_pos)
 : pos{chunk_pos}
-, voxel_ids{} {
+, voxels{} {
     for (usize local_z = 0; local_z < Chunk::DEPTH; local_z++) {
         for (usize local_x = 0; local_x < Chunk::WIDTH; local_x++) {
             auto const world_x = local_x + chunk_pos.x * Chunk::WIDTH;
@@ -27,7 +27,7 @@ Chunk::Chunk(glm::uvec3 chunk_pos)
                     id = 1;
                 }
 
-                this->set_voxel({local_x, local_y, local_z}, id);
+                this->set_voxel({local_x, local_y, local_z}, {id, 0});
             }
         }
     }
@@ -43,20 +43,20 @@ auto Chunk::is_in_bounds(glm::uvec3 pos) noexcept -> bool {
 }
 
 auto Chunk::get_voxel(this Chunk const& self, glm::uvec3 pos) noexcept
-    -> std::optional<VoxelId> {
+    -> std::optional<Voxel> {
     if (!Chunk::is_in_bounds(pos)) {
         return std::nullopt;
     }
 
-    return self.voxel_ids[Chunk::index_of(pos)];
+    return self.voxels[Chunk::index_of(pos)];
 }
 
-auto Chunk::set_voxel(this Chunk& self, glm::uvec3 pos, VoxelId id) noexcept -> void {
+auto Chunk::set_voxel(this Chunk& self, glm::uvec3 pos, Voxel value) noexcept -> void {
     if (!Chunk::is_in_bounds(pos)) {
         return;
     }
 
-    self.voxel_ids[Chunk::index_of(pos)] = id;
+    self.voxels[Chunk::index_of(pos)] = value;
 }
 
 auto height_map_at(glm::uvec2 pos) -> f32 {

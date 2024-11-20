@@ -3,8 +3,8 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
-#include "data.hpp"
 #include "physics.hpp"
+#include "terrain.hpp"
 #include "types.hpp"
 
 namespace tmine {

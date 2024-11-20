@@ -59,7 +59,7 @@ auto ChunkArray::chunk(this ChunkArray& self, glm::uvec3 pos) noexcept
 
 auto ChunkArray::get_voxel(
     this ChunkArray const& self, glm::uvec3 voxel_pos
-) noexcept -> std::optional<VoxelId> {
+) noexcept -> std::optional<Voxel> {
     auto const chunk_pos = voxel_pos / Chunk::SIZE;
     auto const local_pos = voxel_pos % Chunk::SIZE;
 
@@ -73,7 +73,7 @@ auto ChunkArray::get_voxel(
 }
 
 auto ChunkArray::set_voxel(
-    this ChunkArray& self, glm::uvec3 voxel_pos, VoxelId value
+    this ChunkArray& self, glm::uvec3 voxel_pos, Voxel value
 ) noexcept -> void {
     auto const chunk_pos = voxel_pos / Chunk::SIZE;
     auto const local_pos = voxel_pos % Chunk::SIZE;
@@ -127,7 +127,7 @@ auto ChunkArray::ray_cast(
     while (t <= max_distance) {
         auto voxel = self.get_voxel({ix, iy, iz});
 
-        if (voxel.has_value() && 0 != voxel.value()) {
+        if (voxel.has_value() && 0 != voxel.value().id) {
             auto normal = glm::vec3{0.0f};
 
             switch (stepped_index) {
@@ -145,7 +145,7 @@ auto ChunkArray::ray_cast(
             }
 
             return RayCastResult{
-                .id = voxel.value(),
+                .voxel = voxel.value(),
                 .voxel_pos = {ix, iy, iz},
                 .hit_pos = glm::vec3{px + t * dx, py + t * dy, pz + t * dz},
                 .normal = normal,

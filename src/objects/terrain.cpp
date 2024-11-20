@@ -206,7 +206,7 @@ auto Terrain::render_opaque(
     }
 }
 
-auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
+auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value)
     -> void {
     auto const chunk_pos = pos / Chunk::SIZE;
     auto const local_pos = pos % Chunk::SIZE;
@@ -223,14 +223,14 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
     self.chunks->set_voxel(pos, value);
 
     // update `chunks_with_transparency` if user is removing transparent voxel
-    if (0 == value &&
-        self.renderer.data.blocks[prev_voxel_id][0].is_translucent())
+    if (0 == value.id &&
+        self.renderer.data.blocks[prev_voxel_id.id][0].is_translucent())
     {
         auto& chunk = *self.chunks->chunk(chunk_pos);
         bool contains_transparent =
-            rg::any_of(chunk.get_voxels(), [&self](auto id) {
-                return 0 != id &&
-                       self.renderer.data.blocks[id][0].is_translucent();
+            rg::any_of(chunk.get_voxels(), [&self](auto voxel) {
+                return 0 != voxel.id &&
+                       self.renderer.data.blocks[voxel.id][0].is_translucent();
             });
 
         // remove chunk which is transparent no more
@@ -243,7 +243,7 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, VoxelId value)
         }
     }
 
-    if (0 != value && self.renderer.data.blocks[value][0].is_translucent()) {
+    if (0 != value.id && self.renderer.data.blocks[value.id][0].is_translucent()) {
         self.chunks_with_transparency.push_back(chunk_index);
         return;
     }
@@ -331,7 +331,7 @@ auto TerrainCollider::collide_box(
             for (u32 z = lo.z; z <= hi.z; ++z) {
                 auto maybe_id = self.chunks->get_voxel({x, y, z});
 
-                if (!maybe_id.has_value() || 0 == maybe_id.value()) {
+                if (!maybe_id.has_value() || 0 == maybe_id.value().id) {
                     continue;
                 }
 
