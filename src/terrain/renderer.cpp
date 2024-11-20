@@ -82,14 +82,10 @@ static auto encode_transparent(
 
 static auto add_transparent_vertices(
     RefMut<ThreadsafeVec<TerrainRenderer::TransparentVertex>> buffer,
-    glm::ivec3 global_offset, ChunkArray const& array, glm::ivec3 pos,
+    glm::ivec3 global_offset, ChunkArray const& array, glm::ivec3 voxel_pos,
     GameBlocksData const& data, VoxelId voxel_id
 ) -> void {
     using V = TerrainRenderer::TransparentVertex;
-
-    auto x = pos.x;
-    auto y = pos.y;
-    auto z = pos.z;
 
     auto constexpr TOP = GameBlock::TOP_TEXTURE_INDEX;
     auto constexpr BOTTOM = GameBlock::BOTTOM_TEXTURE_INDEX;
@@ -107,86 +103,140 @@ static auto add_transparent_vertices(
             return false;
         }
 
-        auto const absolute_offset = glm::uvec3{global_offset + pos + local_offset};
+        auto const absolute_offset =
+            glm::uvec3{global_offset + voxel_pos + local_offset};
 
-        auto id = array.get_voxel(absolute_offset);
+        auto voxel = array.get_voxel(absolute_offset);
 
-        return id.has_value() && id.value().id == voxel_id;
+        return voxel.has_value() && voxel.value().id == voxel_id;
+    };
+
+    auto constexpr Z_FIGHT_BIAS = 0.0005f;
+
+    auto should_prevent_z_fight = [&](glm::ivec3 local_offset) -> bool {
+        auto const absolute_offset =
+            glm::uvec3{global_offset + voxel_pos + local_offset};
+
+        auto voxel = array.get_voxel(absolute_offset);
+
+        if (!voxel.has_value()) {
+            return false;
+        }
+
+        auto id = voxel.value().id;
+
+        return 0 != id && id != voxel_id;
     };
 
     if (!can_omit_side({0, 1, 0})) {
+        auto pos = glm::vec3{voxel_pos};
+
+        if (should_prevent_z_fight({0, 1, 0})) {
+            pos.y -= Z_FIGHT_BIAS;
+        }
+
         auto vertices = std::array{
-            V{encode(global_offset, {x, y, z}, 0b101, POS_Y_NORMAL, ids[TOP], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b100, POS_Y_NORMAL, ids[TOP], 0b11)},
-            V{encode(global_offset, {x, y, z}, 0b000, POS_Y_NORMAL, ids[TOP], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b101, POS_Y_NORMAL, ids[TOP], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b000, POS_Y_NORMAL, ids[TOP], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b001, POS_Y_NORMAL, ids[TOP], 0b00)},
+            V{encode(global_offset, pos, 0b101, POS_Y_NORMAL, ids[TOP], 0b10)},
+            V{encode(global_offset, pos, 0b100, POS_Y_NORMAL, ids[TOP], 0b11)},
+            V{encode(global_offset, pos, 0b000, POS_Y_NORMAL, ids[TOP], 0b01)},
+            V{encode(global_offset, pos, 0b101, POS_Y_NORMAL, ids[TOP], 0b10)},
+            V{encode(global_offset, pos, 0b000, POS_Y_NORMAL, ids[TOP], 0b01)},
+            V{encode(global_offset, pos, 0b001, POS_Y_NORMAL, ids[TOP], 0b00)},
         };
 
         buffer->append(vertices);
     }
 
     if (!can_omit_side({0, -1, 0})) {
+        auto pos = glm::vec3{voxel_pos};
+
+        if (should_prevent_z_fight({0, -1, 0})) {
+            pos.y += Z_FIGHT_BIAS;
+        }
+
         auto vertices = std::array{
-            V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, ids[BOTTOM], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, ids[BOTTOM], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b110, NEG_Y_NORMAL, ids[BOTTOM], 0b11)},
-            V{encode(global_offset, {x, y, z}, 0b111, NEG_Y_NORMAL, ids[BOTTOM], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b011, NEG_Y_NORMAL, ids[BOTTOM], 0b00)},
-            V{encode(global_offset, {x, y, z}, 0b010, NEG_Y_NORMAL, ids[BOTTOM], 0b01)},
+            V{encode(global_offset, pos, 0b111, NEG_Y_NORMAL, ids[BOTTOM], 0b10)},
+            V{encode(global_offset, pos, 0b010, NEG_Y_NORMAL, ids[BOTTOM], 0b01)},
+            V{encode(global_offset, pos, 0b110, NEG_Y_NORMAL, ids[BOTTOM], 0b11)},
+            V{encode(global_offset, pos, 0b111, NEG_Y_NORMAL, ids[BOTTOM], 0b10)},
+            V{encode(global_offset, pos, 0b011, NEG_Y_NORMAL, ids[BOTTOM], 0b00)},
+            V{encode(global_offset, pos, 0b010, NEG_Y_NORMAL, ids[BOTTOM], 0b01)},
         };
 
         buffer->append(vertices);
     }
 
     if (!can_omit_side({1, 0, 0})) {
+        auto pos = glm::vec3{voxel_pos};
+
+        if (should_prevent_z_fight({1, 0, 0})) {
+            pos.x -= Z_FIGHT_BIAS;
+        }
+
         auto vertices = std::array{
-            V{encode(global_offset, {x, y, z}, 0b011, POS_X_NORMAL, ids[RIGHT], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b001, POS_X_NORMAL, ids[RIGHT], 0b11)},
-            V{encode(global_offset, {x, y, z}, 0b000, POS_X_NORMAL, ids[RIGHT], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b011, POS_X_NORMAL, ids[RIGHT], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b000, POS_X_NORMAL, ids[RIGHT], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b010, POS_X_NORMAL, ids[RIGHT], 0b00)},
+            V{encode(global_offset, pos, 0b011, POS_X_NORMAL, ids[RIGHT], 0b10)},
+            V{encode(global_offset, pos, 0b001, POS_X_NORMAL, ids[RIGHT], 0b11)},
+            V{encode(global_offset, pos, 0b000, POS_X_NORMAL, ids[RIGHT], 0b01)},
+            V{encode(global_offset, pos, 0b011, POS_X_NORMAL, ids[RIGHT], 0b10)},
+            V{encode(global_offset, pos, 0b000, POS_X_NORMAL, ids[RIGHT], 0b01)},
+            V{encode(global_offset, pos, 0b010, POS_X_NORMAL, ids[RIGHT], 0b00)},
         };
 
         buffer->append(vertices);
     }
 
     if (!can_omit_side({-1, 0, 0})) {
+        auto pos = glm::vec3{voxel_pos};
+
+        if (should_prevent_z_fight({-1, 0, 0})) {
+            pos.x += Z_FIGHT_BIAS;
+        }
+
         auto vertices = std::array{
-            V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, ids[LEFT], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, ids[LEFT], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b101, NEG_X_NORMAL, ids[LEFT], 0b11)},
-            V{encode(global_offset, {x, y, z}, 0b111, NEG_X_NORMAL, ids[LEFT], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b110, NEG_X_NORMAL, ids[LEFT], 0b00)},
-            V{encode(global_offset, {x, y, z}, 0b100, NEG_X_NORMAL, ids[LEFT], 0b01)},
+            V{encode(global_offset, pos, 0b111, NEG_X_NORMAL, ids[LEFT], 0b10)},
+            V{encode(global_offset, pos, 0b100, NEG_X_NORMAL, ids[LEFT], 0b01)},
+            V{encode(global_offset, pos, 0b101, NEG_X_NORMAL, ids[LEFT], 0b11)},
+            V{encode(global_offset, pos, 0b111, NEG_X_NORMAL, ids[LEFT], 0b10)},
+            V{encode(global_offset, pos, 0b110, NEG_X_NORMAL, ids[LEFT], 0b00)},
+            V{encode(global_offset, pos, 0b100, NEG_X_NORMAL, ids[LEFT], 0b01)},
         };
 
         buffer->append(vertices);
     }
 
     if (!can_omit_side({0, 0, 1})) {
+        auto pos = glm::vec3{voxel_pos};
+
+        if (should_prevent_z_fight({0, 0, 1})) {
+            pos.z -= Z_FIGHT_BIAS;
+        }
+
         auto vertices = std::array{
-            V{encode(global_offset, {x, y, z}, 0b110, POS_Z_NORMAL, ids[BACK], 0b00)},
-            V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, ids[BACK], 0b11)},
-            V{encode(global_offset, {x, y, z}, 0b100, POS_Z_NORMAL, ids[BACK], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b110, POS_Z_NORMAL, ids[BACK], 0b00)},
-            V{encode(global_offset, {x, y, z}, 0b010, POS_Z_NORMAL, ids[BACK], 0b10)},
-            V{encode(global_offset, {x, y, z}, 0b000, POS_Z_NORMAL, ids[BACK], 0b11)},
+            V{encode(global_offset, pos, 0b110, POS_Z_NORMAL, ids[BACK], 0b00)},
+            V{encode(global_offset, pos, 0b000, POS_Z_NORMAL, ids[BACK], 0b11)},
+            V{encode(global_offset, pos, 0b100, POS_Z_NORMAL, ids[BACK], 0b01)},
+            V{encode(global_offset, pos, 0b110, POS_Z_NORMAL, ids[BACK], 0b00)},
+            V{encode(global_offset, pos, 0b010, POS_Z_NORMAL, ids[BACK], 0b10)},
+            V{encode(global_offset, pos, 0b000, POS_Z_NORMAL, ids[BACK], 0b11)},
         };
 
         buffer->append(vertices);
     }
 
     if (!can_omit_side({0, 0, -1})) {
+        auto pos = glm::vec3{voxel_pos};
+
+        if (should_prevent_z_fight({0, 0, -1})) {
+            pos.z += Z_FIGHT_BIAS;
+        }
+
         auto vertices = std::array{
-            V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, ids[FRONT], 0b00)},
-            V{encode(global_offset, {x, y, z}, 0b101, NEG_Z_NORMAL, ids[FRONT], 0b01)},
-            V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, ids[FRONT], 0b11)},
-            V{encode(global_offset, {x, y, z}, 0b111, NEG_Z_NORMAL, ids[FRONT], 0b00)},
-            V{encode(global_offset, {x, y, z}, 0b001, NEG_Z_NORMAL, ids[FRONT], 0b11)},
-            V{encode(global_offset, {x, y, z}, 0b011, NEG_Z_NORMAL, ids[FRONT], 0b10)},
+            V{encode(global_offset, pos, 0b111, NEG_Z_NORMAL, ids[FRONT], 0b00)},
+            V{encode(global_offset, pos, 0b101, NEG_Z_NORMAL, ids[FRONT], 0b01)},
+            V{encode(global_offset, pos, 0b001, NEG_Z_NORMAL, ids[FRONT], 0b11)},
+            V{encode(global_offset, pos, 0b111, NEG_Z_NORMAL, ids[FRONT], 0b00)},
+            V{encode(global_offset, pos, 0b001, NEG_Z_NORMAL, ids[FRONT], 0b11)},
+            V{encode(global_offset, pos, 0b011, NEG_Z_NORMAL, ids[FRONT], 0b10)},
         };
 
         buffer->append(vertices);
