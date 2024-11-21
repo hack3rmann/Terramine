@@ -36,38 +36,7 @@ if(${THREAD_SANITIZE})
     )
 endif()
 
-set(TERRAMINE_SOURCE_FILES
-    ${DEPS_DIR}/glad/src/gl.c
-    src/graphics/deferred_renderer.cpp
-    src/graphics/geometry_buffer.cpp
-    src/graphics/shader.cpp
-    src/graphics/texture.cpp
-    src/gui/sprite.cpp
-    src/gui/text.cpp
-    src/gui/button.cpp
-    src/gui/gui.cpp
-    src/controls/camera.cpp
-    src/controls/player.cpp
-    src/debug/debug.cpp
-    src/debug/lines.cpp
-    src/events/io.cpp
-    src/game/game.cpp
-    src/geometry/aabb.cpp
-    src/loaders/font.cpp
-    src/loaders/png.cpp
-    src/loaders/shader.cpp
-    src/loaders/string.cpp
-    src/loaders/game_objects.cpp
-    src/objects/skybox.cpp
-    src/objects/scene.cpp
-    src/objects/line_batch.cpp
-    src/objects/terrain.cpp
-    src/parser/fnt.cpp
-    src/physics/physics.cpp
-    src/terrain/chunk.cpp
-    src/terrain/chunk_array.cpp
-    src/terrain/renderer.cpp
-    src/window/window.cpp)
+file(GLOB TERRAMINE_SOURCE_FILES src/*/*.cpp)
 
 add_executable(terramine
     src/main.cpp
@@ -97,63 +66,41 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET NO)
 
 
-set(COMB_VERSION 0.2.1)
-FetchContent_Declare(
-    comb
-    DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL https://github.com/hack3rmann/comb/archive/refs/tags/${COMB_VERSION}.tar.gz)
+include(cmake/CPM.cmake)
 
-FetchContent_MakeAvailable(comb)
-target_link_libraries(terramine comb)
-target_link_libraries(test comb)
+CPMAddPackage("gh:fmtlib/fmt#11.0.2")
+CPMAddPackage("gh:hack3rmann/comb#0.2.1")
+CPMAddPackage(
+    NAME libspng
+    VERSION 0.7.4
+    GITHUB_REPOSITORY randy408/libspng
+    OPTIONS "BUILD_EXAMPLES OFF")
 
+set(LIBS glad glfw3 fmt::fmt comb spng glm)
 
-set(FMT_VERSION 11.0.2)
-find_package(fmt ${FMT_VERSION} QUIET)
+target_link_libraries(terramine ${LIBS})
+target_link_libraries(test ${LIBS})
 
-if (NOT fmt_FOUND)
-    FetchContent_Declare(
-        fmt
-        DOWNLOAD_EXTRACT_TIMESTAMP OFF
-        URL https://github.com/fmtlib/fmt/archive/refs/tags/${FMT_VERSION}.tar.gz)
-
-    FetchContent_MakeAvailable(fmt)
-
-    target_link_libraries(terramine fmt)
-    target_link_libraries(test fmt)
-endif()
-
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/glad/include)
-
+add_subdirectory(${DEPS_DIR}/glad ${BUILD_DIR}/deps/glad)
 
 add_subdirectory(${DEPS_DIR}/glfw ${BUILD_DIR}/deps/glfw)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glfw/include)
 target_link_directories(terramine PRIVATE ${BUILD_DIR}/deps/glfw/src)
-target_link_libraries(terramine glfw3)
 target_include_directories(test PRIVATE ${DEPS_DIR}/glfw/include)
 target_link_directories(test PRIVATE ${BUILD_DIR}/deps/glfw/src)
-target_link_libraries(test glfw3)
+
+target_compile_definitions(terramine PRIVATE SPNG_STATIC)
+target_compile_definitions(test PRIVATE SPNG_STATIC)
 
 
 add_subdirectory(${DEPS_DIR}/glm ${BUILD_DIR}/deps/glm)
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/glm)
 target_link_directories(terramine PRIVATE ${BUILD_DIR}/deps/glm/glm)
-target_link_libraries(terramine glm)
 target_include_directories(test PRIVATE ${DEPS_DIR}/glm)
 target_link_directories(test PRIVATE ${BUILD_DIR}/deps/glm/glm)
-target_link_libraries(test glm)
+
 
 target_include_directories(terramine PRIVATE ${DEPS_DIR}/rapidjson/include)
 target_include_directories(test PRIVATE ${DEPS_DIR}/rapidjson/include)
 
-set(BUILD_EXAMPLES OFF)
-add_subdirectory(${DEPS_DIR}/spng ${BUILD_DIR}/deps/spng)
-target_include_directories(terramine PRIVATE ${DEPS_DIR}/spng/spng)
-target_link_directories(terramine PRIVATE ${BUILD_DIR}/deps/spng)
-target_link_libraries(terramine spng_static)
-target_compile_definitions(terramine PRIVATE SPNG_STATIC)
-target_include_directories(test PRIVATE ${DEPS_DIR}/spng/spng)
-target_link_directories(test PRIVATE ${BUILD_DIR}/deps/spng)
-target_link_libraries(test spng_static)
-target_compile_definitions(test PRIVATE SPNG_STATIC)
+
