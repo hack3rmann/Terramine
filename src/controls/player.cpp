@@ -105,8 +105,9 @@ static auto interact_with_terrain(
     }
 
     selection_box->box(
-        glm::vec3{ray_cast_result.voxel_pos} + 0.5f, glm::vec3{1.001f},
-        glm::vec4{glm::vec3{60.0f / 255.0f}, 0.5f}
+        glm::vec3{ray_cast_result.voxel_pos} + 0.5f +
+            0.001f * ray_cast_result.normal,
+        glm::vec3{1.001f}, glm::vec4{glm::vec3{1.0f}, 0.9f}
     );
 
     if (io.just_clicked(MouseButton::Left)) {
