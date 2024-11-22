@@ -20,8 +20,7 @@ option(OPTIMIZE "Enable compiler optimizarions" OFF)
 if(${SANITIZE})
     message(STATUS "Build with sanitizers")
     set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -g -fsanitize={address,undefined,leak}"
-    )
+        "${CMAKE_CXX_FLAGS} -g -fsanitize={address,undefined,leak}")
 endif()
 
 if(${OPTIMIZE})
@@ -32,8 +31,7 @@ endif()
 if(${THREAD_SANITIZE})
     message(STATUS "Build with thread sanitizer")
     set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -g -fsanitize={thread,undefined}"
-    )
+        "${CMAKE_CXX_FLAGS} -g -fsanitize={thread,undefined}")
 endif()
 
 file(GLOB TERRAMINE_SOURCE_FILES src/*/*.cpp)
@@ -69,7 +67,7 @@ set(FETCHCONTENT_QUIET NO)
 include(cmake/CPM.cmake)
 
 CPMAddPackage("gh:fmtlib/fmt#11.0.2")
-CPMAddPackage("gh:hack3rmann/comb#0.2.1")
+CPMAddPackage("gh:hack3rmann/comb#0.2.2")
 CPMAddPackage(
     NAME libspng
     VERSION 0.7.4
