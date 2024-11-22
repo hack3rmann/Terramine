@@ -7,9 +7,3 @@
 [submodule "deps/glfw"]
 	path = deps/glfw
 	url = https://github.com/glfw/glfw.git
-[submodule "deps/spng"]
-	path = deps/spng
-	url = https://github.com/randy408/libspng.git
-[submodule "deps/zlib"]
-	path = deps/zlib
-	url = https://github.com/zlib-ng/zlib-ng.git
