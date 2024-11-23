@@ -38,6 +38,10 @@ auto LineBox::render(
     glDisable(GL_DEPTH_TEST);
 }
 
+auto LineBox::box(this LineBox& self, Aabb box, glm::vec4 color) -> void {
+    self.box(box.center(), box.size(), color);
+}
+
 auto LineBox::box(
     this LineBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
 ) -> void {
