@@ -38,9 +38,6 @@ Terrain::Terrain(glm::uvec3 sizes)
   )}
 , texture_atlas{Texture::from_image(
       load_png(Terrain::TEXTURE_ATLAS_PATH), TextureLoad::DEFAULT
-  )}
-, normal_atlas{Texture::from_image(
-      load_png(Terrain::NORMAL_ATLAS_PATH), TextureLoad::DEFAULT
   )} {
     auto const n_meshes = sizes.x * sizes.y * sizes.z;
 
@@ -243,7 +240,9 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value)
         }
     }
 
-    if (0 != value.id && self.renderer.data.blocks[value.id][0].is_translucent()) {
+    if (0 != value.id &&
+        self.renderer.data.blocks[value.id][0].is_translucent())
+    {
         self.chunks_with_transparency.push_back(chunk_index);
         return;
     }
