@@ -11,6 +11,8 @@
 
 namespace tmine {
 
+class Camera;
+
 struct Voxel {
     VoxelId id;
     BlockMeta meta;
@@ -34,8 +36,7 @@ public:
     auto get_voxel(this Chunk const& self, glm::uvec3 pos) noexcept
         -> std::optional<Voxel>;
 
-    auto set_voxel(this Chunk& self, glm::uvec3 pos, Voxel id) noexcept
-        -> void;
+    auto set_voxel(this Chunk& self, glm::uvec3 pos, Voxel id) noexcept -> void;
 
     inline auto get_pos(this Chunk const& self) noexcept -> glm::uvec3 {
         return self.pos;
@@ -165,7 +166,8 @@ public:
 
     auto render_transparent(
         this TerrainRenderer const& self, Chunk const& chunk,
-        ChunkArray const& array, RefMut<TransparentMesh> transparent_mesh
+        ChunkArray const& array, RefMut<TransparentMesh> transparent_mesh,
+        glm::vec3 camera_pos
     ) -> void;
 
     static auto make_empty_mesh() -> Mesh<Vertex>;
