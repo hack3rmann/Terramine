@@ -83,7 +83,7 @@ static auto encode_transparent(
 static auto add_transparent_vertices(
     RefMut<ThreadsafeVec<TerrainRenderer::TransparentVertex>> buffer,
     glm::ivec3 global_offset, ChunkArray const& array, glm::ivec3 voxel_pos,
-    GameBlocksData const& data, VoxelId voxel_id
+    GameBlocksData const& data, VoxelId voxel_id, f32 camera_distance
 ) -> void {
     using V = TerrainRenderer::TransparentVertex;
 
@@ -111,7 +111,9 @@ static auto add_transparent_vertices(
         return voxel.has_value() && voxel.value().id == voxel_id;
     };
 
-    auto constexpr Z_FIGHT_BIAS = 0.0005f;
+    // NOTE(hack3rmann): this formula had been found by an experiment
+    auto const z_fight_bias =
+        glm::max(0.00001f, 0.001f * (camera_distance - 0.8f));
 
     auto should_prevent_z_fight = [&](glm::ivec3 local_offset) -> bool {
         auto const absolute_offset =
@@ -132,7 +134,7 @@ static auto add_transparent_vertices(
         auto pos = glm::vec3{voxel_pos};
 
         if (should_prevent_z_fight({0, 1, 0})) {
-            pos.y -= Z_FIGHT_BIAS;
+            pos.y -= z_fight_bias;
         }
 
         auto vertices = std::array{
@@ -151,7 +153,7 @@ static auto add_transparent_vertices(
         auto pos = glm::vec3{voxel_pos};
 
         if (should_prevent_z_fight({0, -1, 0})) {
-            pos.y += Z_FIGHT_BIAS;
+            pos.y += z_fight_bias;
         }
 
         auto vertices = std::array{
@@ -170,7 +172,7 @@ static auto add_transparent_vertices(
         auto pos = glm::vec3{voxel_pos};
 
         if (should_prevent_z_fight({1, 0, 0})) {
-            pos.x -= Z_FIGHT_BIAS;
+            pos.x -= z_fight_bias;
         }
 
         auto vertices = std::array{
@@ -189,7 +191,7 @@ static auto add_transparent_vertices(
         auto pos = glm::vec3{voxel_pos};
 
         if (should_prevent_z_fight({-1, 0, 0})) {
-            pos.x += Z_FIGHT_BIAS;
+            pos.x += z_fight_bias;
         }
 
         auto vertices = std::array{
@@ -208,7 +210,7 @@ static auto add_transparent_vertices(
         auto pos = glm::vec3{voxel_pos};
 
         if (should_prevent_z_fight({0, 0, 1})) {
-            pos.z -= Z_FIGHT_BIAS;
+            pos.z -= z_fight_bias;
         }
 
         auto vertices = std::array{
@@ -227,7 +229,7 @@ static auto add_transparent_vertices(
         auto pos = glm::vec3{voxel_pos};
 
         if (should_prevent_z_fight({0, 0, -1})) {
-            pos.z += Z_FIGHT_BIAS;
+            pos.z += z_fight_bias;
         }
 
         auto vertices = std::array{
@@ -782,7 +784,7 @@ auto TerrainRenderer::render_opaque(
 
 auto TerrainRenderer::render_transparent(
     this TerrainRenderer const& self, Chunk const& chunk,
-    ChunkArray const& array, RefMut<TransparentMesh> transparent_mesh
+    ChunkArray const& array, RefMut<TransparentMesh> transparent_mesh, glm::vec3 camera_pos
 ) -> void {
     auto& buffer = transparent_mesh->get_buffer();
 
@@ -803,7 +805,15 @@ auto TerrainRenderer::render_transparent(
                     continue;
                 }
 
-                add_transparent_vertices(&buffer, global_offset, array, {x, y, z}, data, voxel.id);
+                auto const position = glm::uvec3{x, y, z};
+                auto const camera_distance = glm::distance(
+                    glm::vec3{position} + glm::vec3{global_offset}, camera_pos
+                );
+
+                add_transparent_vertices(
+                    &buffer, global_offset, array, position, data, voxel.id,
+                    camera_distance
+                );
             }
         }
     }

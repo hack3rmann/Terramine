@@ -112,7 +112,7 @@ auto Terrain::generate_meshes(this Terrain& self, glm::vec3 camera_pos)
         auto const chunk = *self.chunks->chunk(pos);
 
         self.renderer.render_transparent(
-            chunk, *self.chunks, &self.transparent_mesh
+            chunk, *self.chunks, &self.transparent_mesh, camera_pos
         );
     }
 
