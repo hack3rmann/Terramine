@@ -91,6 +91,49 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
     collider->set_collider_velocity(prev_velocity + speed * velocity_direction);
 }
 
+static auto draw_selection_box(
+    RefMut<LineBox> selection_box, Terrain const& terrain,
+    glm::uvec3 voxel_position, f32 camera_distance
+) -> void {
+    auto const position = glm::vec3{voxel_position};
+
+    auto const offset = 0.001f * camera_distance;
+    auto box = Aabb{position + offset, position + 1.0f - offset};
+
+    auto const blocked_from = [&](glm::ivec3 offset) {
+        auto maybe_voxel =
+            terrain.get_array().get_voxel(glm::ivec3(position) + offset);
+
+        return maybe_voxel.has_value() && 0 != maybe_voxel->id;
+    };
+
+    if (!blocked_from({-1, 0, 0})) {
+        box.lo.x -= 2 * offset;
+    }
+
+    if (!blocked_from({0, -1, 0})) {
+        box.lo.y -= 2 * offset;
+    }
+
+    if (!blocked_from({0, 0, -1})) {
+        box.lo.z -= 2 * offset;
+    }
+
+    if (!blocked_from({1, 0, 0})) {
+        box.hi.x += 2 * offset;
+    }
+
+    if (!blocked_from({0, 1, 0})) {
+        box.hi.y += 2 * offset;
+    }
+
+    if (!blocked_from({0, 0, 1})) {
+        box.hi.z += 2 * offset;
+    }
+
+    selection_box->box(box, glm::vec4{glm::vec3{1.0f}, 0.9f});
+}
+
 static auto interact_with_terrain(
     RefMut<Terrain> terrain, RefMut<LineBox> selection_box,
     Camera const& camera, VoxelId held_voxel_id
@@ -104,10 +147,10 @@ static auto interact_with_terrain(
         return;
     }
 
-    selection_box->box(
-        glm::vec3{ray_cast_result.voxel_pos} + 0.5f +
-            0.001f * ray_cast_result.normal,
-        glm::vec3{1.001f}, glm::vec4{glm::vec3{1.0f}, 0.9f}
+    auto const camera_distance =
+        glm::distance(glm::vec3{ray_cast_result.voxel_pos}, camera.get_pos());
+    draw_selection_box(
+        selection_box, *terrain, ray_cast_result.voxel_pos, camera_distance
     );
 
     if (io.just_clicked(MouseButton::Left)) {
