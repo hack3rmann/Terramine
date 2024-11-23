@@ -52,7 +52,8 @@ struct GameBlock {
     inline static auto constexpr meta_of(
         bool is_translucent, bool is_extra_transparent, u8 orientation
     ) noexcept -> BlockMeta {
-        return (orientation & META_ORIENTATION) | (BlockMeta{is_translucent} << 7) |
+        return (orientation & META_ORIENTATION) |
+               (BlockMeta{is_translucent} << 7) |
                (BlockMeta{is_extra_transparent} << 6);
     }
 
@@ -75,17 +76,31 @@ struct GameBlockTextureIdentifier {
     TextureId id;
 };
 
+enum class Orientation {
+    PosX = 0,
+    NegX = 1,
+    PosY = 2,
+    NegY = 3,
+    PosZ = 4,
+    NegZ = 5,
+};
+
 struct GameBlocksData {
-    static auto constexpr POS_X = usize{0};
-    static auto constexpr NEG_X = usize{1};
-    static auto constexpr POS_Y = usize{2};
-    static auto constexpr NEG_Y = usize{3};
-    static auto constexpr POS_Z = usize{4};
-    static auto constexpr NEG_Z = usize{5};
+    static auto constexpr POS_X = (usize) Orientation::PosX;
+    static auto constexpr NEG_X = (usize) Orientation::NegX;
+    static auto constexpr POS_Y = (usize) Orientation::PosY;
+    static auto constexpr NEG_Y = (usize) Orientation::NegY;
+    static auto constexpr POS_Z = (usize) Orientation::PosZ;
+    static auto constexpr NEG_Z = (usize) Orientation::NegZ;
     static auto constexpr N_ORIENTATIONS = usize{6};
 
     std::vector<std::array<GameBlock, N_ORIENTATIONS>> blocks;
     std::vector<GameBlockTextureIdentifier> textures;
+
+    auto get_block(this GameBlocksData const& self, VoxelId id, Orientation orientation)
+        -> GameBlock const& {
+        return self.blocks[(usize) id][(usize) orientation];
+    }
 };
 
 struct FontInfo {

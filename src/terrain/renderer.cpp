@@ -96,10 +96,10 @@ static auto add_transparent_vertices(
 
     auto constexpr encode = encode_transparent;
 
-    auto const& ids = data.blocks[voxel_id][0].texture_ids;
+    auto const& ids = data.get_block(voxel_id, Orientation::PosX).texture_ids;
 
     auto can_omit_side = [&](glm::ivec3 local_offset) -> bool {
-        if (!data.blocks[voxel_id][0].is_extra_transparent()) {
+        if (!data.get_block(voxel_id, Orientation::PosX).is_extra_transparent()) {
             return false;
         }
 
@@ -282,7 +282,7 @@ auto TerrainRenderer::render_opaque(
                 auto global_offset =
                     glm::ivec3{Chunk::SIZE * chunk->get_pos()};
 
-                auto const& data = self.data.blocks[(usize) voxel.id][voxel.orientation()];
+                auto const& data = self.data.get_block(voxel.id, voxel.orientation());
 
                 auto const top_texture_id =
                     data.texture_ids[GameBlock::TOP_TEXTURE_INDEX];

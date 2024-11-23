@@ -19,8 +19,8 @@ struct Voxel {
         return (BlockMeta) orientation;
     }
 
-    inline auto constexpr orientation(this Voxel const& self) -> u8 {
-        return self.meta & 7;
+    inline auto constexpr orientation(this Voxel const& self) -> Orientation {
+        return (Orientation) (7 & self.meta);
     }
 };
 
