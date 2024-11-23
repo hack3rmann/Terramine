@@ -138,8 +138,6 @@ private:
 public:
     static char constexpr TEXTURE_ATLAS_PATH[] =
         "assets/images/texture_atlas.png";
-    static char constexpr NORMAL_ATLAS_PATH[] =
-        "assets/images/normal_atlas.png";
     static char constexpr OPAQUE_VERTEX_SHADER_NAME[] =
         "opaque_terrain_vertex.glsl";
     static char constexpr TRANSPARENT_VERTEX_SHADER_NAME[] =
