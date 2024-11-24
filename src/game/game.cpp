@@ -82,10 +82,10 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
         self.physics_solver.update(duration.count());
 
         auto& terrain = self.scene.get<Terrain>();
-        auto& line_box = self.scene.get<LineBox>();
+        auto& selection = self.scene.get<SelectionBox>();
 
         self.player.update(
-            &self.physics_solver, &terrain, &line_box, window->size()
+            &self.physics_solver, &terrain, &selection, window->size()
         );
     }
 

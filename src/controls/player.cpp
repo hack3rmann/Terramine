@@ -105,7 +105,7 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
 }
 
 static auto draw_selection_box(
-    RefMut<LineBox> selection_box, Terrain const& terrain,
+    RefMut<SelectionBox> selection_box, Terrain const& terrain,
     glm::uvec3 voxel_position, f32 camera_distance
 ) -> void {
     auto const position = glm::vec3{voxel_position};
@@ -148,7 +148,7 @@ static auto draw_selection_box(
 }
 
 static auto interact_with_terrain(
-    RefMut<Terrain> terrain, RefMut<LineBox> selection_box,
+    RefMut<Terrain> terrain, RefMut<SelectionBox> selection_box,
     Camera const& camera, VoxelId held_voxel_id
 ) -> void {
     auto ray_cast_result = terrain->get_array().ray_cast(
@@ -198,7 +198,7 @@ Player::Player(RefMut<PhysicsSolver> solver)
 
 auto Player::update(
     this Player& self, RefMut<PhysicsSolver> solver, RefMut<Terrain> terrain,
-    RefMut<LineBox> selection_box, glm::uvec2 viewport_size
+    RefMut<SelectionBox> selection_box, glm::uvec2 viewport_size
 ) -> void {
     auto& collider = solver->get_collidable<BoxCollider>(self.collider_id);
 
