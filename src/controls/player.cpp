@@ -110,7 +110,7 @@ static auto draw_selection_box(
 ) -> void {
     auto const position = glm::vec3{voxel_position};
 
-    auto const offset = 0.001f * camera_distance;
+    auto const offset = glm::max(0.001f, 0.001f * (camera_distance - 2.0f));
     auto box = Aabb{position + offset, position + 1.0f - offset};
 
     auto const blocked_from = [&](glm::ivec3 offset) {
