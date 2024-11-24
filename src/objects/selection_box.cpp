@@ -5,12 +5,12 @@
 
 namespace tmine {
 
-LineBox::LineBox()
+SelectionBox::SelectionBox()
 : shader{load_shader("lines_vertex.glsl", "lines_fragment.glsl")}
 , mesh{Primitive::Lines} {}
 
-auto LineBox::line(
-    this LineBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color
+auto SelectionBox::line(
+    this SelectionBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color
 ) -> void {
     auto& buffer = self.mesh.get_buffer();
 
@@ -18,11 +18,11 @@ auto LineBox::line(
     buffer.emplace_back(to, color);
 }
 
-auto LineBox::clear(this LineBox& self) -> void {
+auto SelectionBox::clear(this SelectionBox& self) -> void {
     self.mesh.get_buffer().clear();
 }
 
-auto LineBox::render(
+auto SelectionBox::render(
     Camera const& cam, SceneParameters const&, glm::uvec2 viewport_size
 ) -> void {
     auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
@@ -38,12 +38,12 @@ auto LineBox::render(
     glDisable(GL_DEPTH_TEST);
 }
 
-auto LineBox::box(this LineBox& self, Aabb box, glm::vec4 color) -> void {
+auto SelectionBox::box(this SelectionBox& self, Aabb box, glm::vec4 color) -> void {
     self.box(box.center(), box.size(), color);
 }
 
-auto LineBox::box(
-    this LineBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
+auto SelectionBox::box(
+    this SelectionBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
 ) -> void {
     auto x = pos.x;
     auto y = pos.y;

@@ -61,7 +61,7 @@ private:
 };
 
 class Terrain;
-class LineBox;
+class SelectionBox;
 
 class Player {
 public:
@@ -69,7 +69,7 @@ public:
 
     auto update(
         this Player& self, RefMut<PhysicsSolver> solver,
-        RefMut<Terrain> terrain, RefMut<LineBox> selection_box,
+        RefMut<Terrain> terrain, RefMut<SelectionBox> selection_box,
         glm::uvec2 window_size
     ) -> void;
 

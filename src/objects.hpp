@@ -25,8 +25,6 @@ struct SceneObject {
 };
 
 class Skybox : public SceneObject {
-    friend class SkyboxHandler;
-
 public:
     explicit Skybox(char const* texture_path);
     auto render(
@@ -48,19 +46,17 @@ private:
     Texture texture;
 };
 
-class LineBox : public SceneObject {
-    friend class LineBatchHandler;
-
+class SelectionBox : public SceneObject {
 public:
-    LineBox();
+    SelectionBox();
 
     auto box(
-        this LineBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
+        this SelectionBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
     ) -> void;
 
-    auto box(this LineBox& self, Aabb box, glm::vec4 color) -> void;
+    auto box(this SelectionBox& self, Aabb box, glm::vec4 color) -> void;
 
-    auto clear(this LineBox& self) -> void;
+    auto clear(this SelectionBox& self) -> void;
 
     auto render(
         Camera const& cam, SceneParameters const& params,
@@ -68,7 +64,7 @@ public:
     ) -> void override;
 
 private:
-    auto line(this LineBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color)
+    auto line(this SelectionBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color)
         -> void;
 
 private:
@@ -91,8 +87,6 @@ enum class ChunkState : u8 {
 };
 
 class Terrain : public SceneObject {
-    friend class TerrarianHandler;
-
 public:
     explicit Terrain(glm::uvec3 sizes);
 
