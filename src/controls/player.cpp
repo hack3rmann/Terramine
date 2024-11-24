@@ -4,9 +4,17 @@
 
 namespace tmine {
 
+// FIXME(hack3rmann): handle gravity at runtime
+#define GRAVITY 1
+
 inline auto constexpr COLLIDER_SIZE = glm::vec3{0.6f, 1.75f, 0.6f};
-inline auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f, -20.0f, 0.0f};
 inline auto constexpr INITIAL_POSITION = glm::vec3{60.0f};
+
+#if GRAVITY
+inline auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f, -20.0f, 0.0f};
+#else
+inline auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f};
+#endif
 
 static auto rotate_camera_by_mouse(
     RefMut<glm::vec2> camera_mouse_angles, RefMut<Camera> camera,
@@ -57,16 +65,16 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
         velocity_direction -= camera->get_right_direction();
     }
 
-    if (io.is_pressed(Key::LeftShift)) {
-        velocity_direction.y = -1.0;
-    }
-
     if (velocity_direction != glm::vec3{0.0f}) {
         velocity_direction = glm::normalize(velocity_direction);
     }
 
     auto prev_velocity = collider->get_collider_velocity();
-    auto is_grounded = glm::abs(prev_velocity.y) < 0.01;
+    auto is_grounded = !GRAVITY || glm::abs(prev_velocity.y) < 0.01;
+
+    if (io.is_pressed(Key::LeftShift)) {
+        velocity_direction.y = -1.0;
+    }
 
     if (is_grounded && io.is_pressed(Key::Space)) {
         velocity_direction.y = 1.0f;
@@ -88,6 +96,11 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
 
     camera->set_pos(camera_pos);
     prev_velocity.x = prev_velocity.z = 0.0f;
+
+#if !GRAVITY
+    prev_velocity.y = 0.0f;
+#endif
+
     collider->set_collider_velocity(prev_velocity + speed * velocity_direction);
 }
 
