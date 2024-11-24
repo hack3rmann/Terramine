@@ -42,5 +42,13 @@
     {
         "name": "red_glass",
         "id": 11
+    },
+    {
+        "name": "green_glass",
+        "id": 12
+    },
+    {
+        "name": "blue_glass",
+        "id": 13
     }
 ]
