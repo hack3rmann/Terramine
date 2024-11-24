@@ -76,5 +76,19 @@
         "translucent": true,
         "texture": "red_glass",
         "extra_transparency": true
+    },
+    {
+        "name": "green_glass",
+        "id": 9,
+        "translucent": true,
+        "texture": "green_glass",
+        "extra_transparency": true
+    },
+    {
+        "name": "blue_glass",
+        "id": 10,
+        "translucent": true,
+        "texture": "blue_glass",
+        "extra_transparency": true
     }
 ]
