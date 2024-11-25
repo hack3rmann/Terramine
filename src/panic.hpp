@@ -20,7 +20,10 @@ public:
     virtual auto get_formatted_message() const -> std::string = 0;
 
     inline auto what() const noexcept -> char const* override {
-        this->message.emplace(this->get_formatted_message());
+        if (!this->message.has_value()) {
+            this->message.emplace(this->get_formatted_message());
+        }
+
         return this->message->c_str();
     }
 
@@ -30,7 +33,7 @@ private:
 
 class PanicException : public FormattableException {
 public:
-    PanicException(
+    inline PanicException(
         std::string_view function_name, std::string_view file_name,
         usize line_number, std::string message
     )
