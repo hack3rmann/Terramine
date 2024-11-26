@@ -20,7 +20,7 @@ struct SceneObject {
 
     virtual auto render(
         Camera const& camera, SceneParameters const& params,
-        glm::uvec2 viewport_size
+        RenderPass pass
     ) -> void = 0;
 };
 
@@ -29,7 +29,7 @@ public:
     explicit Skybox(char const* texture_path);
     auto render(
         Camera const& camera, SceneParameters const& params,
-        glm::uvec2 viewport_size
+        RenderPass pass
     ) -> void override;
 
 private:
@@ -62,7 +62,7 @@ public:
 
     auto render(
         Camera const& cam, SceneParameters const& params,
-        glm::uvec2 viewport_size
+        RenderPass pass
     ) -> void override;
 
 private:
@@ -79,6 +79,7 @@ private:
     };
 
 private:
+    f32 line_width;
     ShaderProgram shader;
     Mesh<Vertex> mesh;
 };
@@ -95,7 +96,7 @@ public:
 
     auto render(
         Camera const& camera, SceneParameters const& params,
-        glm::uvec2 viewport_size
+        RenderPass pass
     ) -> void override;
 
     inline auto get_array(this Terrain const& self) noexcept

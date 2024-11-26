@@ -12,7 +12,6 @@ static auto setup_opengl() -> void {
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glLineWidth(3.0f);
 }
 
 Game::Game(glm::uvec2 viewport_size)

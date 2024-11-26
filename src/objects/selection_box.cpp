@@ -6,7 +6,8 @@
 namespace tmine {
 
 SelectionBox::SelectionBox()
-: shader{load_shader("lines_vertex.glsl", "lines_fragment.glsl")}
+: line_width{3.0f}
+, shader{load_shader("lines_vertex.glsl", "lines_fragment.glsl")}
 , mesh{Primitive::Lines} {}
 
 auto SelectionBox::line(
@@ -23,9 +24,11 @@ auto SelectionBox::clear(this SelectionBox& self) -> void {
 }
 
 auto SelectionBox::render(
-    Camera const& cam, SceneParameters const&, glm::uvec2 viewport_size
+    Camera const& cam, SceneParameters const&, RenderPass pass
 ) -> void {
-    auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
+    auto const aspect_ratio = Window::aspect_ratio_of(pass.viewport_size);
+
+    glLineWidth((f32) pass.ssaa_level * this->line_width);
 
     this->shader.bind();
     this->shader.uniform_mat4(

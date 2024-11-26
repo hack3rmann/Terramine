@@ -151,18 +151,18 @@ auto Terrain::update(this Terrain& self, glm::vec3 camera_pos) -> void {
 }
 
 auto Terrain::render(
-    Camera const& cam, SceneParameters const& params, glm::uvec2 viewport_size
+    Camera const& cam, SceneParameters const& params, RenderPass pass
 ) -> void {
     this->update(cam.get_pos());
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    this->render_opaque(cam, params, viewport_size);
+    this->render_opaque(cam, params, pass.viewport_size);
 
     glDisable(GL_CULL_FACE);
 
-    this->render_transparent(cam, params, viewport_size);
+    this->render_transparent(cam, params, pass.viewport_size);
 
     glDisable(GL_DEPTH_TEST);
 }
