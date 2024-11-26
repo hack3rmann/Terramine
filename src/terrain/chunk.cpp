@@ -13,7 +13,6 @@ Chunk::Chunk(glm::uvec3 chunk_pos)
             auto const world_x = local_x + chunk_pos.x * Chunk::WIDTH;
             auto const world_z = local_z + chunk_pos.z * Chunk::DEPTH;
             auto const height = height_map_at({world_x, world_z});
-            // auto const height = 0.6f;
 
             for (usize local_y = 0; local_y < Chunk::HEIGHT; local_y++) {
                 auto const world_y = local_y + chunk_pos.y * Chunk::HEIGHT;
@@ -21,7 +20,9 @@ Chunk::Chunk(glm::uvec3 chunk_pos)
 
                 auto id = VoxelId{0};
 
-                if (world_y <= sample_height + 39) {
+                if (world_y <= sample_height + 35) {
+                    id = 3;
+                } else if (world_y <= sample_height + 39) {
                     id = 2;
                 } else if (world_y <= sample_height + 40) {
                     id = 1;
