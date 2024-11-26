@@ -41,6 +41,7 @@ public:
     auto begin(this ThreadsafeVecLock& self) -> T*;
     auto end(this ThreadsafeVecLock& self) -> T*;
     auto size(this ThreadsafeVecLock const& self) -> usize;
+    auto empty(this ThreadsafeVecLock const& self) -> bool;
 
     auto erase(this ThreadsafeVecLock& self, T* begin, T* end) -> void;
 
@@ -371,10 +372,15 @@ auto ThreadsafeVecLock<T>::pop(this ThreadsafeVecLock& self) -> T {
         throw Panic("cannot pop out of empty `ThreadsafeVec`");
     }
 
+    auto result = std::move(self[self.size() - 1]);
     self.parent->len -= 1;
-    auto result = std::move(self[self.size()]);
 
     return result;
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::empty(this ThreadsafeVecLock const& self) -> bool {
+    return self.size() == 0;
 }
 
 }  // namespace tmine

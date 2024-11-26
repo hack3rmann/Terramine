@@ -49,7 +49,7 @@ Terrain::Terrain(glm::uvec3 sizes)
     for (auto [i, chunk] : this->chunks->get_span() | vs::enumerate) {
         auto const any_voxel_is_transparent =
             rg::any_of(chunk.get_voxels(), [this](auto voxel) {
-                return this->renderer.data
+                return 0 != voxel.id && this->renderer.data
                     .get_block(voxel.id, voxel.orientation())
                     .is_translucent();
             });
@@ -251,11 +251,11 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value)
             });
 
         // remove chunk which is transparent no more
-        if (!contains_transparent && !self.chunks_with_transparency.empty()) {
+        if (!contains_transparent && !chunks_with_transparency.empty()) {
             auto const iter =
-                rg::lower_bound(self.chunks_with_transparency, chunk_index);
+                rg::lower_bound(chunks_with_transparency, chunk_index);
 
-            rg::iter_swap(iter, self.chunks_with_transparency.end() - 1);
+            rg::iter_swap(iter, chunks_with_transparency.end() - 1);
             chunks_with_transparency.pop();
         }
     }
