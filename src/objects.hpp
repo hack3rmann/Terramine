@@ -151,7 +151,7 @@ private:
     std::unique_ptr<Mesh<TerrainRenderer::Vertex>[]> meshes;
     TerrainRenderer::TransparentMesh transparent_mesh{};
     std::vector<usize> chunks_to_update;
-    std::vector<usize> chunks_with_transparency;
+    ThreadsafeVec<usize> chunks_with_transparency;
     TerrainRenderer renderer;
     ShaderProgram opaque_shader;
     ShaderProgram transparent_shader;

@@ -90,4 +90,49 @@ auto test_vec_append_single_thread() -> void {
     vec.append(arr);
 }
 
+auto test_vec_erase_simple() -> void {
+    auto vec = ThreadsafeVec<i32>{};
+
+    vec.push(0);
+    vec.push(1);
+    vec.push(2);
+    vec.push(3);
+    vec.push(4);
+    vec.push(5);
+    vec.push(6);
+    vec.push(7);
+    vec.push(8);
+    vec.push(9);
+    
+    auto lock = vec.lock();
+
+    lock.erase(lock.begin() + 1, lock.end() - 1);
+
+    tmine_assert_eq(lock.size(), 2);
+    tmine_assert_eq(lock[0], 0);
+    tmine_assert_eq(lock[1], 9);
+}
+
+auto test_vec_erase() -> void {
+    auto vec = ThreadsafeVec<i32>{};
+
+    vec.push(0);
+    vec.push(1);
+    vec.push(2);
+    vec.push(3);
+    vec.push(4);
+    vec.push(5);
+    vec.push(6);
+    vec.push(7);
+    vec.push(8);
+    vec.push(9);
+    
+    auto lock = vec.lock();
+
+    lock.erase(lock.begin(), lock.end() - 1);
+
+    tmine_assert_eq(lock.size(), 1);
+    tmine_assert_eq(lock[0], 9);
+}
+
 }
