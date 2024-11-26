@@ -384,8 +384,6 @@ auto TerrainCollider::collide_box(
         }
     }
 
-    auto displacement = glm::vec3{0.0f};
-
     for (usize i = 0; i < boxes.size(); ++i) {
         auto had_merged_any = false;
 
@@ -416,6 +414,9 @@ auto TerrainCollider::collide_box(
 
     boxes.erase(begin, end);
 
+    auto displacement = glm::vec3{0.0f};
+    auto directional_counts = glm::vec3{0};
+
     for (auto const box : boxes) {
         debug::lines()->box(box, 0.8f * DebugColor::BLUE);
 
@@ -427,8 +428,13 @@ auto TerrainCollider::collide_box(
             false,
         };
 
-        displacement += other.collide(collider).self_displacement;
+        auto const cur_displacement = other.collide(collider).self_displacement;
+
+        displacement += cur_displacement;
+        directional_counts += glm::abs(glm::sign(cur_displacement));
     }
+
+    displacement /= glm::max(glm::vec3{1.0f}, directional_counts);
 
     return Collision{
         .self_displacement = glm::vec3{0.0f},
