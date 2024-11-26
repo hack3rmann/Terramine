@@ -7,11 +7,11 @@
 
 using namespace tmine;
 
-Skybox::Skybox(char const* texture_path)
+Skybox::Skybox()
 : mesh{Primitive::Triangles}
 , shader{load_shader("skybox_vertex.glsl", "skybox_fragment.glsl")}
 , texture{Texture::from_image(
-      load_png(std::move(texture_path)), TextureLoad::DEFAULT
+      load_png("assets/images/Skybox4.png"), TextureLoad::DEFAULT
   )} {
     auto constexpr VERTICES = std::array{
         Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.0f}},
