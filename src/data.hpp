@@ -76,6 +76,25 @@ struct GameBlockTextureIdentifier {
     TextureId id;
 };
 
+struct Side {
+    using Value = u32;
+
+    static auto constexpr EMPTY = Value{0};
+    static auto constexpr POS_X = Value{1 << 0};
+    static auto constexpr NEG_X = Value{1 << 1};
+    static auto constexpr POS_Y = Value{1 << 2};
+    static auto constexpr NEG_Y = Value{1 << 3};
+    static auto constexpr POS_Z = Value{1 << 4};
+    static auto constexpr NEG_Z = Value{1 << 5};
+    static auto constexpr ALL = POS_X | NEG_X | POS_Y | NEG_Y | POS_Z | NEG_Z;
+
+    static auto constexpr contains(Value self, Value flags) -> bool {
+        return 0 != (self & flags);
+    }
+};
+
+using SideFlags = Side::Value;
+
 enum class Orientation {
     PosX = 0,
     NegX = 1,

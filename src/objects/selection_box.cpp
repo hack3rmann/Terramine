@@ -27,23 +27,22 @@ auto SelectionBox::render(
 ) -> void {
     auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
 
-    glEnable(GL_DEPTH_TEST);
-
     this->shader.bind();
     this->shader.uniform_mat4(
         "projection_view", cam.get_projection(aspect_ratio) * cam.get_view()
     );
     this->mesh.draw();
-
-    glDisable(GL_DEPTH_TEST);
-}
-
-auto SelectionBox::box(this SelectionBox& self, Aabb box, glm::vec4 color) -> void {
-    self.box(box.center(), box.size(), color);
 }
 
 auto SelectionBox::box(
-    this SelectionBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
+    this SelectionBox& self, Aabb box, glm::vec4 color, SideFlags sides
+) -> void {
+    self.box(box.center(), box.size(), color, sides);
+}
+
+auto SelectionBox::box(
+    this SelectionBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color,
+    SideFlags sides
 ) -> void {
     auto x = pos.x;
     auto y = pos.y;
@@ -51,10 +50,6 @@ auto SelectionBox::box(
     auto w = sizes.x;
     auto h = sizes.y;
     auto d = sizes.z;
-    auto r = color.r;
-    auto g = color.g;
-    auto b = color.b;
-    auto a = color.a;
 
     w *= 0.5f;
     h *= 0.5f;
@@ -62,18 +57,53 @@ auto SelectionBox::box(
 
     self.clear();
 
-    self.line({x - w, y - h, z - d}, {x + w, y - h, z - d}, {r, g, b, a});
-    self.line({x - w, y + h, z - d}, {x + w, y + h, z - d}, {r, g, b, a});
-    self.line({x - w, y - h, z + d}, {x + w, y - h, z + d}, {r, g, b, a});
-    self.line({x - w, y + h, z + d}, {x + w, y + h, z + d}, {r, g, b, a});
-    self.line({x - w, y - h, z - d}, {x - w, y + h, z - d}, {r, g, b, a});
-    self.line({x + w, y - h, z - d}, {x + w, y + h, z - d}, {r, g, b, a});
-    self.line({x - w, y - h, z + d}, {x - w, y + h, z + d}, {r, g, b, a});
-    self.line({x + w, y - h, z + d}, {x + w, y + h, z + d}, {r, g, b, a});
-    self.line({x - w, y - h, z - d}, {x - w, y - h, z + d}, {r, g, b, a});
-    self.line({x + w, y - h, z - d}, {x + w, y - h, z + d}, {r, g, b, a});
-    self.line({x - w, y + h, z - d}, {x - w, y + h, z + d}, {r, g, b, a});
-    self.line({x + w, y + h, z - d}, {x + w, y + h, z + d}, {r, g, b, a});
+    if (Side::contains(sides, Side::NEG_Y | Side::NEG_Z)) {
+        self.line({x - w, y - h, z - d}, {x + w, y - h, z - d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_Y | Side::NEG_Z)) {
+        self.line({x - w, y + h, z - d}, {x + w, y + h, z - d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_Z | Side::NEG_Y)) {
+        self.line({x - w, y - h, z + d}, {x + w, y - h, z + d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_Y | Side::POS_Z)) {
+        self.line({x - w, y + h, z + d}, {x + w, y + h, z + d}, color);
+    }
+
+    if (Side::contains(sides, Side::NEG_X | Side::NEG_Z)) {
+        self.line({x - w, y - h, z - d}, {x - w, y + h, z - d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_X | Side::NEG_Z)) {
+        self.line({x + w, y - h, z - d}, {x + w, y + h, z - d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_Z | Side::NEG_X)) {
+        self.line({x - w, y - h, z + d}, {x - w, y + h, z + d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_X | Side::POS_Z)) {
+        self.line({x + w, y - h, z + d}, {x + w, y + h, z + d}, color);
+    }
+
+    if (Side::contains(sides, Side::NEG_Y | Side::NEG_X)) {
+        self.line({x - w, y - h, z - d}, {x - w, y - h, z + d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_X | Side::NEG_Y)) {
+        self.line({x + w, y - h, z - d}, {x + w, y - h, z + d}, color);
+    }
+
+    if (Side::contains(sides, Side::NEG_X | Side::POS_Y)) {
+        self.line({x - w, y + h, z - d}, {x - w, y + h, z + d}, color);
+    }
+
+    if (Side::contains(sides, Side::POS_X | Side::POS_Y)) {
+        self.line({x + w, y + h, z - d}, {x + w, y + h, z + d}, color);
+    }
 
     self.mesh.reload_buffer();
 }

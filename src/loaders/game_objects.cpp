@@ -14,26 +14,13 @@ namespace vs = std::ranges::views;
 
 using TextureMap = std::unordered_map<std::string, GameBlockTextureIdentifier>;
 
-struct SideFlags {
-    using Value = u32;
-
-    static auto constexpr EMPTY = Value{0};
-    static auto constexpr POS_X = Value{1 << 0};
-    static auto constexpr NEG_X = Value{1 << 1};
-    static auto constexpr POS_Y = Value{1 << 2};
-    static auto constexpr NEG_Y = Value{1 << 3};
-    static auto constexpr POS_Z = Value{1 << 4};
-    static auto constexpr NEG_Z = Value{1 << 5};
-    static auto constexpr ALL = POS_X | NEG_X | POS_Y | NEG_Y | POS_Z | NEG_Z;
-};
-
 static auto parse_side_flags(char const* path, rj::Value const& src)
-    -> SideFlags::Value {
+    -> Side::Value {
     if (!src.IsArray()) {
         throw Panic("`sides` property should be an array in '{}'", path);
     }
 
-    auto result = SideFlags::EMPTY;
+    auto result = Side::EMPTY;
 
     for (auto const& value : src.GetArray()) {
         if (!value.IsString()) {
@@ -47,17 +34,17 @@ static auto parse_side_flags(char const* path, rj::Value const& src)
         auto const value_string = value.GetString();
 
         if (0 == std::strcmp("+x", value_string)) {
-            result |= SideFlags::POS_X;
+            result |= Side::POS_X;
         } else if (0 == std::strcmp("-x", value_string)) {
-            result |= SideFlags::NEG_X;
+            result |= Side::NEG_X;
         } else if (0 == std::strcmp("+y", value_string)) {
-            result |= SideFlags::POS_Y;
+            result |= Side::POS_Y;
         } else if (0 == std::strcmp("-y", value_string)) {
-            result |= SideFlags::NEG_Y;
+            result |= Side::NEG_Y;
         } else if (0 == std::strcmp("+z", value_string)) {
-            result |= SideFlags::POS_Z;
+            result |= Side::POS_Z;
         } else if (0 == std::strcmp("-z", value_string)) {
-            result |= SideFlags::NEG_Z;
+            result |= Side::NEG_Z;
         } else {
             throw Panic(
                 "unknown value of `{}` in the element of `sides` property in "
@@ -165,7 +152,7 @@ static auto parse_block_description(
     auto voxel_id = std::optional<VoxelId>{};
     auto is_translucent = false;
     auto is_extra_transparent = false;
-    auto orientations = SideFlags::ALL;
+    auto orientations = Side::ALL;
     auto top_texture_id = std::optional<TextureId>{};
     auto bottom_texture_id = std::optional<TextureId>{};
     auto left_texture_id = std::optional<TextureId>{};
@@ -289,27 +276,27 @@ auto load_game_blocks(char const* path, TextureMap const& texture_data)
 
         result.resize((usize) desc.voxel_id + 1);
 
-        if (0 != (SideFlags::POS_X & sides)) {
+        if (0 != (Side::POS_X & sides)) {
             result[(usize) desc.voxel_id][GameBlock::ORIENTATION_POS_X] = desc;
         }
 
-        if (0 != (SideFlags::NEG_X & sides)) {
+        if (0 != (Side::NEG_X & sides)) {
             result[(usize) desc.voxel_id][GameBlock::ORIENTATION_NEG_X] = desc;
         }
 
-        if (0 != (SideFlags::POS_Y & sides)) {
+        if (0 != (Side::POS_Y & sides)) {
             result[(usize) desc.voxel_id][GameBlock::ORIENTATION_POS_Y] = desc;
         }
 
-        if (0 != (SideFlags::NEG_Y & sides)) {
+        if (0 != (Side::NEG_Y & sides)) {
             result[(usize) desc.voxel_id][GameBlock::ORIENTATION_NEG_Y] = desc;
         }
 
-        if (0 != (SideFlags::POS_Z & sides)) {
+        if (0 != (Side::POS_Z & sides)) {
             result[(usize) desc.voxel_id][GameBlock::ORIENTATION_POS_Z] = desc;
         }
 
-        if (0 != (SideFlags::NEG_Z & sides)) {
+        if (0 != (Side::NEG_Z & sides)) {
             result[(usize) desc.voxel_id][GameBlock::ORIENTATION_NEG_Z] = desc;
         }
     }

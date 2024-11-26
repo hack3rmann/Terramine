@@ -51,10 +51,12 @@ public:
     SelectionBox();
 
     auto box(
-        this SelectionBox& self, glm::vec3 pos, glm::vec3 sizes, glm::vec4 color
+        this SelectionBox& self, glm::vec3 pos, glm::vec3 sizes,
+        glm::vec4 color, SideFlags sides
     ) -> void;
 
-    auto box(this SelectionBox& self, Aabb box, glm::vec4 color) -> void;
+    auto box(this SelectionBox& self, Aabb box, glm::vec4 color, SideFlags sides)
+        -> void;
 
     auto clear(this SelectionBox& self) -> void;
 
@@ -64,8 +66,9 @@ public:
     ) -> void override;
 
 private:
-    auto line(this SelectionBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color)
-        -> void;
+    auto line(
+        this SelectionBox& self, glm::vec3 from, glm::vec3 to, glm::vec4 color
+    ) -> void;
 
 private:
     struct Vertex {
