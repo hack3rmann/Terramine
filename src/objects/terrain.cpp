@@ -14,7 +14,7 @@ namespace vs = std::ranges::views;
 // Idiomatic dedup algorithm taken from
 // <https://www.geeksforgeeks.org/remove-duplicates-from-vector-in-cpp/>
 template <class T>
-static auto dedup_vector(RefMut<std::vector<T>> vec) -> void {
+static auto dedup_vector(RefMut<T> vec) -> void {
     rg::sort(*vec);
     auto it = std::unique(vec->begin(), vec->end());
     vec->erase(it, vec->end());
@@ -45,6 +45,7 @@ Terrain::Terrain(glm::uvec3 sizes)
         this->chunks_to_update[i] = i;
     }
 
+#pragma omp parallel
     for (auto [i, chunk] : this->chunks->get_span() | vs::enumerate) {
         auto const any_voxel_is_transparent =
             rg::any_of(chunk.get_voxels(), [this](auto voxel) {
@@ -54,7 +55,7 @@ Terrain::Terrain(glm::uvec3 sizes)
             });
 
         if (any_voxel_is_transparent) {
-            this->chunks_with_transparency.push_back((usize) i);
+            this->chunks_with_transparency.push((usize) i);
         }
     }
 
@@ -104,8 +105,12 @@ static auto sort_transparent_triangles(
 auto Terrain::generate_meshes(this Terrain& self, glm::vec3 camera_pos)
     -> void {
     // remove duplicates from vector to prevent data race
-    dedup_vector(&self.chunks_to_update);
-    dedup_vector(&self.chunks_with_transparency);
+    {
+        dedup_vector(&self.chunks_to_update);
+
+        auto lock = self.chunks_with_transparency.lock();
+        dedup_vector(&lock);
+    }
 
     self.transparent_mesh.get_buffer().clear();
 
@@ -232,6 +237,8 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value)
 
     self.chunks->set_voxel(pos, value);
 
+    auto chunks_with_transparency = self.chunks_with_transparency.lock();
+
     // update `chunks_with_transparency` if user is removing transparent voxel
     if (0 == value.id &&
         self.renderer.data.blocks[prev_voxel_id.id][0].is_translucent())
@@ -249,14 +256,14 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value)
                 rg::lower_bound(self.chunks_with_transparency, chunk_index);
 
             rg::iter_swap(iter, self.chunks_with_transparency.end() - 1);
-            self.chunks_with_transparency.pop_back();
+            chunks_with_transparency.pop();
         }
     }
 
     if (0 != value.id &&
         self.renderer.data.blocks[value.id][0].is_translucent())
     {
-        self.chunks_with_transparency.push_back(chunk_index);
+        chunks_with_transparency.push(chunk_index);
         return;
     }
 

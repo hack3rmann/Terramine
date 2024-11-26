@@ -42,6 +42,14 @@ public:
     auto end(this ThreadsafeVecLock& self) -> T*;
     auto size(this ThreadsafeVecLock const& self) -> usize;
 
+    auto erase(this ThreadsafeVecLock& self, T* begin, T* end) -> void;
+
+    auto reserve_exact(this ThreadsafeVecLock& self, usize amount) -> void;
+    auto reserve(this ThreadsafeVecLock& self, usize amount) -> void;
+
+    auto push(this ThreadsafeVecLock& self, T value) -> void;
+    auto pop(this ThreadsafeVecLock& self) -> T;
+
     auto capacity(this ThreadsafeVecLock const& self) -> usize;
 
 private:
@@ -285,6 +293,88 @@ auto ThreadsafeVecLock<T>::capacity(this ThreadsafeVecLock const& self)
 template <class T>
 auto ThreadsafeVecLock<T>::size(this ThreadsafeVecLock const& self) -> usize {
     return self.parent->len;
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::erase(this ThreadsafeVecLock& self, T* begin, T* end)
+    -> void {
+    if (self.size() == 0 || begin == end) {
+        return;
+    }
+
+    if (begin < self.parent->ptr ||
+        begin >= self.parent->ptr + self.parent->len ||
+        end < self.parent->ptr || end > self.parent->ptr + self.parent->len ||
+        begin > end)
+    {
+        throw Panic("invalid erase operation");
+    }
+
+    auto const n_elements = (usize) (end - begin);
+    auto delete_begin = begin;
+
+    if (self.end() != end) {
+        self.reserve(n_elements);
+
+        memcpy(self.end(), begin, sizeof(T) * n_elements);
+        memcpy(begin, end, sizeof(T) * (self.end() - end));
+        delete_begin = self.end();
+    }
+
+    for (usize i = 0; i < n_elements; ++i) {
+        delete_begin[i].~T();
+    }
+
+    self.parent->len -= n_elements;
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::reserve_exact(
+    this ThreadsafeVecLock& self, usize amount
+) -> void {
+    if (self.size() + amount <= self.capacity()) {
+        return;
+    }
+
+    if (0 == self.capacity()) {
+        self.parent->cap = amount;
+        self.parent->ptr =
+            (T*) std::malloc(sizeof(*self.parent->ptr) * self.parent->cap);
+    } else if (self.capacity() - self.size() < amount) {
+        self.parent->cap += amount;
+        self.parent->ptr = (T*) std::realloc(
+            self.parent->ptr, sizeof(*self.parent->ptr) * self.parent->cap
+        );
+    }
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::reserve(this ThreadsafeVecLock& self, usize amount)
+    -> void {
+    return self.reserve_exact(std::max(
+        amount,
+        ThreadsafeVec<T>::next_capacity(self.capacity()) - self.capacity()
+    ));
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::push(this ThreadsafeVecLock& self, T value) -> void {
+    self.reserve(1);
+    
+    new (self.parent->ptr + self.size()) T{std::move(value)};
+    self.parent->len += 1;
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::pop(this ThreadsafeVecLock& self) -> T {
+    if (self.size() == 0) {
+        throw Panic("cannot pop out of empty `ThreadsafeVec`");
+    }
+
+    self.parent->len -= 1;
+    auto result = std::move(self[self.size()]);
+
+    return result;
 }
 
 }  // namespace tmine
