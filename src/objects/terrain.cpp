@@ -45,6 +45,19 @@ Terrain::Terrain(glm::uvec3 sizes)
         this->chunks_to_update[i] = i;
     }
 
+    for (auto [i, chunk] : this->chunks->get_span() | vs::enumerate) {
+        auto const any_voxel_is_transparent =
+            rg::any_of(chunk.get_voxels(), [this](auto voxel) {
+                return this->renderer.data
+                    .get_block(voxel.id, voxel.orientation())
+                    .is_translucent();
+            });
+
+        if (any_voxel_is_transparent) {
+            this->chunks_with_transparency.push_back((usize) i);
+        }
+    }
+
     this->generate_meshes(glm::vec3{0.0f});
 }
 
