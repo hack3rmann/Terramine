@@ -13,7 +13,7 @@ Scene::Scene(glm::uvec2 viewport_size)
 , deferred_renderer{this->deferred_shader, viewport_size}
 , viewport_size{viewport_size}
 , objects{} {
-    this->add(Skybox{"assets/images/Skybox4.png"});
+    this->add(Skybox{});
     this->add_unique(Terrain{glm::uvec3{16, 4, 16}});
     this->add_unique(SelectionBox{});
 }

@@ -26,7 +26,8 @@ struct SceneObject {
 
 class Skybox : public SceneObject {
 public:
-    explicit Skybox(char const* texture_path);
+    Skybox();
+
     auto render(
         Camera const& camera, SceneParameters const& params,
         RenderPass pass
