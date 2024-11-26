@@ -72,15 +72,17 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
     auto prev_velocity = collider->get_collider_velocity();
     auto is_grounded = !GRAVITY || glm::abs(prev_velocity.y) < 0.01;
 
+    auto constexpr SPEED_FALLOFF = 0.7f;
+
     if (io.is_pressed(Key::LeftShift)) {
-        velocity_direction.y = -1.0;
+        velocity_direction.y = -2.5 / SPEED_FALLOFF;
     }
 
     if (is_grounded && io.is_pressed(Key::Space)) {
-        velocity_direction.y = 1.0f;
+        velocity_direction.y = 2.5f / SPEED_FALLOFF;
     }
 
-    auto speed = 10.0f;
+    auto speed = SPEED_FALLOFF * 3.0f;
 
     if (io.is_pressed(Key::LeftControl)) {
         speed *= 3.0f;
@@ -95,7 +97,9 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
          });
 
     camera->set_pos(camera_pos);
-    prev_velocity.x = prev_velocity.z = 0.0f;
+    // prev_velocity.x = prev_velocity.z = 0.0f;
+    prev_velocity.x *= SPEED_FALLOFF;
+    prev_velocity.z *= SPEED_FALLOFF;
 
 #if !GRAVITY
     prev_velocity.y = 0.0f;
