@@ -30,7 +30,6 @@ static auto static_binary_displace(
 
     auto const displacement = collision.self_displacement;
 
-    auto overlapping_displacement_amount = 0.0f;
     auto free_displacement_amount = 0.0f;
     bool displaced_towards_overlap = false;
 
@@ -39,8 +38,11 @@ static auto static_binary_displace(
         free_displacement_amount += 1.0f;
     } while (dynamic_collider->collides(*static_collider));
 
+    auto overlapping_displacement_amount = free_displacement_amount - 1.0f;
+
     // TODO(hack3rmann): turn this constant into a class member
-    static auto constexpr MAX_N_STEPS = usize{20};
+    // FIXME(hack3rmann): maybe remove binary search
+    static auto constexpr MAX_N_STEPS = usize{0};
 
     for (usize i = 0; i < MAX_N_STEPS; ++i) {
         if (free_displacement_amount - overlapping_displacement_amount <
@@ -247,12 +249,12 @@ static auto collide_static_box(
 
     auto displacement = glm::vec3{0.0f};
 
-    if (size.y <= size.x && size.y <= size.z) {
-        displacement.y = signs.y * size.y;
-    } else if (size.x <= size.y && size.x <= size.z) {
+    if (size.x <= size.y && size.x <= size.z) {
         displacement.x = signs.x * size.x;
-    } else {
+    } else if (size.z <= size.x && size.z <= size.y) {
         displacement.z = signs.z * size.z;
+    } else {
+        displacement.y = signs.y * size.y;
     }
 
     return Collision{glm::vec3{0.0f}, displacement};
