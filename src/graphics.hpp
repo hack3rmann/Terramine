@@ -316,7 +316,7 @@ class GeometryBuffer {
     friend class DeferredRenderer;
 
 public:
-    explicit GeometryBuffer(glm::uvec2 viewport_size, u32 msaa_level = 4);
+    explicit GeometryBuffer(glm::uvec2 viewport_size, u32 ssaa_level = 2);
 
     ~GeometryBuffer() = default;
     GeometryBuffer(GeometryBuffer const&) = default;
@@ -327,14 +327,7 @@ public:
         -> GeometryBuffer& = default;
 
     auto bind_frame_buffer(this GeometryBuffer const& self) -> void;
-
-    inline auto unbind_frame_buffer(
-        [[maybe_unused]] this GeometryBuffer const& self
-    ) -> void {
-        GeometryBuffer::unbind_all();
-    }
-
-    static auto unbind_all() -> void;
+    auto unbind_frame_buffer(this GeometryBuffer const& self) -> void;
 
     inline auto get_viewport_size(this GeometryBuffer const& self)
         -> glm::uvec2 {
@@ -343,7 +336,7 @@ public:
 
 private:
     std::shared_ptr<GeometryBufferData> data;
-    u32 msaa_level;
+    u32 ssaa_level;
     glm::uvec2 viewport_size;
 };
 
@@ -372,11 +365,20 @@ public:
     auto draw_screen_pass(this DeferredRenderer const& self) -> void;
     auto clear(this DeferredRenderer const& self) -> void;
 
+    inline auto ssaa_level(this DeferredRenderer const& self) -> u32 {
+        return self.geometry_buffer.ssaa_level;
+    }
+
 private:
     GeometryBuffer geometry_buffer;
     ShaderProgram shader;
     Mesh<ScreenVertex> mesh;
     bool is_bound{false};
+};
+
+struct RenderPass {
+    glm::uvec2 viewport_size;
+    u32 ssaa_level;
 };
 
 }  // namespace tmine

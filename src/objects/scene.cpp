@@ -32,11 +32,16 @@ auto Scene::render(
     self.deferred_renderer.clear();
 
     for (auto& object : self.objects) {
-        object->render(camera, self.params, viewport_size);
+        object->render(
+            camera, self.params,
+            RenderPass{
+                .viewport_size = viewport_size,
+                .ssaa_level = self.deferred_renderer.ssaa_level(),
+            }
+        );
     }
 
     self.deferred_renderer.unbind_geometry_buffer();
-
     self.deferred_renderer.draw_screen_pass();
 }
 

@@ -4,6 +4,8 @@
 
 namespace tmine {
 
+auto constexpr LINE_WIDTH = 3.0f;
+
 static auto compactify_color(glm::vec4 color) -> u32 {
     auto compactible_color =
         glm::uvec4(glm::clamp(255.0f * color, 0.0f, 255.0f));
@@ -83,6 +85,8 @@ auto DebugLines::render(
     }
 
     auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
+
+    glLineWidth(LINE_WIDTH);
 
     // Make sure that depth test is disabled
     glDisable(GL_DEPTH_TEST);

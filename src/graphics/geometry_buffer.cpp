@@ -52,22 +52,20 @@ GeometryBufferData::~GeometryBufferData() {
     glDeleteFramebuffers(1, &this->frame_buffer_object_id);
 }
 
-GeometryBuffer::GeometryBuffer(glm::uvec2 viewport_size, u32 msaa_level)
+GeometryBuffer::GeometryBuffer(glm::uvec2 viewport_size, u32 ssaa_level)
 : data{std::make_shared<GeometryBufferData>()}
-, msaa_level{msaa_level}
+, ssaa_level{ssaa_level}
 , viewport_size{viewport_size} {
     glGenFramebuffers(1, &this->data->frame_buffer_object_id);
     glBindFramebuffer(GL_FRAMEBUFFER, this->data->frame_buffer_object_id);
+
+    auto const frame_size = ssaa_level * viewport_size;
 
     // Generate color texture
     glGenTextures(1, &this->data->color_attachment_id);
     glBindTexture(GL_TEXTURE_2D, this->data->color_attachment_id);
     glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGB, viewport_size.x, viewport_size.y, 0, GL_RGB,
-        GL_UNSIGNED_BYTE, 0
-    );
-    glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGB, viewport_size.x, viewport_size.y, 0, GL_RGB,
+        GL_TEXTURE_2D, 0, GL_RGB, frame_size.x, frame_size.y, 0, GL_RGB,
         GL_UNSIGNED_BYTE, 0
     );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -82,8 +80,8 @@ GeometryBuffer::GeometryBuffer(glm::uvec2 viewport_size, u32 msaa_level)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, viewport_size.x,
-        viewport_size.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL
+        GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, frame_size.x,
+        frame_size.y, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL
     );
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -102,8 +100,8 @@ GeometryBuffer::GeometryBuffer(glm::uvec2 viewport_size, u32 msaa_level)
     glBindRenderbuffer(
         GL_RENDERBUFFER, this->data->color_render_buffer_object_id
     );
-    glRenderbufferStorageMultisample(
-        GL_RENDERBUFFER, msaa_level, GL_RGB8, viewport_size.x, viewport_size.y
+    glRenderbufferStorage(
+        GL_RENDERBUFFER, GL_RGB8, frame_size.x, frame_size.y
     );
     glFramebufferRenderbuffer(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
@@ -115,25 +113,17 @@ GeometryBuffer::GeometryBuffer(glm::uvec2 viewport_size, u32 msaa_level)
     glBindRenderbuffer(
         GL_RENDERBUFFER, this->data->depth_render_buffer_object_id
     );
-    glRenderbufferStorageMultisample(
-        GL_RENDERBUFFER, msaa_level, GL_DEPTH_COMPONENT, viewport_size.x,
-        viewport_size.y
+    glRenderbufferStorage(
+        GL_RENDERBUFFER, GL_DEPTH_COMPONENT, frame_size.x,
+        frame_size.y
     );
     glFramebufferRenderbuffer(
         GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
         this->data->depth_render_buffer_object_id
     );
 
-    auto const status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    switch (status) {
-    case GL_FRAMEBUFFER_COMPLETE: {
-    } break;
-    case GL_FRAMEBUFFER_UNSUPPORTED: {
-        throw Panic("Frame buffer is unsupported...");
-    } break;
-    default: {
-        throw Panic("Frame buffer is not complete...");
-    } break;
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        throw Panic("Frame buffer is not complete");
     }
 
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -142,7 +132,7 @@ GeometryBuffer::GeometryBuffer(glm::uvec2 viewport_size, u32 msaa_level)
 
 auto GeometryBuffer::bind_frame_buffer(this GeometryBuffer const& self)
     -> void {
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glViewport(0, 0, self.ssaa_level * self.viewport_size.x, self.ssaa_level * self.viewport_size.y);
     glBindFramebuffer(GL_FRAMEBUFFER, self.data->frame_buffer_object_id);
     glFramebufferTexture2D(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
@@ -158,7 +148,8 @@ auto GeometryBuffer::bind_frame_buffer(this GeometryBuffer const& self)
     }
 }
 
-auto GeometryBuffer::unbind_all() -> void {
+auto GeometryBuffer::unbind_frame_buffer(this GeometryBuffer const& self) -> void {
+    glViewport(0, 0, self.viewport_size.x, self.viewport_size.y);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
