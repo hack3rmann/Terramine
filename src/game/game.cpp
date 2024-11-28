@@ -19,7 +19,7 @@ Game::Game(glm::uvec2 viewport_size)
 , scene{viewport_size}
 , gui{GuiState::InGame}
 , player{&this->physics_solver}
-, debug{}
+, debug{this->gui.get_font()}
 , prev_time{chrono::high_resolution_clock::now()} {
     setup_opengl();
 
@@ -44,12 +44,19 @@ auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
         return;
     }
 
+    debug::text()->set(
+        "viewport",
+        fmt::format("Viewport Size: {}x{}", viewport_size.x, viewport_size.y)
+    );
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (self.gui.current() == GuiState::PauseMenu ||
         self.gui.current() == GuiState::InGame)
     {
         self.scene.render(self.player.get_camera(), viewport_size);
+
+        debug::text()->render(viewport_size);
     }
 
     if (self.gui.current() == GuiState::StartMenu ||

@@ -116,7 +116,7 @@ private:
 
 class GuiStage {
 public:
-    GuiStage();
+    explicit GuiStage(std::shared_ptr<Font> font);
 
     auto add_sprite(this GuiStage& self, Sprite sprite) -> void;
     auto add_button(
@@ -160,11 +160,15 @@ public:
     auto render(this Gui& self, glm::uvec2 viewport_size) -> void;
     auto update(this Gui& self, RefMut<Window> window) -> void;
 
-private:
-    static auto constexpr N_GUIS = usize{3};
+    auto add_stage(this Gui& self, GuiState state) -> GuiStage&;
+    inline auto get_font(this Gui& self) -> std::shared_ptr<Font> {
+        return self.font;
+    }
 
+private:
     GuiState state{GuiState::StartMenu};
-    std::array<GuiStage, Gui::N_GUIS> guis{};
+    std::unordered_map<GuiState, GuiStage> guis;
+    std::shared_ptr<Font> font;
 };
 
 }  // namespace tmine

@@ -55,7 +55,7 @@ static auto add_glyph(
     auto const y = (i32) font.common.line_height / 2 - (i32) desc.offset.y -
                    (i32) desc.size.y;
 
-    auto const pos = glm::vec2{offset, (f32) y / (f32) font.common.scale.y};
+    auto const pos = glm::vec2{offset, size * (f32) y / (f32) font.common.scale.y};
 
     add_quad(
         buffer, pos, size * glm::vec2{desc.size} / glm::vec2{font.common.scale},
@@ -109,6 +109,8 @@ auto Text::render(ShaderProgram const& shader, glm::uvec2 viewport_size)
     -> void {
     shader.bind();
     this->glyph_texture.bind(0);
+
+    glDisable(GL_DEPTH_TEST);
 
     auto const aspect_ratio = Window::aspect_ratio_of(viewport_size);
     auto const proj =
