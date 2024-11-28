@@ -20,7 +20,7 @@ option(OPTIMIZE "Enable compiler optimizarions" OFF)
 if(${SANITIZE})
     message(STATUS "Build with sanitizers")
     set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -g -fsanitize={address,undefined,leak}")
+        "${CMAKE_CXX_FLAGS} -g -fsanitize=address -fsanitize=undefined -fsanitize=leak")
 endif()
 
 if(${OPTIMIZE})
@@ -31,7 +31,7 @@ endif()
 if(${THREAD_SANITIZE})
     message(STATUS "Build with thread sanitizer")
     set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -g -fsanitize={thread,undefined}")
+        "${CMAKE_CXX_FLAGS} -g -fsanitize=thread -fsanitize=undefined")
 endif()
 
 file(GLOB TERRAMINE_SOURCE_FILES src/*/*.cpp)
