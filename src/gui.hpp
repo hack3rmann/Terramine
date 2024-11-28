@@ -59,12 +59,21 @@ public:
     auto render(ShaderProgram const& shader, glm::uvec2 viewport_size)
         -> void override;
 
+    inline auto set_position(this Text& self, glm::vec2 pos) -> void {
+        self.pos = pos;
+    }
+
+    inline auto get_width(this Text const& self) -> f32 {
+        return self.width;
+    }
+
 private:
     Mesh<GuiObject::Vertex> mesh;
     std::shared_ptr<Font> font;
     Texture glyph_texture;
     glm::vec2 pos;
     f32 size;
+    f32 width;
 };
 
 enum class ButtonState {

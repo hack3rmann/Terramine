@@ -55,7 +55,8 @@ static auto add_glyph(
     auto const y = (i32) font.common.line_height / 2 - (i32) desc.offset.y -
                    (i32) desc.size.y;
 
-    auto const pos = glm::vec2{offset, size * (f32) y / (f32) font.common.scale.y};
+    auto const pos =
+        glm::vec2{offset, size * (f32) y / (f32) font.common.scale.y};
 
     add_quad(
         buffer, pos, size * glm::vec2{desc.size} / glm::vec2{font.common.scale},
@@ -75,7 +76,8 @@ Text::Text(
 , font{font}
 , glyph_texture{std::move(glyph_texture)}
 , pos{pos}
-, size{size} {
+, size{size}
+, width{0.0f} {
     if (font->pages.empty()) {
         throw Panic("font {} contains no pages", font->info.face);
     }
@@ -96,10 +98,12 @@ auto Text::set_text(this Text& self, std::string_view text) -> void {
     auto& buffer = self.mesh.get_buffer();
     buffer.clear();
 
-    auto offset = -0.5f * length;
+    self.width = 0.0f;
 
     for (auto symbol : text) {
-        offset += add_glyph(&buffer, *self.font, offset, self.size, symbol);
+        self.width += add_glyph(
+            &buffer, *self.font, self.width - 0.5f * length, self.size, symbol
+        );
     }
 
     self.mesh.reload_buffer();

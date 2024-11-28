@@ -4,6 +4,7 @@
 #include <optional>
 #include <mutex>
 #include <atomic>
+#include <map>
 
 #include "controls.hpp"
 #include "graphics.hpp"
@@ -77,7 +78,7 @@ public:
 private:
     ShaderProgram shader;
     Texture glyph_texture;
-    std::unordered_map<StaticString, Text> text_lines{};
+    std::map<StaticString, Text> text_lines{};
     std::shared_ptr<Font> font;
     std::mutex mutex{};
     glm::uvec2 viewport_size;
