@@ -44,10 +44,10 @@ auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
         return;
     }
 
-    debug::text()->set(
-        "viewport",
-        fmt::format("Viewport Size: {}x{}", viewport_size.x, viewport_size.y)
-    );
+    // debug::text()->set(
+    //     "viewport",
+    //     fmt::format("Viewport Size: {}x{}", viewport_size.x, viewport_size.y)
+    // );
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -72,6 +72,9 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
     auto const now = chrono::high_resolution_clock::now();
     auto const duration = chrono::duration<f32>{now - self.prev_time};
     self.prev_time = now;
+
+    // FIXME(hack3rmann): implement more debug text
+    debug::text()->set("fps", fmt::format("FPS: {:.3}", 1.0f / duration.count()));
 
     debug::update();
 
