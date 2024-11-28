@@ -22,7 +22,7 @@ private:
     Scene scene;
     Gui gui;
     Player player;
-    DebugOwner debug{};
+    DebugOwner debug;
     std::chrono::time_point<std::chrono::high_resolution_clock> prev_time;
 };
 

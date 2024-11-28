@@ -8,6 +8,7 @@
 #include "controls.hpp"
 #include "graphics.hpp"
 #include "geometry.hpp"
+#include "gui.hpp"
 
 namespace tmine {
 
@@ -60,6 +61,28 @@ private:
     std::mutex mutex;
 };
 
+class DebugText {
+public:
+    explicit DebugText(std::shared_ptr<Font> font);
+
+    auto render(this DebugText& self, glm::uvec2 viewport_size) -> void;
+
+    auto set(this DebugText& self, StaticString element, std::string_view value)
+        -> void;
+
+    inline auto lock(this DebugText& self) -> void { self.mutex.lock(); }
+
+    inline auto unlock(this DebugText& self) -> void { self.mutex.unlock(); }
+
+private:
+    ShaderProgram shader;
+    Texture glyph_texture;
+    std::unordered_map<StaticString, Text> text_lines{};
+    std::shared_ptr<Font> font;
+    std::mutex mutex{};
+    glm::uvec2 viewport_size;
+};
+
 template <class T>
 concept Lockable = requires(T lockable) {
     lockable.lock();
@@ -92,15 +115,22 @@ private:
 
 namespace debug {
 
-    inline constinit auto DEBUG_LINES = std::optional<DebugLines>{};
+    inline constinit auto LINES = std::optional<DebugLines>{};
+    inline constinit auto TEXT = std::optional<DebugText>{};
 
-    inline auto initialize() -> void { DEBUG_LINES.emplace(); }
-
-    inline auto deinitialize() -> void { DEBUG_LINES.reset(); }
-
-    inline auto lines() -> Lock<DebugLines> {
-        return Lock{DEBUG_LINES.value()};
+    inline auto initialize(std::shared_ptr<Font> font) -> void {
+        LINES.emplace();
+        TEXT.emplace(font);
     }
+
+    inline auto deinitialize() -> void {
+        LINES.reset();
+        TEXT.reset();
+    }
+
+    inline auto lines() -> Lock<DebugLines> { return Lock{LINES.value()}; }
+
+    inline auto text() -> Lock<DebugText> { return Lock{TEXT.value()}; }
 
     auto update() -> void;
 
@@ -109,7 +139,9 @@ namespace debug {
 struct DebugOwner {
     bool has_value{true};
 
-    inline DebugOwner() { debug::initialize(); }
+    inline explicit DebugOwner(std::shared_ptr<Font> font) {
+        debug::initialize(font);
+    }
 
     inline DebugOwner(DebugOwner const& other) = delete;
 
