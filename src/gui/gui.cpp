@@ -9,15 +9,15 @@ GuiStage::GuiStage()
       .textures =
           {
               Texture::from_image(
-                  load_png("assets/images/testButtonDef.png"),
+                  load_png("assets/images/button_default.png"),
                   TextureLoad::DEFAULT
               ),
               Texture::from_image(
-                  load_png("assets/images/testButtonHover.png"),
+                  load_png("assets/images/button_hovered.png"),
                   TextureLoad::DEFAULT
               ),
               Texture::from_image(
-                  load_png("assets/images/testButtonClicked.png"),
+                  load_png("assets/images/button_clicked.png"),
                   TextureLoad::DEFAULT
               ),
           },
@@ -25,7 +25,7 @@ GuiStage::GuiStage()
           load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR
       ),
   }}
-, font{load_font("assets/fonts/font.fnt")}
+, font{std::make_shared<Font>(load_font("assets/fonts/font.fnt"))}
 , shader{load_shader("gui_vertex.glsl", "gui_fragment.glsl")} {}
 
 auto GuiStage::add_sprite(this GuiStage& self, Sprite sprite) -> void {
@@ -33,7 +33,7 @@ auto GuiStage::add_sprite(this GuiStage& self, Sprite sprite) -> void {
 }
 
 auto GuiStage::add_button(
-    this GuiStage& self, std::string_view text, glm::vec2 pos, f32 size
+    this GuiStage& self, StaticString text, glm::vec2 pos, f32 size
 ) -> void {
     self.buttons.insert(
         {text,
@@ -63,8 +63,8 @@ auto GuiStage::render(this GuiStage& self, glm::uvec2 viewport_size) -> void {
     }
 
     for (auto& elem : self.buttons) {
-        // C++ just can't use structural binding by reference without copying
-        // so we can manually unpack button reference
+        // C++ just unable to use structural binding by reference without copying
+        // so we should manually unpack button reference
         auto& button = elem.second;
 
         button.render(self.shader, viewport_size);
@@ -91,7 +91,7 @@ Gui::Gui(GuiState initial_state)
         {glm::vec2{0.0f, 0.0f}, 2.7f, background_texture}
     );
     this->guis[(usize) GuiState::StartMenu].add_button(
-        "Start", glm::vec2{0.0f, 0.0f}, 1.0f
+        std::string{"Start"}, glm::vec2{0.0f, 0.0f}, 1.0f
     );
     this->guis[(usize) GuiState::StartMenu].add_button(
         "Exit", glm::vec2{0.0f, -0.4f}, 1.0f
@@ -108,8 +108,8 @@ Gui::Gui(GuiState initial_state)
     );
 }
 
-auto Gui::render(this Gui& self, glm::uvec2 window_size) -> void {
-    self.guis[(usize) self.state].render(window_size);
+auto Gui::render(this Gui& self, glm::uvec2 viewport_size) -> void {
+    self.guis[(usize) self.state].render(viewport_size);
 }
 
 auto Gui::update(this Gui& self, Window* window) -> void {

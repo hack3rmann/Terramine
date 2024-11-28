@@ -8,6 +8,8 @@
 #include <mutex>
 #include <cstdlib>
 #include <cstring>
+#include <variant>
+
 #include "types.hpp"
 #include "panic.hpp"
 
@@ -361,7 +363,7 @@ auto ThreadsafeVecLock<T>::reserve(this ThreadsafeVecLock& self, usize amount)
 template <class T>
 auto ThreadsafeVecLock<T>::push(this ThreadsafeVecLock& self, T value) -> void {
     self.reserve(1);
-    
+
     new (self.parent->ptr + self.size()) T{std::move(value)};
     self.parent->len += 1;
 }
@@ -383,4 +385,47 @@ auto ThreadsafeVecLock<T>::empty(this ThreadsafeVecLock const& self) -> bool {
     return self.size() == 0;
 }
 
+class StaticString {
+public:
+    inline StaticString(char const* c_string)
+    : value{std::string_view{c_string}} {}
+
+    /*implicit*/ inline StaticString(std::string_view value)
+    : value{value} {}
+
+    /*implicit*/ inline StaticString(std::string value)
+    : value{std::move(value)} {}
+
+    operator std::string_view(this StaticString const& self);
+
+    inline auto operator<=>(
+        this StaticString const& self, StaticString const& other
+    ) {
+        return std::string_view{self} <=> std::string_view{other};
+    }
+
+    inline auto operator==(
+        this StaticString const& self, StaticString const& other
+    ) -> bool {
+        return std::string_view{self} == std::string_view{other};
+    }
+
+    inline auto operator!=(
+        this StaticString const& self, StaticString const& other
+    ) -> bool {
+        return std::string_view{self} != std::string_view{other};
+    }
+
+private:
+    std::variant<std::string, std::string_view> value;
+};
+
 }  // namespace tmine
+
+template <>
+struct std::hash<tmine::StaticString> {
+    inline auto operator()(tmine::StaticString const& str) const noexcept
+        -> tmine::usize {
+        return std::hash<std::string_view>{}(std::string_view{str});
+    }
+};

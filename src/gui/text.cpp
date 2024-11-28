@@ -13,12 +13,27 @@ static auto add_quad(
     glm::vec2 uv, glm::vec2 uv_size
 ) -> void {
     auto const vertices = std::array{
-        GuiObject::Vertex{glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}},
-        GuiObject::Vertex{glm::vec2{pos.x, pos.y}, glm::vec2{uv.x, uv.y - uv_size.y}},
-        GuiObject::Vertex{glm::vec2{pos.x + size.x, pos.y}, glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}},
-        GuiObject::Vertex{glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}},
-        GuiObject::Vertex{glm::vec2{pos.x + size.x, pos.y + size.y}, glm::vec2{uv.x + uv_size.x, uv.y}},
-        GuiObject::Vertex{glm::vec2{pos.x + size.x, pos.y}, glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}},
+        GuiObject::Vertex{
+            glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}
+        },
+        GuiObject::Vertex{
+            glm::vec2{pos.x, pos.y}, glm::vec2{uv.x, uv.y - uv_size.y}
+        },
+        GuiObject::Vertex{
+            glm::vec2{pos.x + size.x, pos.y},
+            glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}
+        },
+        GuiObject::Vertex{
+            glm::vec2{pos.x, pos.y + size.y}, glm::vec2{uv.x, uv.y}
+        },
+        GuiObject::Vertex{
+            glm::vec2{pos.x + size.x, pos.y + size.y},
+            glm::vec2{uv.x + uv_size.x, uv.y}
+        },
+        GuiObject::Vertex{
+            glm::vec2{pos.x + size.x, pos.y},
+            glm::vec2{uv.x + uv_size.x, uv.y - uv_size.y}
+        },
     };
 
     buffer->insert(buffer->end(), vertices.begin(), vertices.end());
@@ -43,9 +58,7 @@ static auto add_glyph(
     auto const pos = glm::vec2{offset, (f32) y / (f32) font.common.scale.y};
 
     add_quad(
-        buffer,
-        pos,
-        size * glm::vec2{desc.size} / glm::vec2{font.common.scale},
+        buffer, pos, size * glm::vec2{desc.size} / glm::vec2{font.common.scale},
         glm::vec2{desc.pos.x, (i32) font.common.scale.y - (i32) desc.pos.y} /
             glm::vec2{font.common.scale},
         glm::vec2{desc.size} / glm::vec2{font.common.scale}
@@ -55,36 +68,41 @@ static auto add_glyph(
 }
 
 Text::Text(
-    Font const& font, Texture glyph_texture, std::string_view text, glm::vec2 pos,
-    f32 size
+    std::shared_ptr<Font> font, Texture glyph_texture, std::string_view text,
+    glm::vec2 pos, f32 size
 )
 : mesh{Primitive::Triangles}
+, font{font}
 , glyph_texture{std::move(glyph_texture)}
-, text{std::move(text)}
 , pos{pos}
 , size{size} {
-    if (font.pages.empty()) {
-        throw Panic("font {} contains no pages", font.info.face);
+    if (font->pages.empty()) {
+        throw Panic("font {} contains no pages", font->info.face);
     }
 
-    auto const& first_page = font.pages.front();
-    auto const scale_width = font.common.scale.x;
+    this->set_text(text);
+}
+
+auto Text::set_text(this Text& self, std::string_view text) -> void {
+    auto const& first_page = self.font->pages.front();
+    auto const scale_width = self.font->common.scale.x;
 
     auto const length =
-        size / (f32) scale_width *
-        (f32
-        ) rg::fold_left(this->text, 0, [&](u32 acc, char elem) {
+        self.size / (f32) scale_width *
+        (f32) rg::fold_left(text, 0, [&](u32 acc, char elem) {
             return acc + first_page.chars[(usize) elem].horizontal_advance;
         });
 
-    auto& buffer = this->mesh.get_buffer();
+    auto& buffer = self.mesh.get_buffer();
+    buffer.clear();
+
     auto offset = -0.5f * length;
 
-    for (auto symbol : this->text) {
-        offset += add_glyph(&buffer, font, offset, size, symbol);
+    for (auto symbol : text) {
+        offset += add_glyph(&buffer, *self.font, offset, self.size, symbol);
     }
 
-    this->mesh.reload_buffer();
+    self.mesh.reload_buffer();
 }
 
 auto Text::render(ShaderProgram const& shader, glm::uvec2 viewport_size)

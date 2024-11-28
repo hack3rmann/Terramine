@@ -34,7 +34,7 @@ if(${THREAD_SANITIZE})
         "${CMAKE_CXX_FLAGS} -g -fsanitize=thread -fsanitize=undefined")
 endif()
 
-file(GLOB TERRAMINE_SOURCE_FILES src/*/*.cpp)
+file(GLOB TERRAMINE_SOURCE_FILES src/**/*.cpp)
 
 add_executable(terramine
     src/main.cpp

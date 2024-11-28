@@ -5,6 +5,7 @@
 #include "types.hpp"
 #include "graphics.hpp"
 #include "window.hpp"
+#include "collections.hpp"
 
 namespace tmine {
 
@@ -15,6 +16,8 @@ struct GuiRect {
 
 class GuiObject {
 public:
+    virtual ~GuiObject() = default;
+
     virtual auto render(ShaderProgram const& shader, glm::uvec2 viewport_size)
         -> void = 0;
 
@@ -34,8 +37,6 @@ class Sprite : public GuiObject {
 public:
     Sprite(glm::vec2 pos, f32 size, Texture texture);
 
-    virtual ~Sprite() = default;
-
     auto render(ShaderProgram const& shader, glm::uvec2 viewport_size)
         -> void override;
 
@@ -49,19 +50,19 @@ private:
 class Text : public GuiObject {
 public:
     Text(
-        Font const& font, Texture glyph_texture, std::string_view text,
-        glm::vec2 pos, f32 size
+        std::shared_ptr<Font> font, Texture glyph_texture,
+        std::string_view text, glm::vec2 pos, f32 size
     );
 
-    virtual ~Text() = default;
+    auto set_text(this Text& self, std::string_view text) -> void;
 
     auto render(ShaderProgram const& shader, glm::uvec2 viewport_size)
         -> void override;
 
 private:
     Mesh<GuiObject::Vertex> mesh;
+    std::shared_ptr<Font> font;
     Texture glyph_texture;
-    std::string_view text;
     glm::vec2 pos;
     f32 size;
 };
@@ -78,6 +79,8 @@ struct ButtonStyle {
 };
 
 class Button : public GuiObject {
+    friend class Gui;
+
 public:
     Button(ButtonStyle style, Text text, glm::vec2 pos, f32 size);
 
@@ -117,7 +120,7 @@ public:
 
     auto add_sprite(this GuiStage& self, Sprite sprite) -> void;
     auto add_button(
-        this GuiStage& self, std::string_view text, glm::vec2 pos, f32 size
+        this GuiStage& self, StaticString text, glm::vec2 pos, f32 size
     ) -> void;
 
     auto get_button(this GuiStage const& self, std::string_view name)
@@ -128,10 +131,10 @@ public:
     auto update(this GuiStage& self, glm::uvec2 viewport_size) -> void;
 
 private:
-    std::unordered_map<std::string_view, Button> buttons{};
+    std::unordered_map<StaticString, Button> buttons{};
     std::vector<Sprite> sprites{};
     ButtonStyle button_style;
-    Font font;
+    std::shared_ptr<Font> font;
     ShaderProgram shader;
 };
 
@@ -144,13 +147,11 @@ enum class GuiState {
 class Gui {
 public:
     inline Gui()
-    : Gui(GuiState::StartMenu) {}
+    : Gui{GuiState::StartMenu} {}
 
     explicit Gui(GuiState initial_state);
 
-    inline auto current(this Gui const& self) -> GuiState {
-        return self.state;
-    }
+    inline auto current(this Gui const& self) -> GuiState { return self.state; }
 
     inline auto set_state(this Gui& self, GuiState state) -> void {
         self.state = state;
