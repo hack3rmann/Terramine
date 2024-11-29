@@ -64,7 +64,7 @@ private:
 
 class DebugText {
 public:
-    explicit DebugText(std::shared_ptr<Font> font);
+    DebugText(std::shared_ptr<Font> font, glm::uvec2 viewport_size);
 
     auto render(this DebugText& self, glm::uvec2 viewport_size) -> void;
 
@@ -119,9 +119,9 @@ namespace debug {
     inline constinit auto LINES = std::optional<DebugLines>{};
     inline constinit auto TEXT = std::optional<DebugText>{};
 
-    inline auto initialize(std::shared_ptr<Font> font) -> void {
+    inline auto initialize(std::shared_ptr<Font> font, glm::uvec2 viewport_size) -> void {
         LINES.emplace();
-        TEXT.emplace(font);
+        TEXT.emplace(font, viewport_size);
     }
 
     inline auto deinitialize() -> void {
@@ -140,8 +140,8 @@ namespace debug {
 struct DebugOwner {
     bool has_value{true};
 
-    inline explicit DebugOwner(std::shared_ptr<Font> font) {
-        debug::initialize(font);
+    inline DebugOwner(std::shared_ptr<Font> font, glm::uvec2 viewport_size) {
+        debug::initialize(font, viewport_size);
     }
 
     inline DebugOwner(DebugOwner const& other) = delete;

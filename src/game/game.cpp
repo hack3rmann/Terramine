@@ -19,7 +19,7 @@ Game::Game(glm::uvec2 viewport_size)
 , scene{viewport_size}
 , gui{GuiState::InGame}
 , player{&this->physics_solver}
-, debug{this->gui.get_font()}
+, debug{this->gui.get_font(), viewport_size}
 , prev_time{chrono::high_resolution_clock::now()} {
     setup_opengl();
 
@@ -35,6 +35,26 @@ Game::Game(glm::uvec2 viewport_size)
     }
 }
 
+static auto draw_debug_text(glm::uvec2 viewport_size) -> void {
+    debug::text()->set(
+        "viewport",
+        fmt::format("Viewport Size: {}x{}", viewport_size.x, viewport_size.y)
+    );
+
+    debug::text()->set(
+        "gl",
+        fmt::format(
+            "Vendor: {}, Renderer: {}", (char const*) glGetString(GL_VENDOR),
+            (char const*) glGetString(GL_RENDERER)
+        )
+    );
+
+    debug::text()->set(
+        "gl#version",
+        fmt::format("OpenGL v{}", (char const*) glGetString(GL_VERSION))
+    );
+}
+
 auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
     if (!Window::is_visible(viewport_size)) {
         if (self.gui.current() == GuiState::InGame) {
@@ -44,10 +64,7 @@ auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
         return;
     }
 
-    // debug::text()->set(
-    //     "viewport",
-    //     fmt::format("Viewport Size: {}x{}", viewport_size.x, viewport_size.y)
-    // );
+    draw_debug_text(viewport_size);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -56,16 +73,16 @@ auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
     {
         self.scene.render(self.player.get_camera(), viewport_size);
 
+        debug::lines()->render(self.player.get_camera(), viewport_size);
         debug::text()->render(viewport_size);
     }
 
     if (self.gui.current() == GuiState::StartMenu ||
         self.gui.current() == GuiState::PauseMenu)
     {
+        debug::lines()->render(self.player.get_camera(), viewport_size);
         self.gui.render(viewport_size);
     }
-
-    debug::lines()->render(self.player.get_camera(), viewport_size);
 }
 
 auto Game::update(this Game& self, RefMut<Window> window) -> void {
@@ -73,8 +90,9 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
     auto const duration = chrono::duration<f32>{now - self.prev_time};
     self.prev_time = now;
 
-    // FIXME(hack3rmann): implement more debug text
-    debug::text()->set("fps", fmt::format("FPS: {:.3}", 1.0f / duration.count()));
+    debug::text()->set(
+        "fps", fmt::format("FPS: {:.1f}", 1.0f / duration.count())
+    );
 
     debug::update();
 
