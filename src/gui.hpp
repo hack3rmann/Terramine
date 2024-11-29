@@ -59,6 +59,10 @@ public:
     auto render(ShaderProgram const& shader, glm::uvec2 viewport_size)
         -> void override;
 
+    inline auto get_position(this Text const& self) -> glm::vec2 {
+        return self.pos;
+    }
+
     inline auto set_position(this Text& self, glm::vec2 pos) -> void {
         self.pos = pos;
     }

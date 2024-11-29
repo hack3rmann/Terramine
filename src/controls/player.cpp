@@ -1,6 +1,7 @@
 #include "../controls.hpp"
 #include "../objects.hpp"
 #include "../events.hpp"
+#include "../debug.hpp"
 
 namespace tmine {
 
@@ -43,6 +44,36 @@ static auto pick_new_voxel(RefMut<VoxelId> id) -> void {
     if (io.just_pressed(Key::Key0)) {
         *id = 10;
     }
+}
+
+static auto get_orientation_string(glm::vec3 front) -> std::string_view {
+    auto orientation_str = std::string_view{};
+
+    if (glm::abs(front.x) >= glm::abs(front.y) &&
+        glm::abs(front.x) >= glm::abs(front.z))
+    {
+        if (front.x < 0.0f) {
+            orientation_str = "Negative X";
+        } else {
+            orientation_str = "Positive X";
+        }
+    } else if (glm::abs(front.y) >= glm::abs(front.x) &&
+               glm::abs(front.y) >= glm::abs(front.z))
+    {
+        if (front.y < 0.0f) {
+            orientation_str = "Negative Y";
+        } else {
+            orientation_str = "Positive Y";
+        }
+    } else {
+        if (front.z < 0.0f) {
+            orientation_str = "Negative Z";
+        } else {
+            orientation_str = "Positive Z";
+        }
+    }
+
+    return orientation_str;
 }
 
 static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
@@ -96,8 +127,21 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
              collider_box.lo.x, collider_box.hi.y - 0.25f, collider_box.lo.z
          });
 
+    debug::text()->set(
+        "camera", fmt::format(
+                      "x: {:.2f}, y: {:.2f}, z: {:.2f}", camera_pos.x,
+                      camera_pos.y, camera_pos.z
+                  )
+    );
+
+    debug::text()->set(
+        "orientation", fmt::format(
+                           "Orientation: {}",
+                           get_orientation_string(camera->get_front_direction())
+                       )
+    );
+
     camera->set_pos(camera_pos);
-    // prev_velocity.x = prev_velocity.z = 0.0f;
     prev_velocity.x *= SPEED_FALLOFF;
     prev_velocity.z *= SPEED_FALLOFF;
 
@@ -171,11 +215,25 @@ static auto interact_with_terrain(
 
     if (!ray_cast_result.has_hit) {
         selection_box->clear();
+        debug::text()->set("look_on", "Look on 'air'");
+
         return;
     }
 
     draw_selection_box(
         selection_box, ray_cast_result.voxel_pos, camera.get_pos(), *terrain
+    );
+
+    auto const look_voxel =
+        terrain->get_array().get_voxel(ray_cast_result.voxel_pos).value();
+
+    debug::text()->set(
+        "look_on", fmt::format(
+                       "Look on '{}'",
+                       terrain->get_data()
+                           .get_block(look_voxel.id, look_voxel.orientation())
+                           .name
+                   )
     );
 
     if (io.just_clicked(MouseButton::Left)) {
@@ -224,6 +282,15 @@ auto Player::update(
     );
 
     update_movement(&self.camera, &collider);
+
+    debug::text()->set(
+        "hold", fmt::format(
+                    "Held Block: {}",
+                    terrain->get_data()
+                        .get_block(self.held_voxel_id, Orientation::PosX)
+                        .name
+                )
+    );
 
     pick_new_voxel(&self.held_voxel_id);
     interact_with_terrain(

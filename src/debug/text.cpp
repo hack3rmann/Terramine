@@ -3,15 +3,27 @@
 
 namespace tmine {
 
-auto constexpr DEBUG_TEXT_SIZE = 0.3f;
+namespace vs = std::ranges::views;
 
-DebugText::DebugText(std::shared_ptr<Font> font)
+auto constexpr DEBUG_TEXT_SIZE = 0.3f;
+auto constexpr MONITOR_FONT_SCALE = 1623.0f;
+
+static auto font_size_of(glm::uvec2 viewport_size) -> f32 {
+    return DEBUG_TEXT_SIZE * MONITOR_FONT_SCALE / (f32) viewport_size.y;
+}
+
+static auto line_height_of(Font const& font, glm::uvec2 viewport_size) -> f32 {
+    return font_size_of(viewport_size) * (f32) font.common.line_height /
+           (f32) font.common.scale.y;
+}
+
+DebugText::DebugText(std::shared_ptr<Font> font, glm::uvec2 viewport_size)
 : shader{load_shader("gui_vertex.glsl", "gui_fragment.glsl")}
 , glyph_texture{Texture::from_image(
       load_png("assets/images/font.png"), TextureLoad::NO_MIPMAP_LINEAR
   )}
 , font{font}
-, viewport_size{1} {}
+, viewport_size{viewport_size} {}
 
 auto DebugText::render(this DebugText& self, glm::uvec2 viewport_size) -> void {
     self.viewport_size = viewport_size;
@@ -20,8 +32,17 @@ auto DebugText::render(this DebugText& self, glm::uvec2 viewport_size) -> void {
         return;
     }
 
-    for (auto& entry : self.text_lines) {
+    auto const line_height = line_height_of(*self.font, viewport_size);
+    auto vertical_offset = 1.0f - 0.5f * line_height;
+
+    for (auto [i, entry] : self.text_lines | vs::enumerate) {
         auto& text = entry.second;
+
+        auto position = text.get_position();
+        position.y = vertical_offset;
+        vertical_offset -= line_height;
+        text.set_position(position);
+
         text.render(self.shader, viewport_size);
     }
 }
@@ -29,18 +50,15 @@ auto DebugText::render(this DebugText& self, glm::uvec2 viewport_size) -> void {
 auto DebugText::set(
     this DebugText& self, StaticString element, std::string_view value
 ) -> void {
-    auto font_size = DEBUG_TEXT_SIZE * 2000.0f / (f32) self.viewport_size.y;
     auto constexpr LEFT_OFFSET = 0.05f;
 
+    auto const font_size = font_size_of(self.viewport_size);
     auto const aspect_ratio = Window::aspect_ratio_of(self.viewport_size);
-    auto const line_height = font_size * (f32) self.font->common.line_height /
-                             (f32) self.font->common.scale.y;
 
     auto pos = glm::vec2{-1.0f * aspect_ratio, 1.0f};
-
     auto text = Text{self.font, self.glyph_texture, value, pos, font_size};
 
-    pos += 0.5f * glm::vec2(text.get_width() + LEFT_OFFSET, -line_height);
+    pos.x += 0.5f * text.get_width() + LEFT_OFFSET;
     text.set_position(pos);
 
     self.text_lines.insert_or_assign(std::move(element), std::move(text));
