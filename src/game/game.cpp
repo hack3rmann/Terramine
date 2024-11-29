@@ -19,7 +19,7 @@ Game::Game(glm::uvec2 viewport_size)
 , scene{viewport_size}
 , gui{GuiState::InGame}
 , player{&this->physics_solver}
-, debug{this->gui.get_font(), viewport_size}
+, debug{viewport_size}
 , prev_time{chrono::high_resolution_clock::now()} {
     setup_opengl();
 

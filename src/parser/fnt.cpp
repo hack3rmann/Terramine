@@ -301,11 +301,13 @@ namespace fnt {
             chars_ordered[desc.id] = std::move(desc);
         }
 
-        auto const kerning_header =
-            execute_parser(tail, fnt_kerning_header() << whitespace());
+        auto const kerning_header = execute_parser(
+            tail, (fnt_kerning_header() << whitespace()).opt_default()
+        );
 
-        auto const kernings =
-            execute_parser(tail, (fnt_kerning() << whitespace()).repeat());
+        auto const kernings = execute_parser(
+            tail, (fnt_kerning() << whitespace()).repeat().opt_default()
+        );
 
         return comb::ParseResult<FontPage>{
             .value =
