@@ -27,7 +27,7 @@ struct Collision {
 };
 
 inline auto constexpr ABSOLUTELY_ELASTIC_ELASTICITY = 1.0f;
-inline auto constexpr ABSOLUTELY_INELASTIC_ELASTICITY = INFINITY;
+inline auto constexpr ABSOLUTELY_INELASTIC_ELASTICITY = 0.0f;
 
 struct Collidable {
     virtual ~Collidable() = default;

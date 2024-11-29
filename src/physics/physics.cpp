@@ -78,14 +78,14 @@ static auto static_binary_displace(
         );
     }
 
-    auto const elacticity = glm::max(
+    auto const elacticity = glm::min(
         dynamic_collider->collidable_elasticity(),
         static_collider->collidable_elasticity()
     );
     auto const velocity = dynamic_collider->get_collider_velocity();
     auto const parallel_velocity = project(velocity, displacement);
     auto const new_velocity =
-        velocity - (1.0f + 1.0f / elacticity) * parallel_velocity;
+        velocity - (1.0f + elacticity) * parallel_velocity;
 
     dynamic_collider->set_collider_velocity(new_velocity);
 
