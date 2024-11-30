@@ -167,7 +167,6 @@ static auto draw_selection_box(
         auto maybe_voxel =
             terrain.get_array().get_voxel(glm::ivec3(position) + offset);
 
-        // TODO(hack3rmann): check transparency instead of airness
         return maybe_voxel.has_value() && 0 != maybe_voxel->id;
     };
 
@@ -207,7 +206,8 @@ static auto draw_selection_box(
 
 static auto interact_with_terrain(
     RefMut<Terrain> terrain, RefMut<SelectionBox> selection_box,
-    Camera const& camera, VoxelId held_voxel_id
+    BoxCollider const& player_collider, Camera const& camera,
+    VoxelId held_voxel_id
 ) -> void {
     auto ray_cast_result = terrain->get_array().ray_cast(
         camera.get_pos(), camera.get_front_direction(), 100.0f
@@ -250,10 +250,25 @@ static auto interact_with_terrain(
         orientation = GameBlock::ORIENTATION_POS_Z;
     }
 
-    if (io.just_clicked(MouseButton::Right)) {
-        auto const pos =
-            ray_cast_result.voxel_pos + glm::uvec3{ray_cast_result.normal};
-        terrain->set_voxel(pos, {held_voxel_id, Voxel::make_meta(orientation)});
+    auto const new_voxel_pos =
+        ray_cast_result.voxel_pos + glm::uvec3{ray_cast_result.normal};
+
+    auto const new_voxel_box =
+        Aabb{new_voxel_pos, glm::vec3{new_voxel_pos} + glm::vec3{1.0f}};
+
+    auto constexpr PUSHOUT_THREASHOLD = 0.5f;
+
+    auto const intersection_size =
+        player_collider.box.intersection(new_voxel_box).size();
+
+    auto const player_is_pushable =
+        std::min({intersection_size.x, intersection_size.y, intersection_size.z}
+        ) < PUSHOUT_THREASHOLD;
+
+    if (io.just_clicked(MouseButton::Right) && player_is_pushable) {
+        terrain->set_voxel(
+            new_voxel_pos, {held_voxel_id, Voxel::make_meta(orientation)}
+        );
     }
 }
 
@@ -294,7 +309,7 @@ auto Player::update(
 
     pick_new_voxel(&self.held_voxel_id);
     interact_with_terrain(
-        terrain, selection_box, self.camera, self.held_voxel_id
+        terrain, selection_box, collider, self.camera, self.held_voxel_id
     );
 }
 
