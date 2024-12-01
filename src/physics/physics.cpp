@@ -11,11 +11,65 @@ static auto project(glm::vec3 source, glm::vec3 direction) -> glm::vec3 {
 }
 
 static auto binary_displace(
-    [[maybe_unused]] RefMut<Collidable> first_collider,
-    [[maybe_unused]] RefMut<Collidable> second_collider,
+    RefMut<Collidable> first_collider, RefMut<Collidable> second_collider,
     [[maybe_unused]] f32 accuracy
 ) -> bool {
-    throw Unimplemented();
+    auto const collision = first_collider->collide(*second_collider);
+
+    if (!collision.exist()) {
+        return false;
+    }
+
+    auto const first_displacement = collision.self_displacement;
+    auto const second_displacement = collision.other_displacement;
+
+    do {
+        first_collider->displace_collidable(first_displacement);
+        second_collider->displace_collidable(second_displacement);
+    } while (false && first_collider->collides(*second_collider));
+
+    auto const elacticity = glm::min(
+        first_collider->collidable_elasticity(),
+        second_collider->collidable_elasticity()
+    );
+
+    auto elastic_collision_velocity =
+        [](f32 first_mass, f32 second_mass, glm::vec3 first_velocity,
+           glm::vec3 second_velocity) -> glm::vec3 {
+        return ((first_mass - second_mass) * first_velocity +
+                2.0f * second_mass * second_velocity) /
+               (first_mass + second_mass);
+    };
+
+    auto const first_velocity = first_collider->get_collider_velocity();
+    auto const first_parallel_velocity =
+        project(first_velocity, first_displacement);
+
+    auto const second_velocity = second_collider->get_collider_velocity();
+    auto const second_parallel_velocity =
+        project(second_velocity, second_displacement);
+
+    auto const first_mass = first_collider->get_collidable_bounding_box().volume();
+    auto const second_mass = second_collider->get_collidable_bounding_box().volume();
+
+    auto const first_new_velocity =
+        first_velocity + (1.0f + elacticity) * elastic_collision_velocity(
+                                                   first_mass, second_mass,
+                                                   first_parallel_velocity,
+                                                   second_parallel_velocity
+                                               );
+
+    auto const second_new_velocity =
+        second_velocity + (1.0f + elacticity) * elastic_collision_velocity(
+                                                    second_mass, first_mass,
+                                                    second_parallel_velocity,
+                                                    first_parallel_velocity
+                                                );
+
+    first_collider->set_collider_velocity(first_new_velocity);
+    second_collider->set_collider_velocity(second_new_velocity);
+
+    return true;
 }
 
 static auto static_binary_displace(
@@ -212,13 +266,13 @@ static auto collide_dynamic_box(
     auto const total_volume = self_volume + other_volume;
     auto const signs = glm::sign(to_other_center);
 
-    if (size.x >= size.y && size.x >= size.z) {
+    if (size.x <= size.y && size.x <= size.z) {
         return Collision{
             -signs.x *
                 glm::vec3(size.x * other_volume / total_volume, 0.0f, 0.0f),
             signs.x * glm::vec3(size.x * self_volume / total_volume, 0.0f, 0.0f)
         };
-    } else if (size.y >= size.x && size.y >= size.z) {
+    } else if (size.y <= size.x && size.y <= size.z) {
         return Collision{
             -signs.y *
                 glm::vec3(0.0f, size.y * other_volume / total_volume, 0.0f),
