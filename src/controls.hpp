@@ -18,6 +18,7 @@ public:
     auto rotate(this Camera& self, glm::vec3 angles) -> void;
     auto get_projection(this Camera const& self, f32 aspect_ratio) -> glm::mat4;
     auto get_view(this Camera const& self) -> glm::mat4;
+    auto get_rotation(this Camera const& self) -> glm::mat4;
 
     auto get_move_direction(this Camera const& self) -> glm::vec3;
 

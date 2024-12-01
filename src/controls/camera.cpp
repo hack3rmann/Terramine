@@ -21,6 +21,10 @@ auto Camera::get_view(this Camera const& self) -> glm::mat4 {
     return glm::lookAt(self.pos, self.pos + self.front, Camera::DEFAULT_UP);
 }
 
+auto Camera::get_rotation(this Camera const& self) -> glm::mat4 {
+    return self.rotation;
+}
+
 auto Camera::get_move_direction(this Camera const& self) -> glm::vec3 {
     return glm::normalize(glm::vec3{self.front.x, 0.0f, self.front.z});
 }
