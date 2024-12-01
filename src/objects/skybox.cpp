@@ -14,42 +14,47 @@ Skybox::Skybox()
       load_png("assets/images/Skybox4.png"), TextureLoad::DEFAULT
   )} {
     auto constexpr VERTICES = std::array{
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{0.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{0.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{0.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, 0.5f}, glm::vec2{1.0f / 3.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{0.5f, -0.5f, -0.5f}, glm::vec2{1.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 1.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, 0.5f}, glm::vec2{2.0f / 3.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 0.5f}},
-        Skybox::Vertex{glm::vec3{-0.5f, -0.5f, -0.5f}, glm::vec2{2.0f / 3.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, -0.5f}, glm::vec2{1.0f, 0.0f}},
-        Skybox::Vertex{glm::vec3{-0.5f, 0.5f, 0.5f}, glm::vec2{1.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, -0.5f}, {1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, 0.5f, -0.5f}, {0.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
+        Skybox::Vertex{{0.5f, -0.5f, -0.5f}, {1.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, -0.5f}, {1.0f / 3.0f, 0.5f}},
+
+        Skybox::Vertex{{-0.5f, -0.5f, 0.5f}, {2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, 0.5f, 0.5f}, {2.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},
+        Skybox::Vertex{{-0.5f, -0.5f, 0.5f}, {2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},
+        Skybox::Vertex{{0.5f, -0.5f, 0.5f}, {1.0f, 0.5f}},
+
+        Skybox::Vertex{{-0.5f, 0.5f, -0.5f}, {1.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, 0.5f}, {2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, 0.5f, 0.5f}, {1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, 0.5f, -0.5f}, {1.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, -0.5f}, {2.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, 0.5f}, {2.0f / 3.0f, 0.5f}},
+
+        Skybox::Vertex{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}},
+        Skybox::Vertex{{0.5f, -0.5f, 0.5f}, {1.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{{-0.5f, -0.5f, -0.5f}, {0.0f, 0.5f}},
+        Skybox::Vertex{{0.5f, -0.5f, 0.5f}, {1.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{{0.5f, -0.5f, -0.5f}, {1.0f / 3.0f, 0.5f}},
+
+        Skybox::Vertex{{0.5f, -0.5f, -0.5f}, {1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{0.5f, -0.5f, 0.5f}, {1.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, 0.5f}, {2.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{{0.5f, -0.5f, -0.5f}, {1.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{0.5f, 0.5f, 0.5f}, {2.0f / 3.0f, 1.0f}},
+        Skybox::Vertex{{0.5f, 0.5f, -0.5f}, {2.0f / 3.0f, 0.5f}},
+
+        Skybox::Vertex{{-0.5f, -0.5f, -0.5f}, {2.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{{-0.5f, 0.5f, 0.5f}, {1.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, -0.5f, 0.5f}, {2.0f / 3.0f, 0.5f}},
+        Skybox::Vertex{{-0.5f, -0.5f, -0.5f}, {2.0f / 3.0f, 0.0f}},
+        Skybox::Vertex{{-0.5f, 0.5f, -0.5f}, {1.0f, 0.0f}},
+        Skybox::Vertex{{-0.5f, 0.5f, 0.5f}, {1.0f, 0.5f}},
     };
 
     auto& buffer = this->mesh.get_buffer();
@@ -61,15 +66,18 @@ Skybox::Skybox()
 void Skybox::render(
     Camera const& cam, SceneParameters const&, RenderPass pass
 ) {
+    glEnable(GL_CULL_FACE);
+
     this->texture.bind(0);
     this->shader.bind();
 
     this->shader.uniform_mat4(
-        "projection_view",
+        "projection_rotation",
         cam.get_projection(Window::aspect_ratio_of(pass.viewport_size)) *
-            cam.get_view()
+            glm::transpose(cam.get_rotation())
     );
-    this->shader.uniform_vec3("camera_position", cam.get_pos());
 
     this->mesh.draw();
+
+    glDisable(GL_CULL_FACE);
 }
