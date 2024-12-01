@@ -213,10 +213,7 @@ auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
         collider->set_collider_velocity(velocity);
     }
 
-    // TODO(hack3rmann): turn this constant to a class member
-    static auto constexpr MAX_N_STEPS = usize{20};
-
-    for (usize i = 0; i < MAX_N_STEPS; ++i) {
+    for (usize i = 0; i < MAX_N_DISPLACE_STEPS; ++i) {
         if (!handle_collisions(self.colliders, self.accuracy)) {
             break;
         }

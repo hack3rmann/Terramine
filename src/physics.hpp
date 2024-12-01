@@ -107,6 +107,8 @@ private:
     f32 previous_frame_reminder{0.0f};
     f32 accuracy;
     std::vector<std::unique_ptr<Collidable>> colliders{};
+
+    static auto constexpr MAX_N_DISPLACE_STEPS = usize{20};
 };
 
 struct BoxCollider : public Collidable {
