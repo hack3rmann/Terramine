@@ -4,121 +4,127 @@
 #include <glm/glm.hpp>
 #include <comb/parse.hpp>
 
-#include "types.hpp"
 #include "data.hpp"
 
 namespace tmine {
 
-namespace fnt {
-
-    auto parse_key_value_integer(std::string_view src, std::string_view key)
-        -> comb::ParseResult<i64>;
-
-    auto parse_key_value_string(std::string_view src, std::string_view key)
-        -> comb::ParseResult<std::string_view>;
-
-    auto parse_info(std::string_view src) -> comb::ParseResult<FontInfo>;
-
-    auto parse_common(std::string_view src) -> comb::ParseResult<FontCommon>;
-
-    auto parse_page_header(std::string_view src)
-        -> comb::ParseResult<FontPageHeader>;
-
-    auto parse_chars_header(std::string_view src)
-        -> comb::ParseResult<FontCharsHeader>;
-
-    auto parse_char_desc(std::string_view src)
-        -> comb::ParseResult<FontCharDesc>;
-
-    auto parse_kerning(std::string_view src) -> comb::ParseResult<FontKerning>;
-
-    auto parse_page(std::string_view src) -> comb::ParseResult<FontPage>;
-
-    auto parse_font(std::string_view src) -> comb::ParseResult<Font>;
-
-}  // namespace fnt
-
 namespace parser {
 
-    inline auto fnt_key_value_string(std::string_view key) {
-        return comb::Parser{
-            [key](std::string_view src) -> comb::ParseResult<std::string_view> {
-                return ::tmine::fnt::parse_key_value_string(src, key);
-            }
-        };
+    using namespace comb;
+
+    inline auto constexpr key_value(std::string_view key, ParserLike auto value)
+        -> ParserLike auto {
+        return prefix(key) >> character('=') >> std::move(value);
     }
 
-    inline auto fnt_key_value_integer(std::string_view key) {
-        return comb::Parser{
-            [key](std::string_view src) -> comb::ParseResult<i64> {
-                return ::tmine::fnt::parse_key_value_integer(src, key);
-            }
-        };
-    }
+    auto constexpr parse_info =
+        prefix("info") >> whitespace(1) >>
+        collect<FontInfo>(
+            key_value("face", quoted_string()).map_type<std::string>()
+                << whitespace(1),
+            key_value("size", integer()) << whitespace(1),
+            key_value("bold", integer()).map_type<bool>() << whitespace(1),
+            key_value("italic", integer()).map_type<bool>() << whitespace(1),
+            key_value("charset", quoted_string()).map_type<std::string>()
+                << whitespace(1),
+            key_value("unicode", integer()).map_type<bool>() << whitespace(1),
+            key_value("stretchH", integer()) << whitespace(1),
+            key_value("smooth", integer()).map_type<bool>() << whitespace(1),
+            key_value("aa", integer()).map_type<bool>() << whitespace(1),
+            key_value(
+                "padding",
+                collect<glm::ivec4>(
+                    integer() << character(','), integer() << character(','),
+                    integer() << character(','), integer()
+                )
+            ) << whitespace(1),
+            key_value(
+                "spacing",
+                collect<glm::ivec2>(integer() << character(','), integer())
+            )
+        );
 
-    inline auto fnt_info() {
-        return comb::Parser{
-            [](std::string_view src) -> comb::ParseResult<FontInfo> {
-                return ::tmine::fnt::parse_info(src);
-            }
-        };
-    }
+    auto constexpr parse_common =
+        prefix("common") >>
+        whitespace(1) >> collect<FontCommon>(
+                             key_value("lineHeight", integer())
+                                 << whitespace(1),
+                             key_value("base", integer()) << whitespace(1),
+                             collect<glm::uvec2>(
+                                 key_value("scaleW", integer())
+                                     << whitespace(1),
+                                 key_value("scaleH", integer()) << whitespace(1)
+                             ),
+                             key_value("pages", integer()) << whitespace(1),
+                             key_value("packed", integer()).map_type<bool>()
+                         );
 
-    inline auto fnt_common() {
-        return comb::Parser{
-            [](std::string_view src) -> comb::ParseResult<FontCommon> {
-                return ::tmine::fnt::parse_common(src);
-            }
-        };
-    }
+    auto constexpr parse_page_header =
+        prefix("page") >> whitespace(1) >>
+        collect<FontPageHeader>(
+            key_value("id", integer()) << whitespace(1),
+            key_value("file", quoted_string()).map_type<std::string>()
+        );
 
-    inline auto fnt_page_header() {
-        return comb::Parser{
-            [](std::string_view src) -> comb::ParseResult<FontPageHeader> {
-                return ::tmine::fnt::parse_page_header(src);
-            }
-        };
-    }
+    auto constexpr parse_chars_header =
+        prefix("chars") >>
+        whitespace(1) >> collect<FontCharsHeader>(key_value("count", integer())
+                         );
 
-    inline auto fnt_chars_header() {
-        return comb::Parser{
-            [](std::string_view src) -> comb::ParseResult<FontCharsHeader> {
-                return ::tmine::fnt::parse_chars_header(src);
-            }
-        };
-    }
+    auto constexpr parse_char_desc =
+        prefix("char") >>
+        whitespace(1) >> collect<FontCharDesc>(
+                             key_value("id", integer()) << whitespace(1),
+                             collect<glm::uvec2>(
+                                 key_value("x", integer()) << whitespace(1),
+                                 key_value("y", integer()) << whitespace(1)
+                             ),
+                             collect<glm::uvec2>(
+                                 key_value("width", integer()) << whitespace(1),
+                                 key_value("height", integer()) << whitespace(1)
+                             ),
+                             collect<glm::ivec2>(
+                                 key_value("xoffset", integer())
+                                     << whitespace(1),
+                                 key_value("yoffset", integer())
+                                     << whitespace(1)
+                             ),
+                             key_value("xadvance", integer()) << whitespace(1),
+                             key_value("page", integer()) << whitespace(1),
+                             key_value("chnl", integer())
+                         );
 
-    inline auto fnt_char_desc() {
-        return comb::Parser{
-            [](std::string_view src) -> comb::ParseResult<FontCharDesc> {
-                return ::tmine::fnt::parse_char_desc(src);
-            }
-        };
-    }
+    auto constexpr parse_kerning =
+        prefix("kerning") >>
+        whitespace(1) >> collect<FontKerning>(
+                             key_value("first", integer()) << whitespace(1),
+                             key_value("second", integer()) << whitespace(1),
+                             key_value("amount", integer()) << whitespace(1)
+                         );
 
-    inline auto fnt_kerning_header() {
-        return (comb::prefix("kernings") >> comb::whitespace(1) >>
-                fnt_key_value_integer("count"))
-            .map([](i64 count) {
-                return FontKerningsHeader{.count = (u32) count};
-            });
-    }
+    auto constexpr parse_kernings_header =
+        prefix("kernings") >> whitespace(1) >>
+        key_value("count", integer()).map_type<FontKerningsHeader>();
 
-    inline auto fnt_kerning() {
-        return comb::Parser{
-            [](std::string_view src) -> comb::ParseResult<FontKerning> {
-                return ::tmine::fnt::parse_kerning(src);
-            }
-        };
-    }
+    auto constexpr parse_page = collect<FontPage>(
+        parse_page_header << whitespace(), parse_chars_header << whitespace(),
+        list(parse_char_desc, whitespace()).map([](auto unordered) {
+            auto ordered = std::vector<FontCharDesc>(1 << CHAR_BIT);
 
-    inline auto fnt_page() {
-        return comb::Parser{
-            [](std::string_view src) -> comb::ParseResult<FontPage> {
-                return ::tmine::fnt::parse_page(src);
+            for (auto&& desc : unordered) {
+                ordered[desc.id] = std::move(desc);
             }
-        };
-    }
+
+            return ordered;
+        }),
+        parse_kernings_header.opt_default() << whitespace(),
+        list(parse_kerning, whitespace()).opt_default()
+    );
+
+    auto constexpr parse_font = collect<Font>(
+        parse_info << newline(), parse_common << newline(),
+        auto{parse_page}.map([](auto first) { return std::vector{std::move(first)}; })
+    );
 
 }  // namespace parser
 
