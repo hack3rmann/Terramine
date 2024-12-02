@@ -6,8 +6,9 @@
 namespace tmine_test {
 
 auto test_parse_fnt_key_value_string() -> void {
-    auto const result =
-        tmine::fnt::parse_key_value_string("key=\"value\" tail", "key");
+    auto const result = tmine::parser::key_value("key", comb::quoted_string())(
+        "key=\"value\" tail"
+    );
 
     tmine_assert(result.ok());
     tmine_assert_eq(result.get_value(), "value");
@@ -19,7 +20,7 @@ auto test_parse_fnt_info() -> void {
         "info face=\"Segoe Print\" size=150 bold=0 italic=0 charset=\"\" "
         "unicode=0 stretchH=100 smooth=1 aa=1 padding=1,1,1,1 spacing=-2,-2";
 
-    auto const result = tmine::fnt::parse_info(src);
+    auto const result = tmine::parser::parse_info(src);
 
     tmine_assert(result.ok());
     tmine_assert_eq(result.tail, "");
@@ -48,7 +49,7 @@ auto test_parse_fnt_common() -> void {
         "common lineHeight=265 base=189 scaleW=1024 scaleH=1024 pages=1 "
         "packed=0";
 
-    auto const result = tmine::fnt::parse_common(src);
+    auto const result = tmine::parser::parse_common(src);
 
     tmine_assert(result.ok());
 
@@ -65,7 +66,7 @@ auto test_parse_fnt_common() -> void {
 auto test_parse_fnt_page() -> void {
     auto const src = "page id=0 file=\"font.png\"";
 
-    auto const result = tmine::fnt::parse_page_header(src);
+    auto const result = tmine::parser::parse_page_header(src);
 
     tmine_assert(result.ok());
 
@@ -80,7 +81,7 @@ auto test_parse_fnt_char_desc() -> void {
         "char id=0       x=827  y=481  width=70   height=115  xoffset=3    "
         "yoffset=75   xadvance=75   page=0    chnl=0";
 
-    auto const result = tmine::fnt::parse_char_desc(src);
+    auto const result = tmine::parser::parse_char_desc(src);
 
     tmine_assert(result.ok());
 
@@ -100,7 +101,7 @@ auto test_parse_fnt_char_desc() -> void {
 
 auto test_parse_fnt_font() -> void {
     auto const src = tmine::read_to_string("assets/fonts/font.fnt");
-    auto result = tmine::fnt::parse_font(src);
+    auto result = tmine::parser::parse_font(src);
 
     tmine_assert(result.ok());
 

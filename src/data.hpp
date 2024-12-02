@@ -124,14 +124,14 @@ struct GameBlocksData {
 
 struct FontInfo {
     std::string face;
-    std::string charset;
     u32 size;
+    bool is_bold : 4;
+    bool is_italic : 4;
+    std::string charset;
+    bool is_unicode;
     u32 horizontal_stretch;
-    bool is_bold : 1;
-    bool is_italic : 1;
-    bool is_unicode : 1;
-    bool is_smooth : 1;
-    bool is_antialiased : 1;
+    bool is_smooth : 4;
+    bool is_antialiased : 4;
     glm::ivec4 padding;
     glm::ivec2 spacing;
 };
@@ -145,8 +145,8 @@ struct FontCommon {
 };
 
 struct FontPageHeader {
-    std::string file;
     u32 id;
+    std::string file;
 };
 
 struct FontCharsHeader {
@@ -176,8 +176,8 @@ struct FontKerning {
 struct FontPage {
     FontPageHeader header;
     FontCharsHeader chars_header;
-    FontKerningsHeader kernings_header;
     std::vector<FontCharDesc> chars;
+    FontKerningsHeader kernings_header;
     std::vector<FontKerning> kernings;
 };
 
