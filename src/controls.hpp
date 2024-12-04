@@ -64,6 +64,8 @@ private:
 class Terrain;
 class SelectionBox;
 
+enum class PlayerMovement { Walk = 0, Fly };
+
 class Player {
 public:
     explicit Player(RefMut<PhysicsSolver> solver);
@@ -80,6 +82,7 @@ public:
 
 private:
     Camera camera;
+    PlayerMovement movement{PlayerMovement::Walk};
     glm::vec2 camera_mouse_angles;
     VoxelId held_voxel_id;
     ColliderId collider_id;

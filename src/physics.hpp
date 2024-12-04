@@ -40,6 +40,8 @@ struct Collidable {
         return glm::vec3{0.0f};
     }
 
+    inline virtual auto set_collider_acceleration(glm::vec3) -> void {}
+
     virtual auto displace_collidable(glm::vec3 displacement) -> void = 0;
     virtual auto collide(Collidable const& other) const -> Collision = 0;
 
@@ -139,6 +141,10 @@ struct BoxCollider : public Collidable {
 
     inline auto get_collider_acceleration() const -> glm::vec3 override {
         return this->acceleration;
+    }
+
+    inline auto set_collider_acceleration(glm::vec3 value) -> void override {
+        this->acceleration = value;
     }
 
     inline auto set_collider_velocity(glm::vec3 velocity) -> void override {
