@@ -49,9 +49,10 @@ Terrain::Terrain(glm::uvec3 sizes)
     for (auto [i, chunk] : this->chunks->get_span() | vs::enumerate) {
         auto const any_voxel_is_transparent =
             rg::any_of(chunk.get_voxels(), [this](auto voxel) {
-                return 0 != voxel.id && this->renderer.data
-                    .get_block(voxel.id, voxel.orientation())
-                    .is_translucent();
+                return 0 != voxel.id &&
+                       this->renderer.data
+                           .get_block(voxel.id, voxel.orientation())
+                           .is_translucent();
             });
 
         if (any_voxel_is_transparent) {
@@ -417,7 +418,12 @@ auto TerrainCollider::collide_box(
     auto displacement = glm::vec3{0.0f};
     auto directional_counts = glm::vec3{0};
 
-    for (auto const box : boxes) {
+    rg::sort(boxes, [other = other.box](auto const& left, auto const& right) {
+        return other.intersection(left).volume() >=
+               other.intersection(right).volume();
+    });
+
+    for (auto const box : boxes | vs::take(1)) {
         debug::lines()->box(box, 0.8f * DebugColor::BLUE);
 
         auto const collider = BoxCollider{

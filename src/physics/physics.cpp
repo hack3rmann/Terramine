@@ -87,10 +87,7 @@ static auto static_binary_displace(
     auto free_displacement_amount = 0.0f;
     bool displaced_towards_overlap = false;
 
-    do {
-        dynamic_collider->displace_collidable(displacement);
-        free_displacement_amount += 1.0f;
-    } while (dynamic_collider->collides(*static_collider));
+    dynamic_collider->displace_collidable(displacement);
 
     auto overlapping_displacement_amount = free_displacement_amount - 1.0f;
 
