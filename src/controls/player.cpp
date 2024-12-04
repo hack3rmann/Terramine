@@ -221,7 +221,7 @@ static auto draw_selection_box(
 }
 
 // FIXME(hack3rmann): make a runtime mode 'excavate'
-#define EXCAVATE 1
+#define EXCAVATE 0
 #if EXCAVATE
 #    define clicked is_clicked
 #else
