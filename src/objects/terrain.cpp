@@ -1,6 +1,8 @@
 #include <ranges>
 #include <cstdlib>
 
+#include <fmt/ranges.h>
+
 #include "../objects.hpp"
 #include "../loaders.hpp"
 #include "../window.hpp"
@@ -245,67 +247,69 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value)
         self.renderer.data.blocks[prev_voxel_id.id][0].is_translucent())
     {
         auto& chunk = *self.chunks->chunk(chunk_pos);
-        bool contains_transparent =
+        bool contains_translucent =
             rg::any_of(chunk.get_voxels(), [&self](auto voxel) {
                 return 0 != voxel.id &&
                        self.renderer.data.blocks[voxel.id][0].is_translucent();
             });
 
         // remove chunk which is transparent no more
-        if (!contains_transparent && !chunks_with_transparency.empty()) {
+        if (!contains_translucent && !chunks_with_transparency.empty()) {
             auto const iter =
                 rg::lower_bound(chunks_with_transparency, chunk_index);
 
-            rg::iter_swap(iter, chunks_with_transparency.end() - 1);
-            chunks_with_transparency.pop();
+            if (iter != chunks_with_transparency.end() && *iter == chunk_index) {
+                chunks_with_transparency.erase(iter, iter + 1);
+            }
         }
     }
 
     if (0 != value.id &&
         self.renderer.data.blocks[value.id][0].is_translucent())
     {
-        chunks_with_transparency.push(chunk_index);
-        return;
+        auto it = rg::lower_bound(chunks_with_transparency, chunk_index);
+
+        if (it == chunks_with_transparency.end() || *it != chunk_index) {
+            chunks_with_transparency.insert(it, chunk_index);
+        }
     }
 
     auto const sizes = self.chunks->size();
 
-    self.chunks_to_update.push_back(self.chunks->index_of(chunk_pos));
+    auto update_sorted = [&](glm::uvec3 chunk_pos) {
+        auto const index = self.chunks->index_of(chunk_pos);
+
+        auto it = rg::lower_bound(self.chunks_to_update, index);
+
+        if (it == self.chunks_to_update.end() || *it != index) {
+            self.chunks_to_update.insert(it, index);
+        }
+    };
+
+    update_sorted(chunk_pos);
 
     if (0 == local_pos.x && 0 != chunk_pos.x) {
-        self.chunks_to_update.push_back(self.chunks->index_of(
-            glm::uvec3(chunk_pos.x - 1, chunk_pos.y, chunk_pos.z)
-        ));
+        update_sorted(glm::uvec3(chunk_pos.x - 1, chunk_pos.y, chunk_pos.z));
     }
 
     if (Chunk::WIDTH == local_pos.x + 1 && sizes.x != chunk_pos.x + 1) {
-        self.chunks_to_update.push_back(self.chunks->index_of(
-            glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z)
-        ));
+        update_sorted(glm::uvec3(chunk_pos.x + 1, chunk_pos.y, chunk_pos.z));
     }
 
     if (0 == local_pos.y && 0 != chunk_pos.y) {
-        self.chunks_to_update.push_back(self.chunks->index_of(
-            glm::uvec3(chunk_pos.x, chunk_pos.y - 1, chunk_pos.z)
-        ));
+        update_sorted(glm::uvec3(chunk_pos.x, chunk_pos.y - 1, chunk_pos.z));
     }
 
     if (Chunk::HEIGHT == local_pos.y + 1 && sizes.y != chunk_pos.y + 1) {
-        self.chunks_to_update.push_back(self.chunks->index_of(
-            glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z)
-        ));
+        update_sorted(glm::uvec3(chunk_pos.x, chunk_pos.y + 1, chunk_pos.z));
     }
 
     if (0 == local_pos.z && 0 != chunk_pos.z) {
-        self.chunks_to_update.push_back(self.chunks->index_of(
-            glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z - 1)
-        ));
+        update_sorted(glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z - 1));
     }
 
     if (Chunk::DEPTH == local_pos.z + 1 && sizes.z != chunk_pos.z + 1) {
-        self.chunks_to_update.push_back(self.chunks->index_of(
-            glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1)
-        ));
+        update_sorted(glm::uvec3(chunk_pos.x, chunk_pos.y, chunk_pos.z + 1));
     }
 }
 

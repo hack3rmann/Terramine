@@ -220,13 +220,23 @@ static auto draw_selection_box(
     selection_box->box(box, glm::vec4{glm::vec3{1.0f}, 0.7f}, sides);
 }
 
+// FIXME(hack3rmann): make a runtime mode 'excavate'
+#define EXCAVATE 1
+#if EXCAVATE
+#    define clicked is_clicked
+#else
+#    define clicked just_clicked
+#endif
+
 static auto interact_with_terrain(
     RefMut<Terrain> terrain, RefMut<SelectionBox> selection_box,
     BoxCollider const& player_collider, Camera const& camera,
     VoxelId held_voxel_id
 ) -> void {
+    auto constexpr MAX_DISTANCE = 1000.0f;
+
     auto ray_cast_result = terrain->get_array().ray_cast(
-        camera.get_pos(), camera.get_front_direction(), 100.0f
+        camera.get_pos(), camera.get_front_direction(), MAX_DISTANCE
     );
 
     if (!ray_cast_result.has_hit) {
@@ -252,8 +262,28 @@ static auto interact_with_terrain(
                    )
     );
 
-    if (io.just_clicked(MouseButton::Left)) {
+    if (io.clicked(MouseButton::Left)) {
         terrain->set_voxel(ray_cast_result.voxel_pos, {});
+
+#if EXCAVATE
+        auto constexpr RADIUS = i32{15};
+
+        for (i32 x = -RADIUS; x <= RADIUS; ++x) {
+            for (i32 y = -RADIUS; y <= RADIUS; ++y) {
+                for (i32 z = -RADIUS; z <= RADIUS; ++z) {
+                    auto const pos = glm::vec3{x, y, z};
+
+                    if (glm::dot(pos, pos) <= RADIUS * RADIUS) {
+                        terrain->set_voxel(
+                            glm::ivec3{ray_cast_result.voxel_pos} +
+                                glm::ivec3{x, y, z},
+                            {}
+                        );
+                    }
+                }
+            }
+        }
+#endif
     }
 
     auto orientation = u8{0};
@@ -281,10 +311,30 @@ static auto interact_with_terrain(
         std::min({intersection_size.x, intersection_size.y, intersection_size.z}
         ) < PUSHOUT_THREASHOLD;
 
-    if (io.just_clicked(MouseButton::Right) && player_is_pushable) {
+    if (io.clicked(MouseButton::Right) && player_is_pushable) {
         terrain->set_voxel(
             new_voxel_pos, {held_voxel_id, Voxel::make_meta(orientation)}
         );
+
+#if EXCAVATE
+        auto constexpr RADIUS = i32{10};
+
+        for (i32 x = -RADIUS; x <= RADIUS; ++x) {
+            for (i32 y = -RADIUS; y <= RADIUS; ++y) {
+                for (i32 z = -RADIUS; z <= RADIUS; ++z) {
+                    auto const pos = glm::vec3{x, y, z};
+
+                    if (glm::dot(pos, pos) <= RADIUS * RADIUS) {
+                        terrain->set_voxel(
+                            glm::ivec3{ray_cast_result.voxel_pos} +
+                                glm::ivec3{x, y, z},
+                            {held_voxel_id, Voxel::make_meta(orientation)}
+                        );
+                    }
+                }
+            }
+        }
+#endif
     }
 }
 

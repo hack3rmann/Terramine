@@ -47,6 +47,7 @@ public:
     auto empty(this ThreadsafeVecLock const& self) -> bool;
 
     auto erase(this ThreadsafeVecLock& self, T* begin, T* end) -> void;
+    auto insert(this ThreadsafeVecLock& self, T* pos, T value) -> void;
 
     auto reserve_exact(this ThreadsafeVecLock& self, usize amount) -> void;
     auto reserve(this ThreadsafeVecLock& self, usize amount) -> void;
@@ -317,19 +318,41 @@ auto ThreadsafeVecLock<T>::erase(this ThreadsafeVecLock& self, T* begin, T* end)
     auto const n_elements = (usize) (end - begin);
     auto delete_begin = begin;
 
-    if (self.end() != end) {
-        self.reserve(n_elements);
-
-        memcpy(self.end(), begin, sizeof(T) * n_elements);
-        memcpy(begin, end, sizeof(T) * (self.end() - end));
-        delete_begin = self.end();
-    }
-
     for (usize i = 0; i < n_elements; ++i) {
         delete_begin[i].~T();
     }
 
+    std::memmove(begin, end, sizeof(T) * (self.end() - end));
+
     self.parent->len -= n_elements;
+}
+
+template <class T>
+auto ThreadsafeVecLock<T>::insert(this ThreadsafeVecLock& self, T* pos, T value)
+    -> void {
+    if (pos < self.begin() || pos > self.end()) {
+        throw Panic("invalid insert");
+    }
+
+    auto const index = (usize) (pos - self.begin());
+
+    if (index == self.size()) {
+        self.push(std::move(value));
+        return;
+    }
+
+    self.reserve(1);
+
+    if (!self.empty()) {
+        std::memmove(
+            self.parent->ptr + index + 1, self.parent->ptr + index,
+            sizeof(T) * (self.size() - index)
+        );
+    }
+
+    new (self.parent->ptr + index) T{std::move(value)};
+
+    self.parent->len += 1;
 }
 
 template <class T>
@@ -516,13 +539,9 @@ public:
         }
     }
 
-    auto end(this SmallVec& self) -> T* {
-        return self.begin() + self.len;
-    }
+    auto end(this SmallVec& self) -> T* { return self.begin() + self.len; }
 
-    auto size(this SmallVec const& self) -> usize {
-        return self.len;
-    }
+    auto size(this SmallVec const& self) -> usize { return self.len; }
 
     template <class Self>
     auto operator[](this Self&& self, usize index) {
@@ -550,9 +569,7 @@ public:
         }
     }
 
-    auto empty(this SmallVec const& self) -> bool {
-        return self.len == 0;
-    }
+    auto empty(this SmallVec const& self) -> bool { return self.len == 0; }
 
 private:
     usize len;

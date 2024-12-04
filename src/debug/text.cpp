@@ -61,7 +61,11 @@ auto DebugText::set(
     pos.x += 0.5f * text.get_width() + EDGE_OFFSET;
     text.set_position(pos);
 
-    self.text_lines.insert_or_assign(std::move(element), std::move(text));
+    if (self.text_lines.contains(element)) {
+        self.text_lines.erase(element);
+    }
+
+    self.text_lines.insert({std::move(element), std::move(text)});
 }
 
 }  // namespace tmine
