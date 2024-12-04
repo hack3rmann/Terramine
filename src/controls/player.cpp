@@ -5,17 +5,9 @@
 
 namespace tmine {
 
-// FIXME(hack3rmann): handle gravity at runtime
-#define GRAVITY 1
-
 inline auto constexpr COLLIDER_SIZE = glm::vec3{0.6f, 1.75f, 0.6f};
 inline auto constexpr INITIAL_POSITION = glm::vec3{60.0f};
-
-#if GRAVITY
 inline auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f, -20.0f, 0.0f};
-#else
-inline auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f};
-#endif
 
 static auto rotate_camera_by_mouse(
     RefMut<glm::vec2> camera_mouse_angles, RefMut<Camera> camera,
@@ -76,8 +68,9 @@ static auto get_orientation_string(glm::vec3 front) -> std::string_view {
     return orientation_str;
 }
 
-static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
-    -> void {
+static auto update_movement(
+    RefMut<Camera> camera, RefMut<BoxCollider> collider, PlayerMovement movement
+) -> void {
     auto velocity_direction = glm::vec3{0.0f};
 
     if (io.is_pressed(Key::W)) {
@@ -96,27 +89,49 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
         velocity_direction -= camera->get_right_direction();
     }
 
+    if (PlayerMovement::Fly == movement) {
+        if (io.is_pressed(Key::Space)) {
+            velocity_direction.y += 1.0f;
+        }
+
+        if (io.is_pressed(Key::LeftShift)) {
+            velocity_direction.y -= 1.0f;
+        }
+
+        collider->set_collider_acceleration(glm::vec3{0.0f});
+    } else {
+        collider->set_collider_acceleration(GRAVITY_ACCELERATION);
+    }
+
     if (velocity_direction != glm::vec3{0.0f}) {
         velocity_direction = glm::normalize(velocity_direction);
     }
 
-    auto prev_velocity = collider->get_collider_velocity();
-    auto is_grounded = !GRAVITY || glm::abs(prev_velocity.y) < 0.01;
-
     auto constexpr SPEED_FALLOFF = 0.7f;
+    auto constexpr SPEED = 2.0f;
 
-    if (io.is_pressed(Key::LeftShift)) {
-        velocity_direction.y = -2.5 / SPEED_FALLOFF;
-    }
-
-    if (is_grounded && io.is_pressed(Key::Space)) {
-        velocity_direction.y = 2.5f / SPEED_FALLOFF;
-    }
-
-    auto speed = SPEED_FALLOFF * 3.0f;
+    auto speed = SPEED;
+    auto speed_falloff =
+        PlayerMovement::Walk == movement ? SPEED_FALLOFF : 0.2f + SPEED_FALLOFF;
 
     if (io.is_pressed(Key::LeftControl)) {
-        speed *= 3.0f;
+        if (PlayerMovement::Walk == movement) {
+            speed *= 3.0f;
+        } else {
+            speed *= 10.0f;
+        }
+    }
+
+    auto velocity = speed * velocity_direction;
+    auto prev_velocity = collider->get_collider_velocity();
+
+    if (PlayerMovement::Walk == movement) {
+        auto const is_grounded =
+            PlayerMovement::Fly == movement || glm::abs(prev_velocity.y) < 0.01;
+
+        if (is_grounded && io.is_pressed(Key::Space)) {
+            velocity.y = 2.5f * speed / speed_falloff;
+        }
     }
 
     auto const collider_box = collider->get_collidable_bounding_box();
@@ -142,14 +157,15 @@ static auto update_movement(RefMut<Camera> camera, RefMut<BoxCollider> collider)
     );
 
     camera->set_pos(camera_pos);
-    prev_velocity.x *= SPEED_FALLOFF;
-    prev_velocity.z *= SPEED_FALLOFF;
 
-#if !GRAVITY
-    prev_velocity.y = 0.0f;
-#endif
+    prev_velocity.x *= speed_falloff;
+    prev_velocity.z *= speed_falloff;
 
-    collider->set_collider_velocity(prev_velocity + speed * velocity_direction);
+    if (PlayerMovement::Fly == movement) {
+        prev_velocity.y *= speed_falloff;
+    }
+
+    collider->set_collider_velocity(prev_velocity + velocity);
 }
 
 static auto draw_selection_box(
@@ -292,11 +308,19 @@ auto Player::update(
         collider.set_collider_velocity(glm::vec3{0.0f});
     }
 
+    if (io.just_pressed(Key::F)) {
+        if (self.movement == PlayerMovement::Walk) {
+            self.movement = PlayerMovement::Fly;
+        } else {
+            self.movement = PlayerMovement::Walk;
+        }
+    }
+
     rotate_camera_by_mouse(
         &self.camera_mouse_angles, &self.camera, viewport_size
     );
 
-    update_movement(&self.camera, &collider);
+    update_movement(&self.camera, &collider, self.movement);
 
     debug::text()->set(
         "hold", fmt::format(
