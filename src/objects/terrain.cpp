@@ -343,25 +343,7 @@ auto TerrainCollider::collide_box(
 
     debug::lines()->box(other_box, 0.8f * DebugColor::GREEN);
 
-    // TODO(hack3rmann): use SmallVec<Aabb, 6> here
-    auto boxes = std::vector<Aabb>{};
-
-    auto have_common_axis = [](Aabb lhs, Aabb rhs) -> bool {
-        auto constexpr EPS = 0.00001f;
-
-        return (glm::abs(lhs.lo.x - rhs.lo.x) < EPS &&
-                glm::abs(lhs.hi.x - rhs.hi.x) < EPS &&
-                glm::abs(lhs.lo.y - rhs.lo.y) < EPS &&
-                glm::abs(lhs.hi.y - rhs.hi.y) < EPS) ||
-               (glm::abs(lhs.lo.y - rhs.lo.y) < EPS &&
-                glm::abs(lhs.hi.y - rhs.hi.y) < EPS &&
-                glm::abs(lhs.lo.z - rhs.lo.z) < EPS &&
-                glm::abs(lhs.hi.z - rhs.hi.z) < EPS) ||
-               (glm::abs(lhs.lo.x - rhs.lo.x) < EPS &&
-                glm::abs(lhs.hi.x - rhs.hi.x) < EPS &&
-                glm::abs(lhs.lo.z - rhs.lo.z) < EPS &&
-                glm::abs(lhs.hi.z - rhs.hi.z) < EPS);
-    };
+    auto boxes = SmallVec<16, Aabb>{};
 
     for (u32 x = lo.x; x <= hi.x; ++x) {
         for (u32 y = lo.y; y <= hi.y; ++y) {
@@ -380,67 +362,32 @@ auto TerrainCollider::collide_box(
                     continue;
                 }
 
-                boxes.push_back(box);
+                boxes.push(box);
             }
         }
     }
 
-    for (usize i = 0; i < boxes.size(); ++i) {
-        auto had_merged_any = false;
+    if (boxes.empty()) {
+        return Collision{};
+    }
 
-        if (boxes[i] == INFINITELY_LARGE_AABB) {
-            continue;
+    auto const max_box = *rg::max_element(
+        boxes,
+        [other = other.box](auto const& left, auto const& right) {
+            return other.intersection(left).volume() <
+                   other.intersection(right).volume();
         }
+    );
 
-        do {
-            had_merged_any = false;
+    debug::lines()->box(max_box, 0.8f * DebugColor::BLUE);
 
-            for (usize j = 0; j < boxes.size(); ++j) {
-                if (i == j || boxes[j] == INFINITELY_LARGE_AABB ||
-                    !have_common_axis(boxes[i], boxes[j]))
-                {
-                    continue;
-                }
+    auto const collider = BoxCollider{
+        max_box,         glm::vec3{0.0f},
+        glm::vec3{0.0f}, ABSOLUTELY_ELASTIC_ELASTICITY,
+        false,
+    };
 
-                boxes[i] = boxes[i].combination(boxes[j]);
-                boxes[j] = INFINITELY_LARGE_AABB;
-                had_merged_any = true;
-            }
-        } while (had_merged_any);
-    }
-
-    auto [begin, end] = rg::remove_if(boxes, [](auto const& elem) {
-        return elem == INFINITELY_LARGE_AABB;
-    });
-
-    boxes.erase(begin, end);
-
-    auto displacement = glm::vec3{0.0f};
-    auto directional_counts = glm::vec3{0};
-
-    rg::sort(boxes, [other = other.box](auto const& left, auto const& right) {
-        return other.intersection(left).volume() >=
-               other.intersection(right).volume();
-    });
-
-    for (auto const box : boxes | vs::take(1)) {
-        debug::lines()->box(box, 0.8f * DebugColor::BLUE);
-
-        auto const collider = BoxCollider{
-            box,
-            glm::vec3{0.0f},
-            glm::vec3{0.0f},
-            ABSOLUTELY_ELASTIC_ELASTICITY,
-            false,
-        };
-
-        auto const cur_displacement = other.collide(collider).self_displacement;
-
-        displacement += cur_displacement;
-        directional_counts += glm::abs(glm::sign(cur_displacement));
-    }
-
-    displacement /= glm::max(glm::vec3{1.0f}, directional_counts);
+    auto const displacement = other.collide(collider).self_displacement;
 
     return Collision{
         .self_displacement = glm::vec3{0.0f},

@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <variant>
+#include <type_traits>
 
 #include "types.hpp"
 #include "panic.hpp"
@@ -429,3 +430,141 @@ struct std::hash<tmine::StaticString> {
         return std::hash<std::string_view>{}(std::string_view{str});
     }
 };
+
+namespace tmine {
+
+template <class T>
+struct MaybeUninitialized {
+    alignas(T) std::array<std::byte, sizeof(T)> data;
+};
+
+template <usize N, class T>
+    requires requires { N > 0; }
+class SmallVec {
+public:
+    inline SmallVec()
+    : len{0}
+    , ptr{nullptr}
+    , cap{0} {}
+
+    ~SmallVec()
+        requires std::is_trivially_destructible_v<T>
+    {
+        if (this->len > N) {
+            free(this->ptr);
+        }
+    }
+
+    ~SmallVec()
+        requires(!std::is_trivially_destructible_v<T>)
+    {
+        if (this->len <= N) {
+            for (usize i = 0; i < this->len; ++i) {
+                reinterpret_cast<T*>(&this->values[i])->~T();
+            }
+        } else {
+            for (usize i = 0; i < this->len; ++i) {
+                this->ptr[i].~T();
+            }
+
+            free(this->ptr);
+        }
+    }
+
+private:
+    auto spill(this SmallVec& self, usize cap) -> void {
+        if (cap <= N) {
+            throw Panic("bad SmallVec spill");
+        }
+
+        auto const ptr = (T*) malloc(cap * sizeof(T));
+
+        if (self.len > 0) {
+            memcpy(ptr, self.values, self.len * sizeof(T));
+        }
+
+        self.ptr = ptr;
+        self.cap = cap;
+    }
+
+    static auto next_capacity(usize cap) -> usize { return 3 * (cap + 1) / 2; }
+
+public:
+    auto push(this SmallVec& self, T value) -> void {
+        if (self.len < N) {
+            new (&self.values[self.len]) T{std::move(value)};
+        } else if (self.len == N) {
+            self.spill(self.len + 1);
+            new (self.ptr + self.len) T{std::move(value)};
+        } else {
+            if (self.len == self.cap) {
+                self.cap = SmallVec::next_capacity(self.cap);
+                self.ptr = (T*) realloc(self.ptr, sizeof(T) * self.cap);
+            }
+
+            new (self.ptr + self.len) T{std::move(value)};
+        }
+
+        self.len += 1;
+    }
+
+    auto begin(this SmallVec& self) -> T* {
+        if (self.len <= N) {
+            return reinterpret_cast<T*>(&self.values[0]);
+        } else {
+            return self.ptr;
+        }
+    }
+
+    auto end(this SmallVec& self) -> T* {
+        return self.begin() + self.len;
+    }
+
+    auto size(this SmallVec const& self) -> usize {
+        return self.len;
+    }
+
+    template <class Self>
+    auto operator[](this Self&& self, usize index) {
+        return std::forward_like<Self>(self.begin()[index]);
+    }
+
+    auto erase_from(this SmallVec& self, T* it) -> void {
+        if (it < self.begin() || it >= self.end()) {
+            return;
+        }
+
+        for (auto cur = it; cur != self.end(); ++cur) {
+            cur->~T();
+        }
+
+        auto const was_on_stack_before = self.len > N;
+
+        self.len -= self.end() - it;
+
+        if (!was_on_stack_before && self.len <= N) {
+            auto const ptr = self.ptr;
+
+            memcpy(self.values, ptr, sizeof(T) * self.len);
+            free(ptr);
+        }
+    }
+
+    auto empty(this SmallVec const& self) -> bool {
+        return self.len == 0;
+    }
+
+private:
+    usize len;
+
+    union {
+        MaybeUninitialized<T> values[N];
+
+        struct {
+            T* ptr;
+            usize cap;
+        };
+    };
+};
+
+}  // namespace tmine

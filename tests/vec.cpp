@@ -135,4 +135,26 @@ auto test_vec_erase() -> void {
     tmine_assert_eq(lock[0], 9);
 }
 
+auto test_smallvec_push() -> void {
+    auto vec = SmallVec<8, i32>{};
+
+    vec.push(1);
+    vec.push(2);
+    vec.push(3);
+    vec.push(4);
+    vec.push(5);
+    vec.push(6);
+    vec.push(7);
+    vec.push(8);
+    vec.push(9);
+    vec.push(10);
+    vec.push(11);
+    vec.push(12);
+    vec.push(13);
+
+    for (i32 i = 1; i <= (i32) vec.size(); ++i) {
+        tmine_assert_eq(i, vec[i - 1]);
+    }
+}
+
 }

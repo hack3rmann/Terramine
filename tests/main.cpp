@@ -16,5 +16,6 @@ auto main() -> int {
     perform_test(test_vec_append_single_thread);
     perform_test(test_vec_erase_simple);
     perform_test(test_vec_erase);
+    perform_test(test_smallvec_push);
     perform_test(test_dynamic_cast_if_init);
 }

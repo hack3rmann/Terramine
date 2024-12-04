@@ -112,7 +112,7 @@ namespace parser {
             auto ordered = std::vector<FontCharDesc>(1 << CHAR_BIT);
 
             for (auto&& desc : unordered) {
-                ordered[desc.id] = std::move(desc);
+                ordered[255 & desc.id] = std::move(desc);
             }
 
             return ordered;
