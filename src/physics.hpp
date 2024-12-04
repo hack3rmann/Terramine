@@ -56,18 +56,15 @@ struct Collidable {
 
 class PhysicsSolver {
 public:
-    inline PhysicsSolver(
-        f32 time_step = 1.0f / 60.0f / 20.0f, f32 accuracy = 0.005f
-    ) noexcept
-    : time_step{time_step}
-    , accuracy{accuracy} {}
+    inline PhysicsSolver(f32 time_step = 1.0f / 60.0f / 20.0f) noexcept
+    : time_step{time_step} {}
 
     template <std::derived_from<Collidable> T, typename... Args>
     inline auto register_collidable(this PhysicsSolver& self, Args&&... args)
         -> ColliderId {
         auto const id = ColliderId{(u32) self.colliders.size()};
-        self.colliders.emplace_back(std::make_unique<T>(std::forward<Args>(args)...)
-        );
+        self.colliders.emplace_back(std::make_unique<T>(std::forward<Args>(args
+        )...));
 
         return id;
     }
@@ -105,7 +102,6 @@ private:
 private:
     f32 time_step;
     f32 previous_frame_reminder{0.0f};
-    f32 accuracy;
     std::vector<std::unique_ptr<Collidable>> colliders{};
 
     static auto constexpr MAX_N_DISPLACE_STEPS = usize{20};

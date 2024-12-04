@@ -1,4 +1,3 @@
-#include "../panic.hpp"
 #include "../physics.hpp"
 
 namespace tmine {
@@ -10,9 +9,8 @@ static auto project(glm::vec3 source, glm::vec3 direction) -> glm::vec3 {
     return factor * direction;
 }
 
-static auto binary_displace(
-    RefMut<Collidable> first_collider, RefMut<Collidable> second_collider,
-    [[maybe_unused]] f32 accuracy
+static auto displace(
+    RefMut<Collidable> first_collider, RefMut<Collidable> second_collider
 ) -> bool {
     auto const collision = first_collider->collide(*second_collider);
 
@@ -23,10 +21,8 @@ static auto binary_displace(
     auto const first_displacement = collision.self_displacement;
     auto const second_displacement = collision.other_displacement;
 
-    do {
-        first_collider->displace_collidable(first_displacement);
-        second_collider->displace_collidable(second_displacement);
-    } while (false && first_collider->collides(*second_collider));
+    first_collider->displace_collidable(first_displacement);
+    second_collider->displace_collidable(second_displacement);
 
     auto const elacticity = glm::min(
         first_collider->collidable_elasticity(),
@@ -49,8 +45,10 @@ static auto binary_displace(
     auto const second_parallel_velocity =
         project(second_velocity, second_displacement);
 
-    auto const first_mass = first_collider->get_collidable_bounding_box().volume();
-    auto const second_mass = second_collider->get_collidable_bounding_box().volume();
+    auto const first_mass =
+        first_collider->get_collidable_bounding_box().volume();
+    auto const second_mass =
+        second_collider->get_collidable_bounding_box().volume();
 
     auto const first_new_velocity =
         first_velocity + (1.0f + elacticity) * elastic_collision_velocity(
@@ -73,8 +71,7 @@ static auto binary_displace(
 }
 
 static auto static_binary_displace(
-    RefMut<Collidable> static_collider, RefMut<Collidable> dynamic_collider,
-    f32 accuracy
+    RefMut<Collidable> static_collider, RefMut<Collidable> dynamic_collider
 ) -> bool {
     auto const collision = dynamic_collider->collide(*static_collider);
 
@@ -84,50 +81,7 @@ static auto static_binary_displace(
 
     auto const displacement = collision.self_displacement;
 
-    auto free_displacement_amount = 0.0f;
-    bool displaced_towards_overlap = false;
-
     dynamic_collider->displace_collidable(displacement);
-
-    auto overlapping_displacement_amount = free_displacement_amount - 1.0f;
-
-    // TODO(hack3rmann): turn this constant into a class member
-    // FIXME(hack3rmann): maybe remove binary search
-    static auto constexpr MAX_N_STEPS = usize{0};
-
-    for (usize i = 0; i < MAX_N_STEPS; ++i) {
-        if (free_displacement_amount - overlapping_displacement_amount <
-            accuracy)
-        {
-            break;
-        }
-
-        auto const mid =
-            0.5f * (overlapping_displacement_amount + free_displacement_amount);
-
-        auto const displacement_amount =
-            displaced_towards_overlap ? mid - overlapping_displacement_amount
-                                      : mid - free_displacement_amount;
-
-        dynamic_collider->displace_collidable(
-            displacement_amount * displacement
-        );
-
-        if (dynamic_collider->collides(*static_collider)) {
-            displaced_towards_overlap = true;
-            overlapping_displacement_amount = mid;
-        } else {
-            displaced_towards_overlap = false;
-            free_displacement_amount = mid;
-        }
-    }
-
-    if (displaced_towards_overlap) {
-        dynamic_collider->displace_collidable(
-            (free_displacement_amount - overlapping_displacement_amount) *
-            displacement
-        );
-    }
 
     auto const elacticity = glm::min(
         dynamic_collider->collidable_elasticity(),
@@ -145,7 +99,7 @@ static auto static_binary_displace(
 
 static auto handle_collision(
     RefMut<Collidable> first, RefMut<Collidable> second, Aabb first_box,
-    Aabb second_box, f32 accuracy
+    Aabb second_box
 ) -> bool {
     auto first_is_dynamic = first->is_collidable_dynamic();
     auto second_is_dynamic = second->is_collidable_dynamic();
@@ -161,18 +115,18 @@ static auto handle_collision(
     }
 
     if (first_is_dynamic && second_is_dynamic) {
-        return binary_displace(first, second, accuracy);
+        return displace(first, second);
     } else if (!first_is_dynamic && second_is_dynamic) {
-        return static_binary_displace(first, second, accuracy);
+        return static_binary_displace(first, second);
     } else if (first_is_dynamic && !second_is_dynamic) {
-        return static_binary_displace(second, first, accuracy);
+        return static_binary_displace(second, first);
     } else {
         return false;
     }
 }
 
 static auto handle_collisions(
-    std::span<std::unique_ptr<Collidable>> collidables, f32 accuracy
+    std::span<std::unique_ptr<Collidable>> collidables
 ) -> bool {
     auto do_any_collide = false;
 
@@ -187,7 +141,7 @@ static auto handle_collisions(
 
             handle_collision(
                 first_collider.get(), second_collider.get(), first_box,
-                second_box, accuracy
+                second_box
             );
         }
     }
@@ -211,7 +165,7 @@ auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
     }
 
     for (usize i = 0; i < MAX_N_DISPLACE_STEPS; ++i) {
-        if (!handle_collisions(self.colliders, self.accuracy)) {
+        if (!handle_collisions(self.colliders)) {
             break;
         }
     }
@@ -326,17 +280,9 @@ auto BoxCollider::collide(Collidable const& other_collider) const -> Collision {
         collision = collide_dynamic_box(*this, *other);
     } else if (!self_is_dynamic && other_is_dynamic) {
         collision = collide_static_box(*this, *other);
-
-        if (collision.self_displacement != glm::vec3(0.0f)) {
-            throw Panic("invalid displacement");
-        }
     } else if (self_is_dynamic && !other_is_dynamic) {
         collision = collide_static_box(*other, *this);
         std::swap(collision.self_displacement, collision.other_displacement);
-
-        if (collision.other_displacement != glm::vec3(0.0f)) {
-            throw Panic("invalid displacement");
-        }
     }
 
     return collision;
