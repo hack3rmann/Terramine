@@ -76,6 +76,8 @@ public:
         glm::uvec2 window_size
     ) -> void;
 
+    auto fixed_update(this Player& self, RefMut<PhysicsSolver> solver) -> void;
+
     inline auto get_camera(this Player const& self) -> Camera const& {
         return self.camera;
     }

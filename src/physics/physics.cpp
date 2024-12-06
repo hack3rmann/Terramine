@@ -149,7 +149,8 @@ static auto handle_collisions(
     return do_any_collide;
 }
 
-auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
+auto PhysicsSolver::update(this PhysicsSolver& self, f32 time_step)
+    -> void {
     for (auto& collider : self.colliders) {
         if (!collider->is_collidable_dynamic()) {
             continue;
@@ -157,8 +158,8 @@ auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
 
         auto const acceleration = collider->get_collider_acceleration();
         auto const velocity =
-            self.time_step * acceleration + collider->get_collider_velocity();
-        auto const displacement = self.time_step * velocity;
+            time_step * acceleration + collider->get_collider_velocity();
+        auto const displacement = time_step * velocity;
 
         collider->displace_collidable(displacement);
         collider->set_collider_velocity(velocity);
@@ -169,18 +170,6 @@ auto PhysicsSolver::fixed_update(this PhysicsSolver& self) -> void {
             break;
         }
     }
-}
-
-auto PhysicsSolver::update(this PhysicsSolver& self, f32 frame_duration)
-    -> void {
-    auto duration = self.previous_frame_reminder + frame_duration;
-
-    while (self.time_step < duration) {
-        duration -= self.time_step;
-        self.fixed_update();
-    }
-
-    self.previous_frame_reminder = duration;
 }
 
 auto BoxCollider::displace_collidable(glm::vec3 displacement) -> void {
