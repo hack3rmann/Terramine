@@ -103,8 +103,8 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
             self.physics_solver.update(time_step);
         });
 
-        self.updater.fixed_update([&](auto) {
-            self.player.fixed_update(&self.physics_solver);
+        self.updater.fixed_update([&](f32 time_step) {
+            self.player.fixed_update(time_step, &self.physics_solver);
         });
         
         self.player.update(

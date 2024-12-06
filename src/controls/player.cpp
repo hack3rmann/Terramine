@@ -5,10 +5,17 @@
 
 namespace tmine {
 
-inline auto constexpr COLLIDER_SIZE = glm::vec3{0.6f, 1.75f, 0.6f};
-inline auto constexpr INITIAL_POSITION = glm::vec3{60.0f};
-inline auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f, -20.0f, 0.0f};
-inline auto constexpr MOUSE_SENSITIVITY = 2.0f;
+auto constexpr COLLIDER_SIZE = glm::vec3{0.6f, 1.75f, 0.6f};
+auto constexpr INITIAL_POSITION = glm::vec3{60.0f};
+auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f, -20.0f, 0.0f};
+auto constexpr MOUSE_SENSITIVITY = 2.0f;
+auto constexpr DEFAULT_FOV = glm::radians(60.0f);
+auto constexpr MAX_FOV = glm::radians(120.0f);
+auto constexpr MIN_SPEED = 0.1f;
+
+static auto lerp(auto a, auto b, f32 param) {
+    return (1.0f - param) * a + param * b;
+}
 
 static auto rotate_camera_by_mouse(
     RefMut<glm::vec2> camera_mouse_angles, RefMut<Camera> camera,
@@ -71,8 +78,42 @@ static auto get_orientation_string(glm::vec3 front) -> std::string_view {
     return orientation_str;
 }
 
+static auto update_fov_dynamics(
+    f32 time_step, RefMut<Camera> camera, f32 speed,
+    RefMut<FovDynamics> dynamics
+) -> void {
+    auto constexpr FREQUENCY = 3.0f;
+    auto constexpr DAMPING = 2.0f;
+    auto constexpr INITIAL_RESPONSE = 0.0f;
+
+    auto constexpr K1 = DAMPING / (M_PI * FREQUENCY);
+    auto constexpr K2 = 1.0f / (4.0f * M_PI * M_PI * FREQUENCY * FREQUENCY);
+    auto constexpr K3 =
+        (INITIAL_RESPONSE * DAMPING) / (2.0f * M_PI * FREQUENCY);
+
+    auto constexpr POWER = 0.8f;
+
+    auto const confine = [](f32 value) { return glm::pow(value / (value + 1.0f), POWER); };
+    auto const target_fov =
+        lerp(DEFAULT_FOV, MAX_FOV, confine(glm::max(0.0f, speed - MIN_SPEED)));
+
+    auto const target_fov_speed =
+        (target_fov - dynamics->prev_target_fov) / time_step;
+
+    auto const next_fov =
+        camera->get_fov() + time_step * dynamics->fov_velocity;
+
+    dynamics->fov_velocity += time_step / K2 *
+                              (target_fov + K3 * target_fov_speed - next_fov -
+                               K1 * dynamics->fov_velocity);
+
+    dynamics->prev_target_fov = target_fov;
+    camera->set_fov(next_fov);
+}
+
 static auto update_movement(
-    RefMut<Camera> camera, RefMut<BoxCollider> collider, PlayerMovement movement
+    f32 time_step, RefMut<Camera> camera, RefMut<BoxCollider> collider,
+    PlayerMovement movement, RefMut<FovDynamics> dynamics
 ) -> void {
     auto velocity_direction = glm::vec3{0.0f};
 
@@ -111,17 +152,17 @@ static auto update_movement(
     }
 
     auto constexpr SPEED_FALLOFF = 0.99f;
-    auto constexpr SPEED = 0.1f;
 
-    auto speed = SPEED;
-    auto speed_falloff =
-        PlayerMovement::Walk == movement ? SPEED_FALLOFF : 0.001f + SPEED_FALLOFF;
+    auto speed = MIN_SPEED;
+    auto speed_falloff = PlayerMovement::Walk == movement
+                           ? SPEED_FALLOFF
+                           : 0.001f + SPEED_FALLOFF;
 
     if (io.is_pressed(Key::LeftControl)) {
         if (PlayerMovement::Walk == movement) {
             speed *= 3.0f;
         } else {
-            speed *= 30.0f;
+            speed *= 10.0f;
         }
     }
 
@@ -167,6 +208,12 @@ static auto update_movement(
     if (PlayerMovement::Fly == movement) {
         prev_velocity.y *= speed_falloff;
     }
+
+    auto const speed_for_fov =
+        glm::abs(glm::dot(velocity_direction, camera->get_front_direction())) *
+        speed;
+
+    update_fov_dynamics(time_step, camera, speed_for_fov, dynamics);
 
     collider->set_collider_velocity(prev_velocity + velocity);
 }
@@ -350,10 +397,14 @@ Player::Player(RefMut<PhysicsSolver> solver)
       GRAVITY_ACCELERATION, ABSOLUTELY_INELASTIC_ELASTICITY
   )} {}
 
-auto Player::fixed_update(this Player& self, RefMut<PhysicsSolver> solver) -> void {
+auto Player::fixed_update(
+    this Player& self, f32 time_step, RefMut<PhysicsSolver> solver
+) -> void {
     auto& collider = solver->get_collidable<BoxCollider>(self.collider_id);
 
-    update_movement(&self.camera, &collider, self.movement);
+    update_movement(
+        time_step, &self.camera, &collider, self.movement, &self.fov_dynamics
+    );
 }
 
 auto Player::update(
