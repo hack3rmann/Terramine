@@ -1,12 +1,11 @@
 #pragma once
 
-#include <chrono>
-
 #include "gui.hpp"
 #include "window.hpp"
 #include "objects.hpp"
 #include "physics.hpp"
 #include "debug.hpp"
+#include "update.hpp"
 
 namespace tmine {
 
@@ -18,12 +17,12 @@ public:
     auto update(this Game& self, RefMut<Window> window) -> void;
 
 private:
+    FixedUpdater updater;
     PhysicsSolver physics_solver;
     Scene scene;
     Gui gui;
     Player player;
     DebugOwner debug;
-    std::chrono::time_point<std::chrono::high_resolution_clock> prev_time;
 };
 
 }  // namespace tmine

@@ -8,13 +8,16 @@ namespace tmine {
 inline auto constexpr COLLIDER_SIZE = glm::vec3{0.6f, 1.75f, 0.6f};
 inline auto constexpr INITIAL_POSITION = glm::vec3{60.0f};
 inline auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f, -20.0f, 0.0f};
+inline auto constexpr MOUSE_SENSITIVITY = 2.0f;
 
 static auto rotate_camera_by_mouse(
     RefMut<glm::vec2> camera_mouse_angles, RefMut<Camera> camera,
     glm::uvec2 viewport_size
 ) -> void {
-    camera_mouse_angles->x -= io.get_mouse_delta().y / viewport_size.y * 2.f;
-    camera_mouse_angles->y -= io.get_mouse_delta().x / viewport_size.x * 2.f;
+    camera_mouse_angles->x -=
+        io.get_mouse_delta().y / viewport_size.y * MOUSE_SENSITIVITY;
+    camera_mouse_angles->y -=
+        io.get_mouse_delta().x / viewport_size.x * MOUSE_SENSITIVITY;
 
     camera_mouse_angles->x = glm::clamp(
         camera_mouse_angles->x, glm::radians(-89.9f), glm::radians(89.9f)
@@ -107,18 +110,18 @@ static auto update_movement(
         velocity_direction = glm::normalize(velocity_direction);
     }
 
-    auto constexpr SPEED_FALLOFF = 0.7f;
-    auto constexpr SPEED = 2.0f;
+    auto constexpr SPEED_FALLOFF = 0.99f;
+    auto constexpr SPEED = 0.1f;
 
     auto speed = SPEED;
     auto speed_falloff =
-        PlayerMovement::Walk == movement ? SPEED_FALLOFF : 0.2f + SPEED_FALLOFF;
+        PlayerMovement::Walk == movement ? SPEED_FALLOFF : 0.001f + SPEED_FALLOFF;
 
     if (io.is_pressed(Key::LeftControl)) {
         if (PlayerMovement::Walk == movement) {
             speed *= 3.0f;
         } else {
-            speed *= 10.0f;
+            speed *= 30.0f;
         }
     }
 
@@ -130,7 +133,7 @@ static auto update_movement(
             PlayerMovement::Fly == movement || glm::abs(prev_velocity.y) < 0.01;
 
         if (is_grounded && io.is_pressed(Key::Space)) {
-            velocity.y = 2.5f * speed / speed_falloff;
+            velocity.y = 75.0f * speed / speed_falloff;
         }
     }
 
@@ -347,6 +350,12 @@ Player::Player(RefMut<PhysicsSolver> solver)
       GRAVITY_ACCELERATION, ABSOLUTELY_INELASTIC_ELASTICITY
   )} {}
 
+auto Player::fixed_update(this Player& self, RefMut<PhysicsSolver> solver) -> void {
+    auto& collider = solver->get_collidable<BoxCollider>(self.collider_id);
+
+    update_movement(&self.camera, &collider, self.movement);
+}
+
 auto Player::update(
     this Player& self, RefMut<PhysicsSolver> solver, RefMut<Terrain> terrain,
     RefMut<SelectionBox> selection_box, glm::uvec2 viewport_size
@@ -369,8 +378,6 @@ auto Player::update(
     rotate_camera_by_mouse(
         &self.camera_mouse_angles, &self.camera, viewport_size
     );
-
-    update_movement(&self.camera, &collider, self.movement);
 
     debug::text()->set(
         "hold", fmt::format(

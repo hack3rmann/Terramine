@@ -4,9 +4,6 @@
 
 namespace tmine {
 
-namespace chrono = std::chrono;
-using namespace std::literals;
-
 static auto setup_opengl() -> void {
     glClearColor(27.0 / 255.0, 26.0 / 255.0, 33.0 / 255.0, 1.0f);
     glEnable(GL_MULTISAMPLE);
@@ -19,8 +16,7 @@ Game::Game(glm::uvec2 viewport_size)
 , scene{viewport_size}
 , gui{GuiState::InGame}
 , player{&this->physics_solver}
-, debug{viewport_size}
-, prev_time{chrono::high_resolution_clock::now()} {
+, debug{viewport_size} {
     setup_opengl();
 
     // It is okay if no terrain is found
@@ -86,15 +82,9 @@ auto Game::render(this Game& self, glm::uvec2 viewport_size) -> void {
 }
 
 auto Game::update(this Game& self, RefMut<Window> window) -> void {
-    auto const now = chrono::high_resolution_clock::now();
-    auto const duration = chrono::duration<f32>{now - self.prev_time};
-    self.prev_time = now;
-
-    debug::text()->set(
-        "fps", fmt::format("FPS: {:.1f}", 1.0f / duration.count())
-    );
-
     debug::update();
+
+    self.updater.start_new_frame();
 
     if (io.just_pressed(Key::T)) {
         window->toggle_cursor_visibility();
@@ -106,11 +96,17 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
     }
 
     if (GuiState::InGame == self.gui.current()) {
-        self.physics_solver.update(duration.count());
-
         auto& terrain = self.scene.get<Terrain>();
         auto& selection = self.scene.get<SelectionBox>();
 
+        self.updater.fixed_update([&](f32 time_step) {
+            self.physics_solver.update(time_step);
+        });
+
+        self.updater.fixed_update([&](auto) {
+            self.player.fixed_update(&self.physics_solver);
+        });
+        
         self.player.update(
             &self.physics_solver, &terrain, &selection, window->size()
         );
