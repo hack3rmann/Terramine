@@ -47,6 +47,14 @@ public:
         return Camera::DEFAULT_UP;
     }
 
+    inline auto get_fov(this Camera const& self) -> f32 {
+        return self.fov;
+    }
+
+    inline auto set_fov(this Camera& self, f32 value) -> void {
+        self.fov = value;
+    }
+
 private:
     static auto constexpr DEFAULT_FRONT = glm::vec3{0.0f, 0.0f, -1.0f};
     static auto constexpr DEFAULT_UP = glm::vec3{0.0f, 1.0f, 0.0f};
@@ -66,6 +74,11 @@ class SelectionBox;
 
 enum class PlayerMovement { Walk = 0, Fly };
 
+struct FovDynamics {
+    f32 fov_velocity{0.0f};
+    f32 prev_target_fov{glm::radians(60.0f)};
+};
+
 class Player {
 public:
     explicit Player(RefMut<PhysicsSolver> solver);
@@ -76,7 +89,7 @@ public:
         glm::uvec2 window_size
     ) -> void;
 
-    auto fixed_update(this Player& self, RefMut<PhysicsSolver> solver) -> void;
+    auto fixed_update(this Player& self, f32 time_step, RefMut<PhysicsSolver> solver) -> void;
 
     inline auto get_camera(this Player const& self) -> Camera const& {
         return self.camera;
@@ -84,6 +97,7 @@ public:
 
 private:
     Camera camera;
+    FovDynamics fov_dynamics;
     PlayerMovement movement{PlayerMovement::Walk};
     glm::vec2 camera_mouse_angles;
     VoxelId held_voxel_id;
