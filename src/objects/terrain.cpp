@@ -258,7 +258,8 @@ auto Terrain::set_voxel(this Terrain& self, glm::uvec3 pos, Voxel value)
             auto const iter =
                 rg::lower_bound(chunks_with_transparency, chunk_index);
 
-            if (iter != chunks_with_transparency.end() && *iter == chunk_index) {
+            if (iter != chunks_with_transparency.end() && *iter == chunk_index)
+            {
                 chunks_with_transparency.erase(iter, iter + 1);
             }
         }
@@ -347,7 +348,7 @@ auto TerrainCollider::collide_box(
 
     debug::lines()->box(other_box, 0.8f * DebugColor::GREEN);
 
-    auto boxes = SmallVec<16, Aabb>{};
+    auto max_box = std::optional<Aabb>{};
 
     for (u32 x = lo.x; x <= hi.x; ++x) {
         for (u32 y = lo.y; y <= hi.y; ++y) {
@@ -366,27 +367,24 @@ auto TerrainCollider::collide_box(
                     continue;
                 }
 
-                boxes.push(box);
+                if (!max_box.has_value() ||
+                    max_box->intersection(other.box).volume() <
+                        intersection.volume())
+                {
+                    max_box.emplace(box);
+                }
             }
         }
     }
 
-    if (boxes.empty()) {
+    if (!max_box.has_value()) {
         return Collision{};
     }
 
-    auto const max_box = *rg::max_element(
-        boxes,
-        [other = other.box](auto const& left, auto const& right) {
-            return other.intersection(left).volume() <
-                   other.intersection(right).volume();
-        }
-    );
-
-    debug::lines()->box(max_box, 0.8f * DebugColor::BLUE);
+    debug::lines()->box(max_box.value(), 0.8f * DebugColor::BLUE);
 
     auto const collider = BoxCollider{
-        max_box,         glm::vec3{0.0f},
+        max_box.value(), glm::vec3{0.0f},
         glm::vec3{0.0f}, ABSOLUTELY_ELASTIC_ELASTICITY,
         false,
     };
