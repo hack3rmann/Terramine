@@ -9,7 +9,7 @@
         __FUNCTION__, __FILE__, __LINE__, ::fmt::format(fmt_args) \
     }
 
-#define Unimplemented() Panic("unimplemented")
+#define Unimplemented(...) Panic("unimplemented" __VA_OPT__(": ") __VA_ARGS__)
 
 namespace tmine {
 
