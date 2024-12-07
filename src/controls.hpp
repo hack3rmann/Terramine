@@ -81,7 +81,7 @@ struct FovDynamics {
 
 class Player {
 public:
-    explicit Player(RefMut<PhysicsSolver> solver);
+    explicit Player(Terrain const& terrain, RefMut<PhysicsSolver> solver);
 
     auto update(
         this Player& self, RefMut<PhysicsSolver> solver,
@@ -96,12 +96,12 @@ public:
     }
 
 private:
+    ColliderId collider_id;
     Camera camera;
     FovDynamics fov_dynamics;
     PlayerMovement movement{PlayerMovement::Walk};
     glm::vec2 camera_mouse_angles;
     VoxelId held_voxel_id;
-    ColliderId collider_id;
 };
 
 }  // namespace tmine

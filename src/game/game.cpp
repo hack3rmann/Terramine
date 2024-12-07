@@ -15,20 +15,13 @@ Game::Game(glm::uvec2 viewport_size)
 : physics_solver{}
 , scene{viewport_size}
 , gui{GuiState::InGame}
-, player{&this->physics_solver}
+, player{this->scene.get<Terrain>(), &this->physics_solver}
 , debug{viewport_size} {
     setup_opengl();
 
-    // It is okay if no terrain is found
-    try {
-        auto& terrain = this->scene.get<Terrain>();
-        auto chunk_array = terrain.borrow_array();
-        this->physics_solver.register_collidable<TerrainCollider>(chunk_array);
-    } catch (PanicException const& panic) {
-        fmt::print(
-            stderr, "warning: no terrain in the scene: {}", panic.what()
-        );
-    }
+    auto& terrain = this->scene.get<Terrain>();
+    auto chunk_array = terrain.borrow_array();
+    this->physics_solver.register_collidable<TerrainCollider>(chunk_array);
 }
 
 static auto draw_debug_text(glm::uvec2 viewport_size) -> void {
