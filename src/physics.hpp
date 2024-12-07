@@ -70,12 +70,6 @@ public:
         return id;
     }
 
-    template <std::derived_from<Collidable> T>
-    inline auto register_collidable(this PhysicsSolver& self, T collider)
-        -> ColliderId {
-        return self.register_collidable(std::move(collider));
-    }
-
     template <std::derived_from<Collidable> T, class Self>
     inline auto get_collidable(this Self&& self, ColliderId id)
         -> decltype(auto) {

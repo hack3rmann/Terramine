@@ -93,7 +93,9 @@ static auto update_fov_dynamics(
 
     auto constexpr POWER = 0.8f;
 
-    auto const confine = [](f32 value) { return glm::pow(value / (value + 1.0f), POWER); };
+    auto const confine = [](f32 value) {
+        return glm::pow(value / (value + 1.0f), POWER);
+    };
     auto const target_fov =
         lerp(DEFAULT_FOV, MAX_FOV, confine(glm::max(0.0f, speed - MIN_SPEED)));
 
@@ -388,14 +390,54 @@ static auto interact_with_terrain(
     }
 }
 
-Player::Player(RefMut<PhysicsSolver> solver)
-: camera{INITIAL_POSITION, glm::radians(60.0f)}
+static auto reset_collider(Terrain const& terrain, RefMut<BoxCollider> collider)
+    -> void {
+    auto const world_size = terrain.get_array().size() * Chunk::SIZE;
+    auto surface_center = glm::uvec3{
+        world_size.x / 2,
+        world_size.y,
+        world_size.z / 2,
+    };
+
+    // TODO(hack3rmann): check all voxels that may hit player's collider
+    for (; surface_center.y != 0; --surface_center.y) {
+        auto voxel = terrain.get_array().get_voxel(surface_center);
+
+        if (voxel.has_value() && voxel->id != 0) {
+            break;
+        }
+    }
+
+    if (surface_center.y != 0) {
+        surface_center.y += 1;
+    } else {
+        surface_center.y = world_size.y;
+    }
+
+    collider->box =
+        Aabb{surface_center, glm::vec3{surface_center} + COLLIDER_SIZE};
+    collider->set_collider_velocity(glm::vec3{0.0f});
+}
+
+static auto spawn_collider(Terrain const& terrain, RefMut<PhysicsSolver> solver)
+    -> ColliderId {
+    auto collider = BoxCollider{
+        Aabb{INITIAL_POSITION, INITIAL_POSITION + COLLIDER_SIZE},
+        glm::vec3{0.0f},
+        GRAVITY_ACCELERATION,
+        ABSOLUTELY_INELASTIC_ELASTICITY,
+    };
+
+    reset_collider(terrain, &collider);
+
+    return solver->register_collidable<BoxCollider>(std::move(collider));
+}
+
+Player::Player(Terrain const& terrain, RefMut<PhysicsSolver> solver)
+: collider_id{spawn_collider(terrain, solver)}
+, camera{INITIAL_POSITION, glm::radians(60.0f)}
 , camera_mouse_angles{glm::vec3{0.0f}}
-, held_voxel_id{1}
-, collider_id{solver->register_collidable<BoxCollider>(
-      Aabb{INITIAL_POSITION, INITIAL_POSITION + COLLIDER_SIZE}, glm::vec3{0.0f},
-      GRAVITY_ACCELERATION, ABSOLUTELY_INELASTIC_ELASTICITY
-  )} {}
+, held_voxel_id{1} {}
 
 auto Player::fixed_update(
     this Player& self, f32 time_step, RefMut<PhysicsSolver> solver
@@ -414,8 +456,7 @@ auto Player::update(
     auto& collider = solver->get_collidable<BoxCollider>(self.collider_id);
 
     if (io.is_pressed(Key::P)) {
-        collider.box = Aabb{INITIAL_POSITION, INITIAL_POSITION + COLLIDER_SIZE};
-        collider.set_collider_velocity(glm::vec3{0.0f});
+        reset_collider(*terrain, &collider);
     }
 
     if (io.just_pressed(Key::F)) {
