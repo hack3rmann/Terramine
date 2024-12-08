@@ -97,7 +97,7 @@ auto Game::update(this Game& self, RefMut<Window> window) -> void {
         });
 
         self.updater.fixed_update([&](f32 time_step) {
-            self.player.fixed_update(time_step, &self.physics_solver);
+            self.player.fixed_update(time_step, terrain, &self.physics_solver);
         });
         
         self.player.update(
