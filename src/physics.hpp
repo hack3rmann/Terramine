@@ -145,4 +145,32 @@ struct BoxCollider : public Collidable {
     auto collide(Collidable const& other) const -> Collision override;
 };
 
+struct AnimationDynamicsParams {
+    f32 frequency;
+    f32 damping;
+    f32 initial_response;
+
+    auto constexpr coefficients(this AnimationDynamicsParams self)
+        -> glm::vec3 {
+        return glm::vec3{
+            self.damping / (M_PI * self.frequency),
+            1.0f / (4.0f * M_PI * M_PI * self.frequency * self.frequency),
+            (self.initial_response * self.damping) /
+                (2.0f * M_PI * self.frequency),
+        };
+    }
+
+    template <class T>
+    auto constexpr update(
+        this AnimationDynamicsParams self, f32 time_step, RefMut<T> y,
+        RefMut<T> dydt, T const& x, T const& dxdt
+    ) -> void {
+        auto const coefficients = self.coefficients();
+
+        *y += time_step * *dydt;
+        *dydt += time_step / coefficients.y *
+                 (x + coefficients.z * dxdt - *y - coefficients.x * *dydt);
+    }
+};
+
 }  // namespace tmine

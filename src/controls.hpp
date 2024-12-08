@@ -79,6 +79,11 @@ struct FovDynamics {
     f32 prev_target_fov{glm::radians(60.0f)};
 };
 
+struct VelocityDynamics {
+    glm::vec3 target_velocity_rate_of_change{0.0f};
+    glm::vec3 velocity_rate_of_change{0.0f};
+};
+
 class Player {
 public:
     explicit Player(Terrain const& terrain, RefMut<PhysicsSolver> solver);
@@ -99,6 +104,7 @@ private:
     ColliderId collider_id;
     Camera camera;
     FovDynamics fov_dynamics;
+    VelocityDynamics velocity_dynamics;
     PlayerMovement movement{PlayerMovement::Walk};
     glm::vec2 camera_mouse_angles;
     VoxelId held_voxel_id;
