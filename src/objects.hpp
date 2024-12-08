@@ -19,8 +19,7 @@ struct SceneObject {
     virtual ~SceneObject() = default;
 
     virtual auto render(
-        Camera const& camera, SceneParameters const& params,
-        RenderPass pass
+        Camera const& camera, SceneParameters const& params, RenderPass pass
     ) -> void = 0;
 };
 
@@ -29,8 +28,7 @@ public:
     Skybox();
 
     auto render(
-        Camera const& camera, SceneParameters const& params,
-        RenderPass pass
+        Camera const& camera, SceneParameters const& params, RenderPass pass
     ) -> void override;
 
 private:
@@ -56,14 +54,14 @@ public:
         glm::vec4 color, SideFlags sides
     ) -> void;
 
-    auto box(this SelectionBox& self, Aabb box, glm::vec4 color, SideFlags sides)
-        -> void;
+    auto box(
+        this SelectionBox& self, Aabb box, glm::vec4 color, SideFlags sides
+    ) -> void;
 
     auto clear(this SelectionBox& self) -> void;
 
     auto render(
-        Camera const& cam, SceneParameters const& params,
-        RenderPass pass
+        Camera const& cam, SceneParameters const& params, RenderPass pass
     ) -> void override;
 
 private:
@@ -96,8 +94,7 @@ public:
     explicit Terrain(glm::uvec3 sizes);
 
     auto render(
-        Camera const& camera, SceneParameters const& params,
-        RenderPass pass
+        Camera const& camera, SceneParameters const& params, RenderPass pass
     ) -> void override;
 
     inline auto get_array(this Terrain const& self) noexcept
@@ -161,33 +158,20 @@ private:
     Texture normal_atlas;
 };
 
-class TerrainCollider : public Collidable {
+class TerrainCollider final : public Collidable {
 public:
+    using Super = Collidable;
+
     inline explicit TerrainCollider(std::shared_ptr<ChunkArray> chunks)
-    : chunks{chunks} {}
+    : Super{glm::vec3{0.0f}, glm::vec3{0.0f}, ABSOLUTELY_ELASTIC_ELASTICITY, false}
+    , chunks{chunks} {}
 
     auto get_collidable_bounding_box() const -> Aabb override;
-
-    inline auto get_collider_velocity() const -> glm::vec3 override {
-        return glm::vec3{0.0f};
-    }
-
-    inline auto set_collider_velocity(glm::vec3) -> void override {}
-
-    inline auto displace_collidable(glm::vec3) -> void override {}
-
-    inline auto is_collidable_dynamic() const -> bool override { return false; }
-
-    inline auto collidable_elasticity() const -> f32 override {
-        return ABSOLUTELY_ELASTIC_ELASTICITY;
-    }
-
     auto collide(Collidable const& other) const -> Collision override;
+    inline auto displace_collidable(glm::vec3) -> void override {}
 
     auto collide_box(this TerrainCollider const& self, BoxCollider const& other)
         -> Collision;
-
-    // TODO: implement `collides` function
 
 private:
     std::shared_ptr<ChunkArray> chunks;
