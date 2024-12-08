@@ -93,8 +93,10 @@ static auto update_fov_dynamics(
     auto const confine = [](f32 value) {
         return glm::pow(value / (value + 1.0f), POWER);
     };
-    auto const target_fov =
-        lerp(DEFAULT_FOV, MAX_FOV, confine(glm::max(0.0f, 0.03f * (speed - MIN_SPEED))));
+    auto const target_fov = lerp(
+        DEFAULT_FOV, MAX_FOV,
+        confine(glm::max(0.0f, 0.03f * (speed - MIN_SPEED)))
+    );
 
     auto const target_fov_speed =
         (target_fov - dynamics->prev_target_fov) / time_step;
@@ -108,10 +110,40 @@ static auto update_fov_dynamics(
     camera->set_fov(fov);
 }
 
+static auto is_grounded(BoxCollider const& box, Terrain const& terrain)
+    -> bool {
+    auto constexpr TOLERANCE = 0.001f;
+
+    auto displaced_box = box.box;
+    displaced_box.lo.x += TOLERANCE;
+    displaced_box.lo.y -= TOLERANCE;
+    displaced_box.lo.z += TOLERANCE;
+    displaced_box.hi -= TOLERANCE;
+
+    auto const lo = glm::round(displaced_box.lo - 0.5f);
+    auto const hi = glm::round(
+        glm::vec3{displaced_box.hi.x, displaced_box.lo.y, displaced_box.hi.z} - 0.5f
+    );
+
+    for (u32 x = lo.x; x <= hi.x; ++x) {
+        u32 const y = lo.y;
+
+        for (u32 z = lo.z; z <= hi.z; ++z) {
+            auto const voxel = terrain.get_array().get_voxel({x, y, z});
+
+            if (voxel.has_value() && 0 != voxel->id) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 static auto update_movement(
     f32 time_step, RefMut<Camera> camera, RefMut<BoxCollider> collider,
-    PlayerMovement movement, RefMut<FovDynamics> fov_dynamics,
-    RefMut<VelocityDynamics> velocity_dynamics
+    Terrain const& terrain, PlayerMovement movement,
+    RefMut<FovDynamics> fov_dynamics, RefMut<VelocityDynamics> velocity_dynamics
 ) -> void {
     auto velocity_direction = glm::vec3{0.0f};
 
@@ -149,7 +181,8 @@ static auto update_movement(
         velocity_direction = glm::normalize(velocity_direction);
     }
 
-    auto speed = PlayerMovement::Walk == movement ? MIN_SPEED : 2.0f * MIN_SPEED;
+    auto speed =
+        PlayerMovement::Walk == movement ? MIN_SPEED : 2.0f * MIN_SPEED;
 
     if (io.is_pressed(Key::LeftControl)) {
         speed *= 3.0f;
@@ -235,10 +268,7 @@ static auto update_movement(
     }
 
     if (PlayerMovement::Walk == movement) {
-        auto const is_grounded =
-            PlayerMovement::Fly == movement || glm::abs(prev_velocity.y) < 0.01;
-
-        if (is_grounded && io.is_pressed(Key::Space)) {
+        if (is_grounded(*collider, terrain) && io.is_pressed(Key::Space)) {
             next_velocity.y = 0.7f * speed;
         }
     }
@@ -466,13 +496,14 @@ Player::Player(Terrain const& terrain, RefMut<PhysicsSolver> solver)
 , held_voxel_id{1} {}
 
 auto Player::fixed_update(
-    this Player& self, f32 time_step, RefMut<PhysicsSolver> solver
+    this Player& self, f32 time_step, Terrain const& terrain,
+    RefMut<PhysicsSolver> solver
 ) -> void {
     auto& collider = solver->get_collidable<BoxCollider>(self.collider_id);
 
     update_movement(
-        time_step, &self.camera, &collider, self.movement, &self.fov_dynamics,
-        &self.velocity_dynamics
+        time_step, &self.camera, &collider, terrain, self.movement,
+        &self.fov_dynamics, &self.velocity_dynamics
     );
 }
 

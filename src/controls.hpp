@@ -47,9 +47,7 @@ public:
         return Camera::DEFAULT_UP;
     }
 
-    inline auto get_fov(this Camera const& self) -> f32 {
-        return self.fov;
-    }
+    inline auto get_fov(this Camera const& self) -> f32 { return self.fov; }
 
     inline auto set_fov(this Camera& self, f32 value) -> void {
         self.fov = value;
@@ -94,7 +92,10 @@ public:
         glm::uvec2 window_size
     ) -> void;
 
-    auto fixed_update(this Player& self, f32 time_step, RefMut<PhysicsSolver> solver) -> void;
+    auto fixed_update(
+        this Player& self, f32 time_step, Terrain const& terrain,
+        RefMut<PhysicsSolver> solver
+    ) -> void;
 
     inline auto get_camera(this Player const& self) -> Camera const& {
         return self.camera;
