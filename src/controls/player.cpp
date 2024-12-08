@@ -11,7 +11,7 @@ auto constexpr GRAVITY_ACCELERATION = glm::vec3{0.0f, -20.0f, 0.0f};
 auto constexpr MOUSE_SENSITIVITY = 2.0f;
 auto constexpr DEFAULT_FOV = glm::radians(60.0f);
 auto constexpr MAX_FOV = glm::radians(120.0f);
-auto constexpr MIN_SPEED = 0.1f;
+auto constexpr MIN_SPEED = 10.0f;
 
 static auto lerp(auto a, auto b, f32 param) {
     return (1.0f - param) * a + param * b;
@@ -82,14 +82,11 @@ static auto update_fov_dynamics(
     f32 time_step, RefMut<Camera> camera, f32 speed,
     RefMut<FovDynamics> dynamics
 ) -> void {
-    auto constexpr FREQUENCY = 3.0f;
-    auto constexpr DAMPING = 2.0f;
-    auto constexpr INITIAL_RESPONSE = 0.0f;
-
-    auto constexpr K1 = DAMPING / (M_PI * FREQUENCY);
-    auto constexpr K2 = 1.0f / (4.0f * M_PI * M_PI * FREQUENCY * FREQUENCY);
-    auto constexpr K3 =
-        (INITIAL_RESPONSE * DAMPING) / (2.0f * M_PI * FREQUENCY);
+    auto constexpr ANIMATION_PARAMS = AnimationDynamicsParams{
+        .frequency = 3.0f,
+        .damping = 2.0f,
+        .initial_response = 0.0f,
+    };
 
     auto constexpr POWER = 0.8f;
 
@@ -97,25 +94,24 @@ static auto update_fov_dynamics(
         return glm::pow(value / (value + 1.0f), POWER);
     };
     auto const target_fov =
-        lerp(DEFAULT_FOV, MAX_FOV, confine(glm::max(0.0f, speed - MIN_SPEED)));
+        lerp(DEFAULT_FOV, MAX_FOV, confine(glm::max(0.0f, 0.03f * (speed - MIN_SPEED))));
 
     auto const target_fov_speed =
         (target_fov - dynamics->prev_target_fov) / time_step;
 
-    auto const next_fov =
-        camera->get_fov() + time_step * dynamics->fov_velocity;
+    auto fov = camera->get_fov();
 
-    dynamics->fov_velocity += time_step / K2 *
-                              (target_fov + K3 * target_fov_speed - next_fov -
-                               K1 * dynamics->fov_velocity);
+    ANIMATION_PARAMS.update(
+        time_step, &fov, &dynamics->fov_velocity, target_fov, target_fov_speed
+    );
 
-    dynamics->prev_target_fov = target_fov;
-    camera->set_fov(next_fov);
+    camera->set_fov(fov);
 }
 
 static auto update_movement(
     f32 time_step, RefMut<Camera> camera, RefMut<BoxCollider> collider,
-    PlayerMovement movement, RefMut<FovDynamics> dynamics
+    PlayerMovement movement, RefMut<FovDynamics> fov_dynamics,
+    RefMut<VelocityDynamics> velocity_dynamics
 ) -> void {
     auto velocity_direction = glm::vec3{0.0f};
 
@@ -153,32 +149,14 @@ static auto update_movement(
         velocity_direction = glm::normalize(velocity_direction);
     }
 
-    auto constexpr SPEED_FALLOFF = 0.99f;
-
-    auto speed = MIN_SPEED;
-    auto speed_falloff = PlayerMovement::Walk == movement
-                           ? SPEED_FALLOFF
-                           : 0.001f + SPEED_FALLOFF;
+    auto speed = PlayerMovement::Walk == movement ? MIN_SPEED : 2.0f * MIN_SPEED;
 
     if (io.is_pressed(Key::LeftControl)) {
-        if (PlayerMovement::Walk == movement) {
-            speed *= 3.0f;
-        } else {
-            speed *= 10.0f;
-        }
+        speed *= 3.0f;
     }
 
-    auto velocity = speed * velocity_direction;
+    auto target_velocity = speed * velocity_direction;
     auto prev_velocity = collider->get_collider_velocity();
-
-    if (PlayerMovement::Walk == movement) {
-        auto const is_grounded =
-            PlayerMovement::Fly == movement || glm::abs(prev_velocity.y) < 0.01;
-
-        if (is_grounded && io.is_pressed(Key::Space)) {
-            velocity.y = 75.0f * speed / speed_falloff;
-        }
-    }
 
     auto const collider_box = collider->get_collidable_bounding_box();
     auto const camera_pos =
@@ -204,20 +182,68 @@ static auto update_movement(
 
     camera->set_pos(camera_pos);
 
-    prev_velocity.x *= speed_falloff;
-    prev_velocity.z *= speed_falloff;
-
-    if (PlayerMovement::Fly == movement) {
-        prev_velocity.y *= speed_falloff;
-    }
-
     auto const speed_for_fov =
         glm::abs(glm::dot(velocity_direction, camera->get_front_direction())) *
         speed;
 
-    update_fov_dynamics(time_step, camera, speed_for_fov, dynamics);
+    update_fov_dynamics(time_step, camera, speed_for_fov, fov_dynamics);
 
-    collider->set_collider_velocity(prev_velocity + velocity);
+    auto const velocity_animation_params = PlayerMovement::Walk == movement
+        ? AnimationDynamicsParams{
+            .frequency = 4.0f,
+            .damping = 1.0f,
+            .initial_response = 0.0f,
+        }
+        : AnimationDynamicsParams{
+            .frequency = 10.0,
+            .damping = 5.0,
+            .initial_response = 0.0f,
+        };
+
+    auto next_velocity = prev_velocity;
+
+    if (PlayerMovement::Fly == movement) {
+        velocity_animation_params.update(
+            time_step, &next_velocity,
+            &velocity_dynamics->velocity_rate_of_change, target_velocity,
+            velocity_dynamics->target_velocity_rate_of_change
+        );
+    } else {
+        auto flat_next_velocity = glm::vec2{next_velocity.x, next_velocity.z};
+        auto flat_velocity_rate_of_change = glm::vec2{
+            velocity_dynamics->velocity_rate_of_change.x,
+            velocity_dynamics->velocity_rate_of_change.z
+        };
+        auto const flat_velocity =
+            glm::vec2{target_velocity.x, target_velocity.z};
+        auto const flat_target_velocity_rate_of_change = glm::vec2{
+            velocity_dynamics->target_velocity_rate_of_change.x,
+            velocity_dynamics->target_velocity_rate_of_change.z
+        };
+
+        velocity_animation_params.update(
+            time_step, &flat_next_velocity, &flat_velocity_rate_of_change,
+            flat_velocity, flat_target_velocity_rate_of_change
+        );
+
+        next_velocity = glm::vec3{
+            flat_next_velocity.x, next_velocity.y, flat_next_velocity.y
+        };
+        velocity_dynamics->velocity_rate_of_change = glm::vec3{
+            flat_velocity_rate_of_change.x, 0.0f, flat_velocity_rate_of_change.y
+        };
+    }
+
+    if (PlayerMovement::Walk == movement) {
+        auto const is_grounded =
+            PlayerMovement::Fly == movement || glm::abs(prev_velocity.y) < 0.01;
+
+        if (is_grounded && io.is_pressed(Key::Space)) {
+            next_velocity.y = 0.7f * speed;
+        }
+    }
+
+    collider->set_collider_velocity(next_velocity);
 }
 
 static auto draw_selection_box(
@@ -445,7 +471,8 @@ auto Player::fixed_update(
     auto& collider = solver->get_collidable<BoxCollider>(self.collider_id);
 
     update_movement(
-        time_step, &self.camera, &collider, self.movement, &self.fov_dynamics
+        time_step, &self.camera, &collider, self.movement, &self.fov_dynamics,
+        &self.velocity_dynamics
     );
 }
 
