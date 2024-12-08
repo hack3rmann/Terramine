@@ -29,31 +29,57 @@ struct Collision {
 inline auto constexpr ABSOLUTELY_ELASTIC_ELASTICITY = 1.0f;
 inline auto constexpr ABSOLUTELY_INELASTIC_ELASTICITY = 0.0f;
 
-struct Collidable {
+class Collidable {
+public:
+    Collidable() = default;
     virtual ~Collidable() = default;
 
+    inline Collidable(
+        glm::vec3 velocity, glm::vec3 acceleration = glm::vec3{0.0f},
+        f32 elasticity = ABSOLUTELY_ELASTIC_ELASTICITY, bool is_dynamic = true
+    )
+    : velocity{velocity}
+    , acceleration{acceleration}
+    , elasticity{elasticity}
+    , is_dynamic{is_dynamic} {}
+
     virtual auto get_collidable_bounding_box() const -> Aabb = 0;
-    virtual auto get_collider_velocity() const -> glm::vec3 = 0;
-    virtual auto set_collider_velocity(glm::vec3 velocity) -> void = 0;
-
-    inline virtual auto get_collider_acceleration() const -> glm::vec3 {
-        return glm::vec3{0.0f};
-    }
-
-    inline virtual auto set_collider_acceleration(glm::vec3) -> void {}
-
     virtual auto displace_collidable(glm::vec3 displacement) -> void = 0;
     virtual auto collide(Collidable const& other) const -> Collision = 0;
+
+    inline virtual auto get_collider_velocity() const -> glm::vec3 {
+        return this->velocity;
+    }
+
+    inline virtual auto set_collider_velocity(glm::vec3 velocity) -> void {
+        this->velocity = velocity;
+    }
+
+    inline virtual auto get_collider_acceleration() const -> glm::vec3 {
+        return this->acceleration;
+    }
+
+    inline virtual auto set_collider_acceleration(glm::vec3 value) -> void {
+        this->acceleration = value;
+    }
 
     inline virtual auto collides(Collidable const& other) const -> bool {
         return this->collide(other).exist();
     }
 
-    inline virtual auto is_collidable_dynamic() const -> bool { return true; }
+    inline virtual auto is_collidable_dynamic() const -> bool {
+        return this->is_dynamic;
+    }
 
     inline virtual auto collidable_elasticity() const -> f32 {
-        return ABSOLUTELY_ELASTIC_ELASTICITY;
+        return this->elasticity;
     }
+
+protected:
+    glm::vec3 velocity{};
+    glm::vec3 acceleration{};
+    f32 elasticity{ABSOLUTELY_ELASTIC_ELASTICITY};
+    bool is_dynamic{true};
 };
 
 class PhysicsSolver {
@@ -98,49 +124,20 @@ private:
 };
 
 struct BoxCollider : public Collidable {
+    using Super = Collidable;
+
     Aabb box;
-    glm::vec3 velocity;
-    glm::vec3 acceleration;
-    f32 elasticity;
-    bool is_dynamic;
 
     inline BoxCollider(
         Aabb box = Aabb{}, glm::vec3 velocity = glm::vec3{0.0f},
         glm::vec3 acceleration = glm::vec3{0.0f},
         f32 elasticity = ABSOLUTELY_ELASTIC_ELASTICITY, bool is_dynamic = true
     )
-    : box{box}
-    , velocity{velocity}
-    , acceleration{acceleration}
-    , elasticity{elasticity}
-    , is_dynamic{is_dynamic} {}
-
-    inline auto is_collidable_dynamic() const -> bool override {
-        return this->is_dynamic;
-    }
+    : Super{velocity, acceleration, elasticity, is_dynamic}
+    , box{box} {}
 
     inline auto get_collidable_bounding_box() const -> Aabb override {
         return this->box;
-    }
-
-    inline auto get_collider_velocity() const -> glm::vec3 override {
-        return this->velocity;
-    }
-
-    inline auto get_collider_acceleration() const -> glm::vec3 override {
-        return this->acceleration;
-    }
-
-    inline auto set_collider_acceleration(glm::vec3 value) -> void override {
-        this->acceleration = value;
-    }
-
-    inline auto set_collider_velocity(glm::vec3 velocity) -> void override {
-        this->velocity = velocity;
-    }
-
-    inline auto collidable_elasticity() const -> f32 override {
-        return this->elasticity;
     }
 
     auto displace_collidable(glm::vec3 displacement) -> void override;
