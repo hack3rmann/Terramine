@@ -1,4 +1,5 @@
 #include "../physics.hpp"
+#include <span>
 
 namespace tmine {
 
