@@ -1,5 +1,7 @@
 # Terramine
 
+Faster Minecraft clone written in C++23.
+
 | Sunset Screenshot | House Built in the Game |
 | ------ | ----- |
 | ![image](https://github.com/user-attachments/assets/edc08fb1-d551-43d4-b8a8-da752406897c) | ![Screenshot_30-Nov_02-07-25_3687](https://github.com/user-attachments/assets/01e5b2db-04cf-440d-8605-2f7a4106f8c1) |
