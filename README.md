@@ -1,5 +1,7 @@
 # Terramine
 
+![image](https://github.com/user-attachments/assets/edc08fb1-d551-43d4-b8a8-da752406897c)
+
 Voxel game engine built on OpenGL and GLFW featuring:
 
 1. Realtime world editing accelerated with multithreading.
