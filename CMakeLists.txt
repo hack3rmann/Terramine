@@ -9,10 +9,6 @@ set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-execute_process(COMMAND ln -sfT ${BUILD_DIR}/compile_commands.json
-    ${CMAKE_SOURCE_DIR}/compile_commands.json)
-
 option(SANITIZE "Enable sanitizers" OFF)
 option(THREAD_SANITIZE "Enable thread sanitizer" OFF)
 option(OPTIMIZE "Enable compiler optimizarions" OFF)
